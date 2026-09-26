@@ -94,7 +94,10 @@ public partial class App : Application
             var config = sp.GetRequiredService<IOptions<AppConfig>>().Value;
             var baseUrl = config.ApiBaseUrl;
 #if __ANDROID__
-            if (Android.OS.Build.Fingerprint?.Contains("generic", StringComparison.OrdinalIgnoreCase) == true
+            var emulator = Android.OS.Build.Fingerprint?.Contains("generic", StringComparison.OrdinalIgnoreCase) == true
+                || Android.OS.Build.Hardware is "ranchu" or "goldfish"
+                || Android.OS.Build.Model?.Contains("sdk_gphone", StringComparison.OrdinalIgnoreCase) == true;
+            if (emulator
                 && !string.IsNullOrEmpty(config.ApiBaseUrlAndroidEmulator))
                 baseUrl = config.ApiBaseUrlAndroidEmulator;
 #endif
