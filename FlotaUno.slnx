@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Flota.Api.Infrastructure/Flota.Api.Infrastructure.csproj" />
+    <Project Path="src/Flota.Api/Flota.Api.csproj" />
+    <Project Path="src/Flota.App/Flota.App.csproj" />
+    <Project Path="src/Flota.Client/Flota.Client.csproj" />
+    <Project Path="src/Flota.Core/Flota.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Flota.Api.Tests/Flota.Api.Tests.csproj" />
+    <Project Path="tests/Flota.Core.Tests/Flota.Core.Tests.csproj" />
+  </Folder>
+</Solution>

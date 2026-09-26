@@ -34,3 +34,6 @@ secrets.json
 # System
 Thumbs.db
 .DS_Store
+
+# Dane lokalne Flota.Api
+App_Data/

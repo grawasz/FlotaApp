@@ -1,0 +1,34 @@
+<Project>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <Authors>Jerzy Grabarski</Authors>
+    <Product>Flota</Product>
+    <NeutralLanguage>pl-PL</NeutralLanguage>
+
+    <!--
+      NU1507: wiele źródeł pakietów bez mapowania (CPM)
+      NETSDK1201: RID bez samodzielnego wdrożenia
+      PRI257: język domyślny spoza zasobów
+    -->
+    <NoWarn>$(NoWarn);NU1507;NETSDK1201;PRI257</NoWarn>
+  </PropertyGroup>
+
+  <!-- Projekty bez interfejsu: ostrzeżenia traktowane jako błędy -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' != 'Flota.App' and !$(MSBuildProjectName.StartsWith('Flota.App.'))">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- CA1859: sugestia typów konkretnych zamiast interfejsów w metodach prywatnych -->
+    <NoWarn>$(NoWarn);CA1859</NoWarn>
+  </PropertyGroup>
+
+  <!-- .NET for Android obsługuje JDK 17 i 21; na stacji deweloperskiej JAVA_HOME może wskazywać JDK 25 -->
+  <PropertyGroup Condition="'$(JavaSdkDirectory)' == '' and Exists('C:\Program Files\Microsoft\jdk-21.0.10.7-hotspot')">
+    <JavaSdkDirectory>C:\Program Files\Microsoft\jdk-21.0.10.7-hotspot</JavaSdkDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' and Exists('C:\Program Files (x86)\Android\android-sdk')">
+    <AndroidSdkDirectory>C:\Program Files (x86)\Android\android-sdk</AndroidSdkDirectory>
+  </PropertyGroup>
+</Project>

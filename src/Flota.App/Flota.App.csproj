@@ -1,0 +1,56 @@
+<Project Sdk="Uno.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.26100</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+    <RootNamespace>Flota.App</RootNamespace>
+    <DefaultLanguage>pl-PL</DefaultLanguage>
+
+    <ApplicationTitle>Flota</ApplicationTitle>
+    <!-- Identyfikator pakietu: wartość domyślna szablonu do czasu rozstrzygnięcia K9 -->
+    <ApplicationId>com.companyname.flota-app</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationPublisher>Flota</ApplicationPublisher>
+    <Description>Flota — monitorowanie floty pojazdów</Description>
+
+    <UnoFeatures>
+      Material;
+      Svg;
+      Hosting;
+      Toolkit;
+      Logging;
+      Mvvm;
+      Configuration;
+      Http;
+      Serialization;
+      Localization;
+      Authentication;
+      Navigation;
+      ThemeService;
+      SkiaRenderer;
+    </UnoFeatures>
+  </PropertyGroup>
+
+  <!-- SDK 10.0.4xx dopisuje RID hosta (win-x64) przy PublishTrimmed; dla Android/Mono brak pakietu Runtime.Mono.win-x64 -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <UseDefaultPublishRuntimeIdentifier>false</UseDefaultPublishRuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mapsui.Uno.WinUI" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.Uno.WinUI" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Flota.Core\Flota.Core.csproj" />
+    <ProjectReference Include="..\Flota.Client\Flota.Client.csproj" />
+  </ItemGroup>
+</Project>

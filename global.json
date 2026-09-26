@@ -1,0 +1,12 @@
+{
+  // Wersja Uno.Sdk: https://aka.platform.uno/upgrade-uno-packages
+  "msbuild-sdks": {
+    "Uno.Sdk": "6.7.30"
+  },
+  "sdk": {
+    "allowPrerelease": false
+  },
+  "test": {
+    "runner": "Microsoft.Testing.Platform"
+  }
+}
