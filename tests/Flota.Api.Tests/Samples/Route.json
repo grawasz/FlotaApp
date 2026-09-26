@@ -1,0 +1,22 @@
+{
+  "$id": "1",
+  "TrackingObject": { "$id": "2", "TrackingObjectId": 101, "TrackingObjectName": "WX 12345", "RegistrationNumber": "WX 12345", "Tank": { "$id": "3", "Capacity": 80 } },
+  "BeginDate": "2026-09-25T06:00:00",
+  "EndDate": "2026-09-25T18:00:00",
+  "RideTime": "05:30:00",
+  "HaulTime": null,
+  "StopTime": "06:30:00",
+  "Distance": 250.5,
+  "DistanceGPS": 248.1,
+  "MaxRPM": 2800,
+  "MaxSpeed": 110.2,
+  "AverageSpeed": 45.5,
+  "FuelUsed": 20.04,
+  "TotalDistanceCAN": 123456.7,
+  "SensorsActivityTime": { "$id": "4", "Drzwi ": "00:10:00", "Stacyjka": "05:30:00", "Hamulec": "00:00:00", "Temp. zew. [C]: ": "01:00:00" },
+  "SensorsValue": { "$id": "5", " Test tealiw": 12.345 },
+  "Stages": [
+    { "$id": "6", "SensorsActivityTime": { "$id": "7", "Drzwi ": "00:02:00" }, "StageType": 0, "BeginDate": "2026-09-25T06:00:00", "EndDate": "2026-09-25T07:00:00", "Time": "01:00:00", "Distance": 50, "MaxRPM": 2500, "MaxSpeed": 90, "AverageSpeed": 50, "FuelUsed": 4, "DriverName": "Jan Kowalski", "TotalDistanceCAN": 123250 },
+    { "$id": "8", "SensorsActivityTime": null, "StageType": 1, "BeginDate": "2026-09-25T07:00:00", "EndDate": "2026-09-25T07:30:00", "Time": "00:30:00", "Distance": 0, "MaxSpeed": 0, "AverageSpeed": 0 }
+  ]
+}

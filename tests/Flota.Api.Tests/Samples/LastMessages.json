@@ -1,0 +1,40 @@
+[
+  {
+    "$id": "1",
+    "TrackingMessageId": 1001,
+    "SenderId": "S-101",
+    "Location": { "$id": "2", "Latitude": 52.2297, "Longitude": 21.0122, "AreaName": null },
+    "ValidGPS": true,
+    "Satellites": 12,
+    "Heading": -90,
+    "Speed": 54.4,
+    "Timedate": "2026-09-26T10:00:00",
+    "IsEngineStarted": true,
+    "SpeedMax": 60,
+    "Sensors": [ { "$id": "3", "SensorId": 501, "SensorName": "Drzwi ", "SensorType": 2, "Order": 1, "Visible": true, "Value": true } ],
+    "DriverName": "Jan Kowalski",
+    "DriverId": "900",
+    "TotalDistanceCAN": 123456.7,
+    "SpeedFromCAN": 55,
+    "RPM": 1800,
+    "Fuel": 0.5
+  },
+  {
+    "$id": "4",
+    "TrackingMessageId": 1000,
+    "SenderId": "S-101",
+    "Location": { "$id": "5", "Latitude": 52.1, "Longitude": 21.1 },
+    "ValidGPS": true,
+    "Timedate": "2026-09-26T09:00:00",
+    "Sensors": []
+  },
+  {
+    "$id": "6",
+    "TrackingMessageId": 2000,
+    "SenderId": "R-2",
+    "Location": { "$id": "7", "Latitude": 50.06, "Longitude": 19.94 },
+    "ValidGPS": false,
+    "Timedate": "2026-09-26T09:30:00",
+    "Sensors": [ { "$id": "8", "SensorId": 777, "SensorName": "Przycisk", "Order": 1, "Visible": true, "Value": 3.5 } ]
+  }
+]

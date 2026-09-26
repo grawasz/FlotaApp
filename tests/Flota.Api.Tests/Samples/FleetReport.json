@@ -1,0 +1,23 @@
+{
+  "$id": "1",
+  "DailyReports": [
+    {
+      "$id": "2",
+      "DailyReportId": 1,
+      "DateTime": "2026-08-01T00:00:00",
+      "TrackingObject": { "$id": "3", "TrackingObjectId": 101, "TrackingObjectName": "WX 12345" },
+      "DailyReportRouteDetail": { "$id": "4", "RideTime": "02:00:00", "StopTime": "22:00:00", "Distance": 100.25, "MaxSpeed": 90, "AverageSpeed": 50, "Odometer": 123000 },
+      "DailyReportFuelDetail": { "$id": "5", "FuelUsed": 8, "FuelConsumption": 8, "FuelConsumptionInTime": 4 },
+      "DailyReportSensorDetails": { "$id": "6", "$type": "System.Collections.Generic.List", "$values": [ { "$id": "7", "SensorName": "Drzwi ", "ActivityTime": "00:05:00" } ] }
+    },
+    {
+      "$id": "8",
+      "DateTime": "2026-08-02T00:00:00",
+      "TrackingObject": { "$ref": "3" },
+      "DailyReportRouteDetail": { "$id": "9", "Distance": 50 }
+    }
+  ],
+  "DailyReportRouteDetail": { "$id": "10", "RideTime": "03:00:00", "StopTime": "45:00:00", "Distance": 150.25, "MaxRPM": 2600, "MaxSpeed": 90, "AverageSpeed": 50, "Odometer": 123050 },
+  "DailyReportFuelDetail": { "$id": "11", "FuelUsed": 12, "FuelConsumption": 8, "FuelConsumptionInTime": 4 },
+  "DailyReportSensorDetails": [ { "$id": "12", "SensorName": "Hamulec", "ActivityTime": "00:30:00" } ]
+}

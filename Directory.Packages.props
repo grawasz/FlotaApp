@@ -7,6 +7,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Flota.Api">
+    <!-- Wymuszenie wersji bez znanych podatności (zależność przechodnia WireMock.Net) -->
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.12" />
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />

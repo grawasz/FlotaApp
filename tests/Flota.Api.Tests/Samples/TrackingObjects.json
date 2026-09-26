@@ -1,0 +1,42 @@
+[
+  {
+    "$id": "1",
+    "TrackingObjectId": 101,
+    "TrackingObjectName": "WX 12345",
+    "Company": { "$id": "2", "CompanyId": 7, "CompanyName": "Firma testowa" },
+    "Device": { "$id": "3", "DeviceId": 11, "SenderId": "S-101", "Model": "Skaut 2", "SerialNumber": "A1", "IsActive": true, "CAN": true, "DeviceFeatures": 0, "DeviceType": 1, "TrackingObject": { "$ref": "1" } },
+    "IsActive": true,
+    "RegistrationNumber": "WX 12345",
+    "Manufacturer": "Renault",
+    "MakeModel": "Renault Trafic",
+    "Model": "Trafic",
+    "InitialOdometerValue": 0,
+    "ReportsOdometer": true,
+    "SpeedLimit": 90,
+    "MaxRPM": 3000,
+    "TrackingObjectType": 1,
+    "FuelType": 0,
+    "Sensors": [
+      { "$id": "4", "SensorId": 501, "SensorName": "Drzwi ", "SensorType": 2, "SensorOutputType": 0, "FunctionCode": "", "Order": 1, "Mask": null, "Visible": true, "Value": false }
+    ],
+    "Logbook": false,
+    "Driver": { "$id": "5", "UserId": 900, "Login": "jkowalski", "FirstName": "Jan", "LastName": "Kowalski", "IsActive": true },
+    "Tank": { "$id": "6", "TankId": 1, "TankName": "Zbiornik", "Capacity": 80, "Ratio": 100, "Threshold": 0, "Lag": 0, "Measures": [], "Inputs": [], "ToleranceDefueling": 0, "ToleranceFuelLevel": 0, "InputIndex": 0, "IsIgnoreEngineStatus": false },
+    "HasLocationData": true
+  },
+  {
+    "$id": "7",
+    "TrackingObjectId": 102,
+    "TrackingObjectName": "Radio 2",
+    "Company": { "$ref": "2" },
+    "Device": null,
+    "IsActive": true,
+    "RegistrationNumber": "",
+    "TrackingObjectType": 19,
+    "Sensors": [
+      { "$id": "8", "SensorId": 777, "SensorName": "Przycisk", "SensorType": 0, "Order": 1, "Visible": true, "Value": 3.5 }
+    ],
+    "Driver": null,
+    "Tank": null
+  }
+]
