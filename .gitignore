@@ -1,0 +1,36 @@
+# Wyniki budowania
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+TestResults/
+*.binlog
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+
+# Pakiety
+*.nupkg
+*.snupkg
+**/packages/*
+
+# Dane lokalne i sekrety
+appsettings.*.local.json
+*.db
+*.db-shm
+*.db-wal
+*.pfx
+*.keystore
+*.jks
+secrets.json
+.env
+
+# System
+Thumbs.db
+.DS_Store
