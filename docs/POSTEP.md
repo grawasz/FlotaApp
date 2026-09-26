@@ -12,8 +12,8 @@
 | T1.2 | zakończone | `dotnet build src/Flota.App -f net10.0-windows10.0.26100` i `-f net10.0-android`: 0 błędów; uruchomienie na Windows (pakiet deweloperski MSIX) i emulatorze Android 15 | odstępstwo O6 |
 | T1.3 | zakończone | `dotnet build FlotaUno.slnx`: 0 błędów | — |
 | T1.4 | w toku | paleta w `Styles/ColorPaletteOverride.xaml`; brak testu porównującego wartości z paletą źródłową | — |
-| T1.5 | zakończone | zasoby w `src/Flota.App/Assets/Images`, wyświetlane w aplikacji | — |
-| T1.6 | nierozpoczęte | — | — |
+| T1.5 | zakończone | zasoby w `src/Flota.App/Assets/Images`, wyświetlane w aplikacji; ikona aplikacji i ekran startowy odtworzone w SVG z `avl.ico` (Windows, Android — ikona adaptacyjna, iOS) | — |
+| T1.6 | w toku | `.github/workflows/ci.yml`: testy, build Windows i Android (`windows-latest`), build iOS dla symulatora (`macos-latest`), obraz Flota.Api z testem `/health` (`ubuntu-latest`); brak przebiegu potoku — repozytorium bez zdalnego GitHub | — |
 | T1.7 | w toku | powłoka z panelami sekcji działa na Windows; brak testu interfejsu na szerokości 400 px | — |
 | T2.1 | zakończone | deserializacja próbek z `$id`/`$ref`/`$values` — `UniAvlMapperTests` | próbki fikcyjne w `tests/Flota.Api.Tests/Samples` |
 | T2.2 | zakończone | `UniAvlClientTests` (WireMock): 401, 5xx, niepoprawny JSON, 204, parametry niezależne od kultury | — |
@@ -24,7 +24,7 @@
 | T2.7 | w toku | migawka floty działa z UniAVL; dopasowanie wiadomości — `UniAvlMapperTests`; brak pomiaru czasu względem [POMIAR-BAZOWY.md](POMIAR-BAZOWY.md) | — |
 | T2.8 | w toku | hub `/hubs/fleet` z odpytywaniem UniAVL co 10 s | odstępstwo O1; wymaga K3 |
 | T2.9 | w toku | punkty końcowe raportów, kart drogowych, słowników i ustawień; testy mapowania raportu trasy i floty | brak testów porównawczych z aplikacją Blazor |
-| T2.10 | w toku | OpenAPI, health checks, Serilog, OpenTelemetry; brak `Dockerfile` i `docker-compose.yml` | — |
+| T2.10 | zakończone | `docker compose up` (Flota.Api + PostgreSQL 17): `GET /health` → 200 `Healthy`, tabele utworzone w PostgreSQL, `GET /me/settings` bez tokenu → 401; obraz uruchomiony również z SQLite | konfiguracja w `.env` (wzór `.env.example`); obraz uruchamiany bez uprawnień administratora |
 | T2.11 | zakończone | `dotnet build src/Flota.Client` | odstępstwo O2 |
 | T3.1–T3.7 | w toku | funkcje zaimplementowane i sprawdzone ręcznie na Windows (logowanie, mapa, obiekty, szczegóły, śledzenie); brak testów modelu widoku i testów interfejsu | odstępstwo O3 (T3.2) |
 | T4.1–T4.6 | w toku | funkcje zaimplementowane; eksport XLSX — `XlsxExporterTests`; brak testów porównawczych z aplikacją Blazor | odstępstwo O4 (T4.6) |

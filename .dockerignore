@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+**/App_Data/
+**/*.db
+**/.vs/
+.git/
+.github/
+artifacts/
+docs/
+spikes/
+tests/
+src/Flota.App/
+src/Flota.Client/
+.env

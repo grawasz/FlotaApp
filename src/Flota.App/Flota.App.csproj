@@ -35,6 +35,11 @@
     <UseDefaultPublishRuntimeIdentifier>false</UseDefaultPublishRuntimeIdentifier>
   </PropertyGroup>
 
+  <!-- Ikona AVL (z avl.ico aplikacji źródłowej): na Windows tło z zaokrąglonymi narożnikami; Android i iOS maskują kształt samodzielnie -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <UnoIconBackgroundFile>Assets\Icons\icon_windows.svg</UnoIconBackgroundFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Mapsui.Uno.WinUI" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Uno.WinUI" />

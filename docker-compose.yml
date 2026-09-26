@@ -1,0 +1,45 @@
+# Flota.Api z bazą PostgreSQL.
+# Wartości konfiguracji w pliku .env (wzór: .env.example; plik .env poza repozytorium).
+#   docker compose up --build
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: flota
+      POSTGRES_USER: flota
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Brak POSTGRES_PASSWORD w pliku .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flota -d flota"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Flota.Api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${FLOTA_API_PORT:-5294}:8080"
+    environment:
+      Database__Provider: Postgres
+      ConnectionStrings__Flota: Host=db;Database=flota;Username=flota;Password=${POSTGRES_PASSWORD}
+      # Klucz podpisu JWT (Base64, min. 32 bajty); pusty — klucz losowy, tokeny tracą ważność po restarcie usługi
+      Auth__SigningKey: ${AUTH_SIGNING_KEY:-}
+      Targeo__Endpoint: ${TARGEO_ENDPOINT:-}
+      Targeo__User: ${TARGEO_USER:-}
+      Targeo__Password: ${TARGEO_PASSWORD:-}
+      Targeo__Salt: ${TARGEO_SALT:-}
+    volumes:
+      - api-keys:/app/keys
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  api-keys:
