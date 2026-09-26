@@ -161,8 +161,8 @@
           <Grid>
             <controls:FlotaTable x:Name="RefuelTable" Height="300" />
             <controls:FlotaTable x:Name="DefuelTable" Height="300" Visibility="Collapsed" />
-            <lvc:CartesianChart x:Name="FuelTimeChart" Height="320" Visibility="Collapsed" />
-            <lvc:CartesianChart x:Name="FuelDistanceChart" Height="320" Visibility="Collapsed" />
+            <ContentControl x:Name="FuelTimeHost" Height="320" Visibility="Collapsed" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            <ContentControl x:Name="FuelDistanceHost" Height="320" Visibility="Collapsed" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
           </Grid>
         </StackPanel>
 
@@ -172,7 +172,7 @@
         <!-- Styl jazdy -->
         <StackPanel x:Name="StyleView" Spacing="8" Visibility="Collapsed">
           <Grid x:Name="StyleSummary" ColumnSpacing="12" RowSpacing="6" />
-          <lvc:CartesianChart x:Name="StyleChart" Height="300" />
+          <ContentControl x:Name="StyleHost" Height="300" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
         </StackPanel>
 
         <!-- Podsumowanie kursów -->

@@ -15,7 +15,7 @@
         <controls:ToolButton x:Name="RefreshButton" x:Uid="ObjectsRefresh" Label="Odśwież" Icon="refresh_16x16.png" Click="OnRefreshClick" />
         <controls:ToolButton x:Name="TraceButton" Grid.Column="1" x:Uid="ObjectsTrace" Label="Śledź" Icon="trace_16x16.png" Click="OnTraceClick" />
         <TextBox x:Name="FilterBox" Grid.Column="2" x:Uid="ObjectsFilter" PlaceholderText="Szukaj obiektu"
-                 MinWidth="80" VerticalAlignment="Center" Margin="4,0,2,0" TextChanged="OnFilterChanged" />
+                 MinWidth="80" Style="{StaticResource DefaultTextBoxStyle}" FontSize="13" VerticalAlignment="Center" Margin="4,0,2,0" TextChanged="OnFilterChanged" />
       </Grid>
     </controls:PanelFrame.Toolbar>
 

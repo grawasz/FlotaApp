@@ -63,16 +63,6 @@ public sealed partial class PanelFrame : ContentControl
         private set => SetValue(ToolbarVisibilityProperty, value);
     }
 
-    public static readonly DependencyProperty HeaderContentProperty = DependencyProperty.Register(
-        nameof(HeaderContent), typeof(object), typeof(PanelFrame), new PropertyMetadata(null));
-
-    /// <summary>Dodatkowa treść w nagłówku (po prawej).</summary>
-    public object? HeaderContent
-    {
-        get => GetValue(HeaderContentProperty);
-        set => SetValue(HeaderContentProperty, value);
-    }
-
     public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(
         nameof(IsExpanded), typeof(bool), typeof(PanelFrame), new PropertyMetadata(true, (d, e) => ((PanelFrame)d).UpdateExpanded()));
 
@@ -118,5 +108,6 @@ public sealed partial class PanelFrame : ContentControl
     {
         BodyVisibility = IsExpanded ? Visibility.Visible : Visibility.Collapsed;
         ChevronGlyph = IsExpanded ? "" : "";
+        if (GetTemplateChild("PART_Chevron") is FontIcon chevron) chevron.Glyph = ChevronGlyph;
     }
 }

@@ -498,6 +498,20 @@ public sealed partial class RouteReportPanel : UserControl
         RenderRoute(); // „Suma tankowań” w podsumowaniu trasy
     }
 
+    LiveChartsCore.SkiaSharpView.WinUI.CartesianChart? _fuelTime, _fuelDistance, _style;
+
+    /// <summary>Wykresy tworzone przy pierwszym użyciu (zakładki Paliwo, Styl jazdy).</summary>
+    LiveChartsCore.SkiaSharpView.WinUI.CartesianChart FuelTimeChart => _fuelTime ??= NewChart(FuelTimeHost);
+    LiveChartsCore.SkiaSharpView.WinUI.CartesianChart FuelDistanceChart => _fuelDistance ??= NewChart(FuelDistanceHost);
+    LiveChartsCore.SkiaSharpView.WinUI.CartesianChart StyleChart => _style ??= NewChart(StyleHost);
+
+    static LiveChartsCore.SkiaSharpView.WinUI.CartesianChart NewChart(ContentControl host)
+    {
+        var chart = new LiveChartsCore.SkiaSharpView.WinUI.CartesianChart();
+        host.Content = chart;
+        return chart;
+    }
+
     void RenderFuelCharts(FuelReport f)
     {
         var capacity = _vm.Report?.TankCapacity;
@@ -552,8 +566,8 @@ public sealed partial class RouteReportPanel : UserControl
         FuelTabDistance.IsChecked = i == 3;
         RefuelTable.Visibility = i == 0 ? Visibility.Visible : Visibility.Collapsed;
         DefuelTable.Visibility = i == 1 ? Visibility.Visible : Visibility.Collapsed;
-        FuelTimeChart.Visibility = i == 2 ? Visibility.Visible : Visibility.Collapsed;
-        FuelDistanceChart.Visibility = i == 3 ? Visibility.Visible : Visibility.Collapsed;
+        FuelTimeHost.Visibility = i == 2 ? Visibility.Visible : Visibility.Collapsed;
+        FuelDistanceHost.Visibility = i == 3 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     // ---------------- Zdarzenia, styl jazdy ----------------
@@ -578,7 +592,7 @@ public sealed partial class RouteReportPanel : UserControl
         if (s is null)
         {
             PairRaw(StyleSummary, Loc.Get("NoData"), string.Empty);
-            StyleChart.Visibility = Visibility.Collapsed;
+            StyleHost.Visibility = Visibility.Collapsed;
             return;
         }
         if (s.SpeedingTime.TotalSeconds > 0) PairRaw(StyleSummary, Loc.Get("StyleSpeedingTime"), ReportRules.FormatDuration(s.SpeedingTime));
@@ -587,7 +601,7 @@ public sealed partial class RouteReportPanel : UserControl
         if (s.SuddenBrakings is { } sb) PairRaw(StyleSummary, Loc.Get("StyleSuddenBrakings"), sb.ToString(Loc.Pl));
 
         var features = s.Features.Where(f => f.Value is not null).ToList();
-        StyleChart.Visibility = features.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        StyleHost.Visibility = features.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         StyleChart.Series =
         [
             new LineSeries<double>

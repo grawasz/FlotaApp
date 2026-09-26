@@ -14,30 +14,51 @@ internal static class DevSnapshot
 {
     public static void Start(Window window)
     {
-        var timer = window.DispatcherQueue.CreateTimer();
-        timer.Interval = TimeSpan.FromSeconds(1);
-        timer.Tick += async (_, _) =>
+        var folder = ApplicationData.Current.LocalFolder.Path;
+        var request = Path.Combine(folder, "snap-request");
+        var dispatcher = window.DispatcherQueue;
+        _ = Task.Run(async () =>
         {
-            try
+            while (true)
             {
-                var folder = ApplicationData.Current.LocalFolder;
-                if (await folder.TryGetItemAsync("snap-request") is not StorageFile request) return;
-                await request.DeleteAsync();
-                if (window.Content is not UIElement root) return;
-                var rtb = new RenderTargetBitmap();
-                await rtb.RenderAsync(root);
-                var pixels = (await rtb.GetPixelsAsync()).ToArray();
-                var file = await folder.CreateFileAsync("snap.png", CreationCollisionOption.ReplaceExisting);
-                using var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
-                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-                encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied, (uint)rtb.PixelWidth, (uint)rtb.PixelHeight, 96, 96, pixels);
-                await encoder.FlushAsync();
+                await Task.Delay(1000);
+                if (!File.Exists(request)) continue;
+                try { File.Delete(request); } catch (IOException) { continue; }
+                var done = new TaskCompletionSource();
+                dispatcher.TryEnqueue(async () =>
+                {
+                    try
+                    {
+                        await CaptureAsync(window, Path.Combine(folder, "snap.png"));
+                    }
+                    catch (Exception ex)
+                    {
+                        File.AppendAllText(Path.Combine(Path.GetTempPath(), "flota-app-error.log"), "SNAPSHOT " + ex + Environment.NewLine);
+                    }
+                    finally
+                    {
+                        done.TrySetResult();
+                    }
+                });
+                await done.Task;
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException or System.Runtime.InteropServices.COMException)
-            {
-            }
-        };
-        timer.Start();
+        });
+    }
+
+    static async Task CaptureAsync(Window window, string path)
+    {
+        if (window.Content is not UIElement root) return;
+        var rtb = new RenderTargetBitmap();
+        await rtb.RenderAsync(root);
+        var pixels = (await rtb.GetPixelsAsync()).ToArray();
+        using var ms = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+        var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, ms);
+        encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied, (uint)rtb.PixelWidth, (uint)rtb.PixelHeight, 96, 96, pixels);
+        await encoder.FlushAsync();
+        ms.Seek(0);
+        var bytes = new byte[ms.Size];
+        await ms.ReadAsync(bytes.AsBuffer(), (uint)ms.Size, Windows.Storage.Streams.InputStreamOptions.None);
+        await File.WriteAllBytesAsync(path, bytes);
     }
 }
 #endif
