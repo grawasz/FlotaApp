@@ -14,8 +14,7 @@ public sealed class MapImages
     {
         if (IsLoaded) return;
         var names = Enumerable.Range(0, 23).Select(TrackingObjectIcons.IconKey).Distinct()
-            .Select(k => $"{k}.png")
-            .Concat(["arrows-o/arrow_0.png", "arrows-o/dot.png"]);
+            .Select(k => $"{k}.png");
         foreach (var name in names)
         {
             try
@@ -37,7 +36,27 @@ public sealed class MapImages
     /// <summary>Źródło ikony typu obiektu.</summary>
     public string? ObjectIcon(int type) => _sources.GetValueOrDefault($"{TrackingObjectIcons.IconKey(type)}.png");
 
-    public string? Arrow => _sources.GetValueOrDefault("arrows-o/arrow_0.png");
+    /// <summary>
+    /// Wskaźnik kierunku śladu (wektorowy, skierowany na północ; obracany o azymut): biały szewron z obrysem w kolorze akcentu.
+    /// </summary>
+    public string Arrow => _arrow ??= Svg(
+        $"<path d='M6 16.5 L12 9.5 L18 16.5' fill='none' stroke='{Hex("FlotaAccentColor")}' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>" +
+        $"<path d='M6 16.5 L12 9.5 L18 16.5' fill='none' stroke='{Hex("SurfaceColor")}' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/>");
 
-    public string? Dot => _sources.GetValueOrDefault("arrows-o/dot.png");
+    /// <summary>Punkt postoju na śladzie: biała kropka z obwódką.</summary>
+    public string Dot => _dot ??= Svg(
+        $"<circle cx='12' cy='12' r='4.5' fill='{Hex("SurfaceColor")}' stroke='{Hex("FlotaAccentColor")}' stroke-width='2.5'/>");
+
+    string? _arrow;
+    string? _dot;
+
+    static string Svg(string body) =>
+        "svg-content://<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>" + body + "</svg>";
+
+    /// <summary>Kolor z palety (Styles/ColorPaletteOverride.xaml) w postaci <c>#RRGGBB</c>.</summary>
+    static string Hex(string key)
+    {
+        var c = Application.Current.Resources.TryGetValue(key, out var v) && v is Windows.UI.Color wc ? wc : Microsoft.UI.Colors.Gray;
+        return $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+    }
 }

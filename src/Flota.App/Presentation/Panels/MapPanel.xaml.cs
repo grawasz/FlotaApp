@@ -27,8 +27,8 @@ public sealed partial class MapPanel : UserControl
 {
     const double TopResolution = 156543.03392804097;
     const int MaxTracePoints = 5000;
-    /// <summary>Strzałki kierunku widoczne od tej rozdzielczości (ok. powiększenie 13) — czytelność i wydajność.</summary>
-    const double ArrowsMaxResolution = 20;
+    /// <summary>Wskaźniki kierunku widoczne od tej rozdzielczości (ok. powiększenie 10).</summary>
+    const double ArrowsMaxResolution = 150;
 
     static readonly (double Lat, double Lon) DefaultCenter = (52.308479309, 20.162054062);
 
@@ -41,6 +41,9 @@ public sealed partial class MapPanel : UserControl
     readonly MemoryLayer _objects = new("Obiekty");
     readonly Dictionary<int, PointFeature> _objectFeatures = [];
     Coordinate[] _traceCoordinates = [];
+    IReadOnlyList<ObjectPosition> _tracePoints = [];
+    /// <summary>Minimalna odległość wskaźników kierunku na ekranie [px].</summary>
+    const double ArrowSpacing = 40;
     double _traceResolution;
     DispatcherQueueTimer? _simplifyTimer;
     bool _initialized;
@@ -130,15 +133,12 @@ public sealed partial class MapPanel : UserControl
             }
             var position = traced == item && TracePosition() is { } tp ? tp : item.Position!;
             var (x, y) = SphericalMercator.FromLonLat(position.Longitude, position.Latitude);
-            if (!_objectFeatures.TryGetValue(item.Id, out var f))
+            // Nowy obiekt przy zmianie położenia — Mapsui zapamiętuje zasięg (Extent) obiektu przy utworzeniu;
+            // przesunięcie punktu istniejącego obiektu powodowało jego odfiltrowanie z widoku (znacznik niewidoczny w trybie „Śledź”)
+            if (!_objectFeatures.TryGetValue(item.Id, out var f) || f.Point.X != x || f.Point.Y != y)
             {
                 f = new PointFeature(x, y) { Data = item };
                 _objectFeatures[item.Id] = f;
-            }
-            else
-            {
-                f.Point.X = x;
-                f.Point.Y = y;
             }
             StyleObject(f, item, traced == item && _fleet.TraceMode == TraceMode.Report);
             // Nowa generacja obiektu — Mapsui przechowuje narysowane symbole w pamięci podręcznej
@@ -226,41 +226,13 @@ public sealed partial class MapPanel : UserControl
     {
         if (!_initialized) return;
         var points = _fleet.Trace;
-        var arrows = new List<IFeature>();
-        _traceCoordinates = [];
-        if (points.Count > 1 && points.Count <= MaxTracePoints)
+        _tracePoints = points.Count > 1 && points.Count <= MaxTracePoints ? points : [];
+        _traceCoordinates = _tracePoints.Select(p =>
         {
-            _traceCoordinates = points.Select(p =>
-            {
-                var (x, y) = SphericalMercator.FromLonLat(p.Longitude, p.Latitude);
-                return new Coordinate(x, y);
-            }).ToArray();
-
-            for (var i = 0; i < points.Count - 1; i++)
-            {
-                var p = points[i];
-                var (x, y) = SphericalMercator.FromLonLat(p.Longitude, p.Latitude);
-                var f = new PointFeature(x, y) { Data = p };
-                var next = points[i + 1];
-                var azimuth = Flota.Core.Geo.Direction.ArrowAzimuth(p.Latitude, p.Longitude, p.Heading, next.Latitude, next.Longitude);
-                var dot = p.Speed is null or 0 || azimuth is null;
-                var src = dot ? _images.Dot : _images.Arrow;
-                if (src is not null)
-                {
-                    f.Styles.Add(new ImageStyle
-                    {
-                        Image = new Mapsui.Styles.Image { Source = src },
-                        // Azymut zgodny z ruchem wskazówek zegara — jak obrót symbolu w Mapsui
-                        SymbolRotation = dot ? 0 : azimuth!.Value,
-                        Opacity = 0.6f,
-                    });
-                }
-                arrows.Add(f);
-            }
-        }
-        _arrows.Features = arrows;
-        _arrows.FeaturesWereModified();
-        RebuildTraceLine();
+            var (x, y) = SphericalMercator.FromLonLat(p.Longitude, p.Latitude);
+            return new Coordinate(x, y);
+        }).ToArray();
+        RebuildTraceGeometry();
         UpdateObjects([]);
 
         // Przesunięcie mapy do punktu bieżącego (raport) lub ostatniego (śledzenie)
@@ -269,18 +241,23 @@ public sealed partial class MapPanel : UserControl
             CenterOn(cur.Latitude, cur.Longitude, _map.Navigator.Viewport.Resolution > Resolution(12) ? 15 : null);
     }
 
-    /// <summary>Linia śladu uproszczona do rozdzielczości ekranu (prototyp T0.4 — długie linie są głównym kosztem rysowania).</summary>
-    void RebuildTraceLine()
+    /// <summary>
+    /// Linia śladu uproszczona do rozdzielczości ekranu (prototyp T0.4 — długie linie są głównym kosztem rysowania)
+    /// i wskaźniki kierunku rozmieszczone co najmniej <see cref="ArrowSpacing"/> px od siebie.
+    /// </summary>
+    void RebuildTraceGeometry()
     {
-        var features = new List<IFeature>();
+        var resolution = _map.Navigator.Viewport.Resolution;
+        _traceResolution = resolution;
+        var lineFeatures = new List<IFeature>();
+        var arrowFeatures = new List<IFeature>();
         if (_traceCoordinates.Length > 1)
         {
-            _traceResolution = _map.Navigator.Viewport.Resolution;
             NetTopologySuite.Geometries.Geometry line = new LineString(_traceCoordinates);
-            if (_traceCoordinates.Length > 500 && _traceResolution > 0)
-                line = NetTopologySuite.Simplify.DouglasPeuckerSimplifier.Simplify(line, _traceResolution * 0.5);
+            if (_traceCoordinates.Length > 500 && resolution > 0)
+                line = NetTopologySuite.Simplify.DouglasPeuckerSimplifier.Simplify(line, resolution * 0.5);
             var color = Col("FlotaRouteLineColor");
-            features.Add(new GeometryFeature(line)
+            lineFeatures.Add(new GeometryFeature(line)
             {
                 Styles =
                 {
@@ -290,17 +267,47 @@ public sealed partial class MapPanel : UserControl
                     },
                 },
             });
+
+            // Wskaźniki kierunku: faktyczny kierunek ruchu (Flota.Core.Geo.Direction); postoje — kropka
+            var minDistance = ArrowSpacing * resolution;
+            Coordinate? last = null;
+            for (var i = 0; i < _tracePoints.Count - 1; i++)
+            {
+                var c = _traceCoordinates[i];
+                if (last is not null && c.Distance(last) < minDistance) continue;
+                var p = _tracePoints[i];
+                var next = _tracePoints[i + 1];
+                var azimuth = Flota.Core.Geo.Direction.ArrowAzimuth(p.Latitude, p.Longitude, p.Heading, next.Latitude, next.Longitude);
+                var dot = p.Speed is null or 0 || azimuth is null;
+                arrowFeatures.Add(new PointFeature(c.X, c.Y)
+                {
+                    Data = p,
+                    Styles =
+                    {
+                        new ImageStyle
+                        {
+                            Image = new Mapsui.Styles.Image { Source = dot ? _images.Dot : _images.Arrow },
+                            // Azymut zgodny z ruchem wskazówek zegara — jak obrót symbolu w Mapsui
+                            SymbolRotation = dot ? 0 : azimuth!.Value,
+                            SymbolScale = dot ? 1.0 : 1.25,
+                        },
+                    },
+                });
+                last = c;
+            }
         }
-        _traceLine.Features = features;
+        _traceLine.Features = lineFeatures;
         _traceLine.FeaturesWereModified();
+        _arrows.Features = arrowFeatures;
+        _arrows.FeaturesWereModified();
         _map.RefreshGraphics();
     }
 
     void OnViewportChanged()
     {
-        if (_traceCoordinates.Length <= 500) return;
+        if (_traceCoordinates.Length <= 1) return;
         var r = _map.Navigator.Viewport.Resolution;
-        if (_traceResolution > 0 && Math.Abs(Math.Log(r / _traceResolution)) < Math.Log(1.5)) return;
+        if (_traceResolution > 0 && Math.Abs(Math.Log(r / _traceResolution)) < Math.Log(1.4)) return;
         _simplifyTimer ??= CreateSimplifyTimer();
         _simplifyTimer.Stop();
         _simplifyTimer.Start();
@@ -311,7 +318,7 @@ public sealed partial class MapPanel : UserControl
         var t = DispatcherQueue.CreateTimer();
         t.Interval = TimeSpan.FromMilliseconds(300);
         t.IsRepeating = false;
-        t.Tick += (_, _) => RebuildTraceLine();
+        t.Tick += (_, _) => RebuildTraceGeometry();
         return t;
     }
 
