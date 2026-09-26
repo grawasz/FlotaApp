@@ -1,6 +1,6 @@
 # FlotaUno — zasady pracy
 
-Aplikacja kliencka systemu Flota na Uno Platform (Android, iOS, Windows) oraz usługa pośrednicząca Flota.Api. Zakres, architektura i kolejność zadań: `docs/Plan-migracji-Uno.md`.
+Aplikacja kliencka systemu Flota na Uno Platform (Android, iOS, Windows, przeglądarka — WebAssembly) oraz usługa pośrednicząca Flota.Api. Zakres, architektura i kolejność zadań: `docs/Plan-migracji-Uno.md`.
 
 ## Źródła
 

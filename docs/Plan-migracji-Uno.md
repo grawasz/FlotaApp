@@ -31,7 +31,7 @@
 
 ## 1. Cel i zakres
 
-Celem jest zbudowanie nowej aplikacji klienckiej systemu Flota na Uno Platform, działającej na systemach Android, iOS i Windows, przy spełnieniu następujących wymagań:
+Celem jest zbudowanie nowej aplikacji klienckiej systemu Flota na Uno Platform, działającej na systemach Android, iOS i Windows oraz w przeglądarce internetowej (następca aplikacji Blazor), przy spełnieniu następujących wymagań:
 
 - pełna funkcjonalność aplikacji Blazor (zakres funkcji z aplikacji WPF UniNet.AVL — zob. [rozdział 12](#12-kwestie-do-rozstrzygnięcia));
 - istotne skrócenie czasu ładowania danych;
@@ -180,7 +180,7 @@ Poniższe rozwiązania nie mogą zostać przeniesione do nowej aplikacji. Pozycj
 | # | Obszar | Decyzja | Uzasadnienie |
 |---|---|---|---|
 | D1 | Platforma | Uno Platform, `Uno.Sdk` w najnowszej wersji stabilnej (6.7.30 według NuGet), .NET 10 (LTS) | Jeden projekt i jeden kod XAML/C# dla Android, iOS i Windows; zgodność z WinUI 3. |
-| D2 | Platformy docelowe | `net10.0-android`, `net10.0-ios`, `net10.0-windows10.0.26100` (Windows App SDK) | Windows w wariancie natywnym WinUI (MSIX); Android i iOS z rendererem Skia (domyślnym w Uno 6). Wariant `net10.0-browserwasm` możliwy później jako następca aplikacji Blazor — poza zakresem planu. |
+| D2 | Platformy docelowe | `net10.0-android`, `net10.0-ios`, `net10.0-windows10.0.26100` (Windows App SDK), `net10.0-browserwasm` (WebAssembly) | Windows w wariancie natywnym WinUI (MSIX); Android, iOS i przeglądarka z rendererem Skia (domyślnym w Uno 6). Wersja przeglądarkowa zastępuje aplikację Blazor ([faza 9](#810-faza-9--wersja-przeglądarkowa)). |
 | D3 | Warstwa pośrednia | Nowa usługa **Flota.Api** (ASP.NET Core .NET 10) w roli BFF (backend for frontend) pomiędzy aplikacją a UniAVL | Ukrycie danych uwierzytelniających Targeo; wspólna pamięć podręczna adresów dla wszystkich użytkowników; agregacja wielu wywołań UniAVL w jedno; równoległe pobieranie po stronie serwera o niskich opóźnieniach; kompresja i kontrakty dopasowane do ekranów mobilnych. Rozwija koncepcję prototypu `FloAPI`. |
 | D4 | Wzorzec prezentacji | MVVM z `CommunityToolkit.Mvvm` (generatory źródłowe) | Zgodność z dotychczasową praktyką WinUI 3; brak zależności od MVUX. |
 | D5 | Infrastruktura aplikacji | Uno.Extensions: Hosting, Configuration, Http, Logging, Navigation, Localization, Authentication, Serialization | Standardowy szkielet wstrzykiwania zależności i nawigacji regionów. |
@@ -464,6 +464,17 @@ Plan jest przeznaczony do wykonania przez Claude Code. Zasady pracy wykonawcy za
 
 Publikacja w sklepach, wysyłka do testerów i wdrożenie produkcyjne Flota.Api wykonuje Jurek.
 
+### 8.10. Faza 9 — wersja przeglądarkowa
+
+Ta sama aplikacja `Flota.App` z platformą docelową `net10.0-browserwasm` (Uno WebAssembly, renderer Skia). Aplikacja jest udostępniana przez Flota.Api jako pliki statyczne pod tym samym adresem co API — bez CORS, z ciasteczkami w obrębie jednej domeny.
+
+| Zadanie | Opis | Wynik | Weryfikacja |
+|---|---|---|---|
+| T9.1 | Prototyp: platforma `net10.0-browserwasm`; logowanie, mapa z obiektami, raport trasy; zastępcze implementacje elementów zależnych od platformy (magazyn tokenów, pamięć podręczna stanu floty, zapis pliku). | działająca aplikacja w przeglądarce, `docs/WEB.md` | ⏸ uruchomienie w Chrome i Edge; pomiar czasu pierwszego i ponownego ładowania oraz czasu raportu trasy względem [POMIAR-BAZOWY.md](POMIAR-BAZOWY.md); decyzja Jurka o kontynuacji |
+| T9.2 | Uwierzytelnianie w przeglądarce: token odświeżania w ciasteczku `HttpOnly`, `Secure`, `SameSite=Strict` wydawanym przez Flota.Api; token dostępowy wyłącznie w pamięci. | punkty końcowe `/auth/*` w wariancie ciasteczkowym | testy integracyjne: logowanie, odświeżenie po przeładowaniu strony, wylogowanie, odrzucenie żądania bez ciasteczka |
+| T9.3 | Parytet funkcji w przeglądarce: eksport XLSX przez pobranie pliku, pamięć podręczna kafelków mapy i ostatniego stanu floty w magazynie przeglądarki, obsługa przycisku „Wstecz”. | funkcje | scenariusze z `docs/TESTY-AKCEPTACYJNE.md` w Chrome, Edge, Firefox i Safari |
+| T9.4 | Hosting: pliki statyczne aplikacji w obrazie Flota.Api, kompresja Brotli, nagłówki pamięci podręcznej; build WebAssembly w potoku CI. | obraz Docker, potok CI | `docker compose up` — aplikacja pod adresem `/`, API pod dotychczasowymi ścieżkami; zielony potok |
+
 ## 9. Testy i kontrola jakości
 
 | Poziom | Zakres | Narzędzia |
@@ -482,6 +493,7 @@ Publikacja w sklepach, wysyłka do testerów i wdrożenie produkcyjne Flota.Api 
 | Windows | MSIX | Microsoft Store, instalacja bezpośrednia (sideloading) lub Intune | Certyfikat podpisu kodu |
 | Android | AAB / APK | Google Play (ścieżka testów wewnętrznych, następnie produkcja) lub MDM | Konto Google Play Console, klucz podpisu |
 | iOS / iPadOS | IPA | TestFlight, App Store lub Apple Business Manager (dystrybucja niestandardowa) | Apple Developer Program; budowanie na macOS (lokalnie lub CI) |
+| Przeglądarka | Pliki statyczne WebAssembly | Serwowane przez Flota.Api (ta sama domena) | Jak Flota.Api |
 | Flota.Api | Obraz Docker | Serwer z obsługą HTTPS (odwrotne proxy, np. nginx) | Certyfikat TLS, PostgreSQL, magazyn sekretów |
 
 ## 11. Ryzyka
@@ -495,6 +507,7 @@ Publikacja w sklepach, wysyłka do testerów i wdrożenie produkcyjne Flota.Api 
 | R5 | Ograniczenia `DataGrid` w Uno (wydajność, dynamiczne kolumny) | średnie | niski | Prototyp w fazie 0; wariant rezerwowy — `ItemsRepeater` z własnym nagłówkiem kolumn lub komponent komercyjny. |
 | R6 | Wymogi przeglądu App Store (np. konto testowe, zasady prywatności) | średnie | niski | Konto demonstracyjne, polityka prywatności, opis zastosowania lokalizacji. |
 | R7 | Niejawne reguły biznesowe w kodzie Blazor i WPF (np. wyznaczanie statusów, poziomu paliwa, typu urządzenia) | średnie | średni | Przeniesienie reguł do `Flota.Core` z testami jednostkowymi i testami porównawczymi. |
+| R8 | Czas pierwszego ładowania i wydajność wersji WebAssembly na słabszych komputerach | średnie | średni | Pomiar w prototypie (T9.1); przycinanie kodu, kompresja Brotli, pamięć podręczna przeglądarki; aplikacja Blazor utrzymywana do zakończenia fazy 9. |
 
 ## 12. Kwestie do rozstrzygnięcia
 
