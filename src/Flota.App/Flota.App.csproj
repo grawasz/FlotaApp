@@ -1,6 +1,6 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.26100</TargetFrameworks>
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-windows10.0.26100;net10.0-browserwasm</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
@@ -33,6 +33,11 @@
   <!-- SDK 10.0.4xx dopisuje RID hosta (win-x64) przy PublishTrimmed; dla Android/Mono brak pakietu Runtime.Mono.win-x64 -->
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <UseDefaultPublishRuntimeIdentifier>false</UseDefaultPublishRuntimeIdentifier>
+  </PropertyGroup>
+
+  <!-- WebAssembly: generator JSImport wymaga kodu unsafe -->
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('-browserwasm'))">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!-- Ikona AVL (z avl.ico aplikacji źródłowej): na Windows tło z zaokrąglonymi narożnikami; Android i iOS maskują kształt samodzielnie -->

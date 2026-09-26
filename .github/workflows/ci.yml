@@ -37,8 +37,11 @@ jobs:
           java-version: '21'
 
       # Obciążenia wymagane przez projekt aplikacji (przywracanie obejmuje wszystkie platformy docelowe)
+      # wasm-tools: natywne zasoby WebAssembly (SkiaSharp) — wymagane przez Uno.Wasm.Bootstrap, niezgłaszane przez projekt
       - name: Obciążenia .NET
-        run: dotnet workload restore src/Flota.App/Flota.App.csproj
+        run: |
+          dotnet workload restore src/Flota.App/Flota.App.csproj
+          dotnet workload install wasm-tools
 
       - name: Testy Flota.Core
         run: dotnet test tests/Flota.Core.Tests -c Release
@@ -48,6 +51,9 @@ jobs:
 
       - name: Build Windows
         run: dotnet build src/Flota.App -f net10.0-windows10.0.26100 -c Release
+
+      - name: Build WebAssembly
+        run: dotnet publish src/Flota.App -f net10.0-browserwasm -c Release -o artifacts/web
 
       - name: Zależności Android SDK
         run: dotnet build src/Flota.App -f net10.0-android -t:InstallAndroidDependencies -p:AndroidSdkDirectory="$env:ANDROID_SDK_ROOT" -p:AcceptAndroidSDKLicenses=True

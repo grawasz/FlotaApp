@@ -30,6 +30,7 @@
 | T4.1–T4.6 | w toku | funkcje zaimplementowane; eksport XLSX — `XlsxExporterTests`; brak testów porównawczych z aplikacją Blazor | odstępstwo O4 (T4.6) |
 | T5.1–T5.4 | w toku | funkcje zaimplementowane; brak testów porównawczych i testów modelu widoku | — |
 | T5.5 | nierozpoczęte | — | — |
+| T9.1 | w toku | build `net10.0-browserwasm` Release; ekran logowania w Edge; pomiar ładowania (4,1–4,4 s pierwsze, 3,5–5,5 s kolejne); `WebAppHostingTests` | [WEB.md](WEB.md); ⏸ oczekuje na weryfikację Jurka: logowanie, mapa, raport trasy w Chrome i Edge |
 
 ## Odstępstwa od planu
 
@@ -48,4 +49,4 @@
 | Projekt | Liczba testów | Wynik |
 |---|---|---|
 | `Flota.Core.Tests` | 70 | wszystkie zakończone powodzeniem |
-| `Flota.Api.Tests` | 31 | wszystkie zakończone powodzeniem |
+| `Flota.Api.Tests` | 36 | wszystkie zakończone powodzeniem |

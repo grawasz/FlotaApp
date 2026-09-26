@@ -7,6 +7,7 @@ using Flota.Api.Infrastructure.Geocoding;
 using Flota.Api.Infrastructure.Targeo;
 using Flota.Api.Infrastructure.UniAvl;
 using Flota.Api.Services;
+using Flota.Api.WebApp;
 using Flota.Core.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
@@ -110,6 +111,12 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
     });
 builder.Services.AddAuthorization();
 
+// CORS wyłącznie dla aplikacji przeglądarkowej spod innego adresu (środowisko deweloperskie);
+// w produkcji aplikacja jest udostępniana przez Flota.Api pod tym samym adresem (T9.4)
+var corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
+if (corsOrigins.Length > 0)
+    builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod()));
+
 builder.Services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.TypeInfoResolverChain.Insert(0, FlotaJsonContext.Default));
 
 builder.Services.AddResponseCompression(o =>
@@ -149,6 +156,10 @@ app.UseExceptionHandler(e => e.Run(async ctx =>
 
 app.UseSerilogRequestLogging();
 app.UseResponseCompression();
+if (corsOrigins.Length > 0)
+    app.UseCors();
+// Aplikacja przeglądarkowa (faza 9): pliki statyczne z katalogu WebApp:RootPath
+app.TryUseFlotaWebApp();
 app.UseAuthentication();
 app.UseAuthorization();
 

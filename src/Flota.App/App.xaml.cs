@@ -28,6 +28,9 @@ public partial class App : Application
     }
 
     public static Window MainAppWindow { get; private set; } = null!;
+
+    /// <summary>Adres strony w przeglądarce (WebAssembly); <c>null</c> na pozostałych platformach.</summary>
+    public static string? BrowserOrigin { get; set; }
     public static IServiceProvider Services { get; private set; } = null!;
 
     Frame? _frame;
@@ -88,7 +91,9 @@ public partial class App : Application
 
     static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
-        services.AddSingleton<ITokenStore, SecureTokenStore>();
+        // Przeglądarka: tokeny wyłącznie w pamięci (bez localStorage); trwała sesja — ciasteczko HttpOnly (T9.2)
+        if (OperatingSystem.IsBrowser()) services.AddSingleton<ITokenStore, InMemoryTokenStore>();
+        else services.AddSingleton<ITokenStore, SecureTokenStore>();
         services.AddSingleton(sp =>
         {
             var config = sp.GetRequiredService<IOptions<AppConfig>>().Value;
@@ -101,6 +106,8 @@ public partial class App : Application
                 && !string.IsNullOrEmpty(config.ApiBaseUrlAndroidEmulator))
                 baseUrl = config.ApiBaseUrlAndroidEmulator;
 #endif
+            if (string.IsNullOrWhiteSpace(baseUrl) && BrowserOrigin is { Length: > 0 } origin)
+                baseUrl = origin.TrimEnd('/') + "/";
             var http = new HttpClient { Timeout = TimeSpan.FromMinutes(3) };
             if (!string.IsNullOrWhiteSpace(baseUrl)) http.BaseAddress = new Uri(baseUrl);
             return new FlotaApiClient(http, sp.GetRequiredService<ITokenStore>());

@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "Flota — monitorowanie floty pojazdów",
+  "display": "standalone",
+  "name": "Flota",
+  "short_name": "Flota",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
