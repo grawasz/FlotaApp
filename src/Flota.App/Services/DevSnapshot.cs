@@ -19,9 +19,23 @@ internal static class DevSnapshot
         var dispatcher = window.DispatcherQueue;
         _ = Task.Run(async () =>
         {
+            var commands = Path.Combine(folder, "dev-command");
             while (true)
             {
                 await Task.Delay(1000);
+                if (File.Exists(commands))
+                {
+                    var lines = await File.ReadAllLinesAsync(commands);
+                    File.Delete(commands);
+                    var ran = new TaskCompletionSource();
+                    dispatcher.TryEnqueue(async () =>
+                    {
+                        try { await RunCommandsAsync(lines); }
+                        catch (Exception ex) { File.AppendAllText(Path.Combine(Path.GetTempPath(), "flota-app-error.log"), "DEVCMD " + ex + Environment.NewLine); }
+                        finally { ran.TrySetResult(); }
+                    });
+                    await ran.Task;
+                }
                 if (!File.Exists(request)) continue;
                 try { File.Delete(request); } catch (IOException) { continue; }
                 var done = new TaskCompletionSource();
@@ -43,6 +57,32 @@ internal static class DevSnapshot
                 await done.Task;
             }
         });
+    }
+
+    /// <summary>Polecenia: <c>select &lt;id&gt;</c>, <c>track</c>, <c>zoom &lt;poziom&gt;</c>, <c>wait &lt;ms&gt;</c>.</summary>
+    static async Task RunCommandsAsync(IEnumerable<string> lines)
+    {
+        var fleet = App.Services.GetRequiredService<Presentation.Fleet.FleetViewModel>();
+        foreach (var line in lines)
+        {
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) continue;
+            switch (parts[0])
+            {
+                case "select" when parts.Length > 1 && fleet.Find(int.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture)) is { } o:
+                    fleet.Select(o);
+                    break;
+                case "track":
+                    await fleet.ToggleTrackingAsync();
+                    break;
+                case "zoom" when parts.Length > 1 && fleet.SelectedObject?.Position is { } p:
+                    fleet.ZoomTo(fleet.SelectedObject);
+                    break;
+                case "wait" when parts.Length > 1:
+                    await Task.Delay(int.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture));
+                    break;
+            }
+        }
     }
 
     static async Task CaptureAsync(Window window, string path)

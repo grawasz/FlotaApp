@@ -141,11 +141,17 @@ public sealed partial class MapPanel : UserControl
                 f.Point.Y = y;
             }
             StyleObject(f, item, traced == item && _fleet.TraceMode == TraceMode.Report);
+            // Nowa generacja obiektu — Mapsui przechowuje narysowane symbole w pamięci podręcznej
+            f.Modified();
         }
         // Zaznaczenie mogło się zmienić — ponowne style wszystkich
         if (changed.Count > 0)
             foreach (var (id, f) in _objectFeatures)
-                if (f.Data is ObjectItem it && !changed.Contains(it)) StyleObject(f, it, traced == it && _fleet.TraceMode == TraceMode.Report);
+                if (f.Data is ObjectItem it && !changed.Contains(it))
+                {
+                    StyleObject(f, it, traced == it && _fleet.TraceMode == TraceMode.Report);
+                    f.Modified();
+                }
 
         _objects.Features = _objectFeatures.Values.OrderBy(f => ((ObjectItem)f.Data!).IsSelected).ToList();
         _objects.FeaturesWereModified();
@@ -235,14 +241,17 @@ public sealed partial class MapPanel : UserControl
                 var p = points[i];
                 var (x, y) = SphericalMercator.FromLonLat(p.Longitude, p.Latitude);
                 var f = new PointFeature(x, y) { Data = p };
-                var dot = p.Speed is null or 0;
+                var next = points[i + 1];
+                var azimuth = Flota.Core.Geo.Direction.ArrowAzimuth(p.Latitude, p.Longitude, p.Heading, next.Latitude, next.Longitude);
+                var dot = p.Speed is null or 0 || azimuth is null;
                 var src = dot ? _images.Dot : _images.Arrow;
                 if (src is not null)
                 {
                     f.Styles.Add(new ImageStyle
                     {
                         Image = new Mapsui.Styles.Image { Source = src },
-                        SymbolRotation = dot ? 0 : p.Heading ?? 0,
+                        // Azymut zgodny z ruchem wskazówek zegara — jak obrót symbolu w Mapsui
+                        SymbolRotation = dot ? 0 : azimuth!.Value,
                         Opacity = 0.6f,
                     });
                 }
@@ -255,7 +264,9 @@ public sealed partial class MapPanel : UserControl
         UpdateObjects([]);
 
         // Przesunięcie mapy do punktu bieżącego (raport) lub ostatniego (śledzenie)
-        if (TracePosition() is { HasLocation: true } cur) CenterOn(cur.Latitude, cur.Longitude, null);
+        // Przy dużym oddaleniu — przybliżenie do poziomu ulic (ślad byłby niewidoczny)
+        if (TracePosition() is { HasLocation: true } cur)
+            CenterOn(cur.Latitude, cur.Longitude, _map.Navigator.Viewport.Resolution > Resolution(12) ? 15 : null);
     }
 
     /// <summary>Linia śladu uproszczona do rozdzielczości ekranu (prototyp T0.4 — długie linie są głównym kosztem rysowania).</summary>
