@@ -1,0 +1,14 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.DetailsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls">
+
+  <controls:PanelFrame x:Uid="PanelDetails" Title="Szczegóły obiektu" Icon="tracking_object_16x16.png">
+    <Grid>
+      <TextBlock x:Name="EmptyText" x:Uid="DetailsEmpty" Text="Wybierz obiekt z listy lub na mapie." Style="{StaticResource FlotaCaptionTextStyle}" Margin="8,12" />
+      <ScrollViewer x:Name="Scroll" MaxHeight="400" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+        <StackPanel x:Name="Rows" Padding="8,4" Spacing="2" />
+      </ScrollViewer>
+    </Grid>
+  </controls:PanelFrame>
+</UserControl>

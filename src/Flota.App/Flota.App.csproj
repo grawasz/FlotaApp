@@ -17,7 +17,6 @@
 
     <UnoFeatures>
       Material;
-      Svg;
       Hosting;
       Toolkit;
       Logging;
@@ -26,8 +25,6 @@
       Http;
       Serialization;
       Localization;
-      Authentication;
-      Navigation;
       ThemeService;
       SkiaRenderer;
     </UnoFeatures>
@@ -41,12 +38,6 @@
   <ItemGroup>
     <PackageReference Include="Mapsui.Uno.WinUI" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Uno.WinUI" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
-    <PackageReference Include="Microsoft.Data.Sqlite" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
   </ItemGroup>
 
   <ItemGroup>

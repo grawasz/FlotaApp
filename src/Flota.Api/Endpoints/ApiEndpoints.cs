@@ -37,6 +37,8 @@ public static class ApiEndpoints
             await reports.RouteAsync(await user.SessionAsync(ct), id, p.ToQuery(), ct) is { } r ? TypedResults.Ok(r) : TypedResults.NotFound());
         objects.MapPost("/waypoints", async (int id, WaypointsRequest body, UserContext user, ReportService reports, CancellationToken ct) =>
             TypedResults.Ok(await reports.WaypointsAsync(await user.SessionAsync(ct), id, body.Stages, ct)));
+        objects.MapGet("/trace", async (int id, DateTime from, DateTime to, UserContext user, ReportService reports, CancellationToken ct) =>
+            TypedResults.Ok(await reports.TraceAsync(await user.SessionAsync(ct), id, from, to, ct)));
         objects.MapGet("/fuel", async Task<Results<Ok<FuelReport>, NotFound>> (int id, DateTime from, DateTime to, UserContext user, ReportService reports, CancellationToken ct) =>
             await reports.FuelAsync(await user.SessionAsync(ct), id, from, to, ct) is { } r ? TypedResults.Ok(r) : TypedResults.NotFound());
         objects.MapGet("/events", async (int id, DateTime from, DateTime to, UserContext user, ReportService reports, CancellationToken ct) =>

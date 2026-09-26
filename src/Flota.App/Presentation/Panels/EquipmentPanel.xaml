@@ -1,0 +1,15 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.EquipmentPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls">
+  <controls:PanelFrame x:Uid="PanelEquipment" Title="Wyposażenie" Icon="equipment_16x16.png">
+    <controls:PanelFrame.Toolbar>
+      <StackPanel Orientation="Horizontal" Spacing="2">
+        <controls:ToolButton x:Name="RefreshButton" x:Uid="EquipmentRefresh" Label="Odśwież" Icon="refresh_16x16.png" Click="OnRefreshClick" />
+        <controls:ToolButton x:Name="ExportButton" x:Uid="EquipmentExport" Label="Eksport" Icon="excel_16x16.png" Click="OnExportClick" />
+        <ProgressRing x:Name="Busy" Width="20" Height="20" IsActive="False" Margin="8,0" />
+      </StackPanel>
+    </controls:PanelFrame.Toolbar>
+    <controls:FlotaTable x:Name="Table" Height="320" ShowFilter="True" />
+  </controls:PanelFrame>
+</UserControl>

@@ -13,8 +13,8 @@ public sealed record FleetSnapshot(
 /// <summary>Obiekt floty (pojazd, osoba, urządzenie).</summary>
 public sealed record FleetObject
 {
-    public required int Id { get; init; }
-    public required string Name { get; init; }
+    public int Id { get; init; }
+    public string Name { get; init; } = string.Empty;
     public string RegistrationNumber { get; init; } = string.Empty;
     public string Manufacturer { get; init; } = string.Empty;
     public string Model { get; init; } = string.Empty;
@@ -41,7 +41,7 @@ public sealed record FleetObject
 /// <summary>Pozycja i odczyty obiektu (ostatnia wiadomość lub punkt trasy).</summary>
 public sealed record ObjectPosition
 {
-    public required DateTime Time { get; init; }
+    public DateTime Time { get; init; }
     public double Latitude { get; init; }
     public double Longitude { get; init; }
     public bool ValidGps { get; init; }

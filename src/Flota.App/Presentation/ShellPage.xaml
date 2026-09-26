@@ -1,0 +1,114 @@
+<Page x:Class="Flota.App.Presentation.ShellPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:utu="using:Uno.Toolkit.UI"
+      xmlns:controls="using:Flota.App.Controls"
+      xmlns:panels="using:Flota.App.Presentation.Panels"
+      Background="{ThemeResource BackgroundBrush}">
+
+  <SplitView x:Name="Sidebar"
+             PanePlacement="Right"
+             DisplayMode="Overlay"
+             OpenPaneLength="260"
+             PaneBackground="{ThemeResource SurfaceBrush}">
+    <SplitView.Pane>
+      <Grid Padding="16,24,16,12" RowSpacing="12" utu:SafeArea.Insets="VisibleBounds">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Image Source="ms-appx:///Assets/Images/logo.png" Width="224" Height="84" HorizontalAlignment="Center" AutomationProperties.Name="UNI-AVL" />
+        <TextBlock Grid.Row="1" x:Uid="SidebarProduct" Text="Flota Ⓒ 2023" HorizontalAlignment="Center" Style="{StaticResource FlotaBodyTextStyle}" />
+        <StackPanel Grid.Row="2" Spacing="4" Padding="0,12,0,0" BorderThickness="0,1,0,0" BorderBrush="{ThemeResource OutlineVariantBrush}">
+          <TextBlock x:Name="UserNameText" Style="{StaticResource FlotaLabelTextStyle}" HorizontalAlignment="Center" />
+          <TextBlock x:Name="UserCompanyText" Style="{StaticResource FlotaCaptionTextStyle}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+          <Button x:Uid="Logout" Content="Wyloguj" HorizontalAlignment="Center" Margin="0,8,0,0" Click="OnLogoutClick" Style="{StaticResource OutlinedButtonStyle}" />
+        </StackPanel>
+        <StackPanel Grid.Row="4" Spacing="2">
+          <TextBlock x:Name="VersionText" Style="{StaticResource FlotaCaptionTextStyle}" HorizontalAlignment="Center" />
+          <TextBlock x:Uid="SidebarCopyright" Text="Copyright UNI-Net Poland Sp. z o.o Ⓒ 2023" Style="{StaticResource FlotaCaptionTextStyle}"
+                     HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+        </StackPanel>
+      </Grid>
+    </SplitView.Pane>
+
+    <Grid utu:SafeArea.Insets="VisibleBounds">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <!-- Pasek nagłówka: przełączniki paneli -->
+      <Grid Background="{ThemeResource SurfaceVariantBrush}" BorderBrush="{ThemeResource OutlineVariantBrush}" BorderThickness="0,0,0,1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+          <StackPanel x:Name="Toolbar" Orientation="Horizontal" Padding="4,2" Spacing="2">
+            <controls:ToolButton x:Uid="NavObjects" Label="Obiekty" Icon="tracking_objects_16x16.png" Tag="objects" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavDetails" Label="Szczegóły obiektu" Icon="tracking_object_16x16.png" Tag="details" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavMap" Label="Mapa" Icon="map_16x16.png" Tag="map" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavAreas" Label="Obszary" Icon="areas_16x16.png" Tag="areas" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavDrivers" Label="Kierowcy" Icon="drivers_16x16.png" Tag="drivers" Click="OnToggle" />
+            <Border Style="{StaticResource FlotaToolbarSeparatorStyle}" />
+            <controls:ToolButton x:Uid="NavEvents" Label="Zdarzenia" Icon="events_16x16.png" Tag="events" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavMessages" Label="Wiadomości" Icon="messages_16x16.png" Tag="messages" Click="OnToggle" />
+            <Border Style="{StaticResource FlotaToolbarSeparatorStyle}" />
+            <controls:ToolButton x:Uid="NavRouteReport" Label="Raport trasy" Icon="reports_16x16.png" Tag="route" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavFleetReport" Label="Raport floty" Icon="reports_daily_16x16.png" Tag="fleet" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavEcoDriving" Label="Ranking Eco-Driving" Icon="reports_eco_16x16.png" Tag="eco" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavLogbooks" Label="Karty drogowe" Icon="logbook_16x16.png" Tag="logbooks" Click="OnToggle" />
+            <controls:ToolButton x:Uid="NavEquipment" Label="Wyposażenie" Icon="equipment_16x16.png" Tag="equipment" Click="OnToggle" />
+          </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Padding="8,0,4,0" VerticalAlignment="Center">
+          <Ellipse x:Name="LiveDot" Width="10" Height="10" VerticalAlignment="Center" />
+          <TextBlock x:Name="LiveText" Style="{StaticResource FlotaCaptionTextStyle}" />
+          <ProgressRing x:Name="LoadingRing" Width="18" Height="18" IsActive="False" />
+          <Button x:Name="MenuButton" x:Uid="MenuButton" Width="40" Height="36" Padding="0" Click="OnMenuClick"
+                  Style="{StaticResource TextButtonStyle}" AutomationProperties.Name="Menu">
+            <FontIcon Glyph="&#xE700;" FontSize="16" FontFamily="{ThemeResource SymbolThemeFontFamily}" Foreground="{ThemeResource FlotaAccentBrush}" />
+          </Button>
+        </StackPanel>
+      </Grid>
+
+      <!-- Obszar roboczy: układ ustalany w kodzie (szeroki: trzy kolumny; kompaktowy: mapa i panele pod nią) -->
+      <Grid x:Name="Workspace" Grid.Row="1" Padding="6" ColumnSpacing="6" RowSpacing="6">
+        <Grid x:Name="LeftHost" RowSpacing="6">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <panels:ObjectsPanel x:Name="ObjectsPanel" />
+          <panels:DetailsPanel x:Name="DetailsPanel" Grid.Row="1" />
+          <panels:AreasPanel x:Name="AreasPanel" Grid.Row="2" />
+          <panels:DriversPanel x:Name="DriversPanel" Grid.Row="3" />
+        </Grid>
+        <panels:MapPanel x:Name="MapPanel" />
+        <ScrollViewer x:Name="RightScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled">
+          <StackPanel x:Name="RightHost" Spacing="6">
+            <panels:EventsPanel x:Name="EventsPanel" />
+            <panels:MessagesPanel x:Name="MessagesPanel" />
+            <panels:RouteReportPanel x:Name="RouteReportPanel" />
+            <panels:FleetReportPanel x:Name="FleetReportPanel" />
+            <panels:EcoDrivingPanel x:Name="EcoDrivingPanel" />
+            <panels:LogbooksPanel x:Name="LogbooksPanel" />
+            <panels:EquipmentPanel x:Name="EquipmentPanel" />
+          </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer x:Name="CompactScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" Visibility="Collapsed">
+          <StackPanel x:Name="CompactHost" Spacing="6" />
+        </ScrollViewer>
+      </Grid>
+
+      <!-- Powiadomienia -->
+      <StackPanel x:Name="Notices" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12" Spacing="6" MaxWidth="420" />
+    </Grid>
+  </SplitView>
+</Page>

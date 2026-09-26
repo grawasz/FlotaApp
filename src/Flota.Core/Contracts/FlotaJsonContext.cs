@@ -14,6 +14,7 @@ namespace Flota.Core.Contracts;
 [JsonSerializable(typeof(ErrorResponse))]
 [JsonSerializable(typeof(FleetSnapshot))]
 [JsonSerializable(typeof(PositionChanged))]
+[JsonSerializable(typeof(IReadOnlyList<ObjectPosition>))]
 [JsonSerializable(typeof(IReadOnlyList<PositionChanged>))]
 [JsonSerializable(typeof(AddressResolved))]
 [JsonSerializable(typeof(UserSettings))]

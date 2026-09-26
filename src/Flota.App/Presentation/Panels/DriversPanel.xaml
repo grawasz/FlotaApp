@@ -1,0 +1,11 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.DriversPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls">
+  <controls:PanelFrame x:Uid="PanelDrivers" Title="Kierowcy" Icon="drivers_16x16.png">
+    <Grid>
+      <controls:FlotaTable x:Name="Table" Height="240" ShowFilter="True" />
+      <ProgressRing x:Name="Busy" Width="28" Height="28" IsActive="False" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Grid>
+  </controls:PanelFrame>
+</UserControl>

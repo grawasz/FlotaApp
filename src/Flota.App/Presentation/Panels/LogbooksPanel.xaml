@@ -1,0 +1,24 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.LogbooksPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls">
+  <controls:PanelFrame x:Uid="PanelLogbooks" Title="Karty drogowe" Icon="logbook_16x16.png">
+    <controls:PanelFrame.Toolbar>
+      <StackPanel Orientation="Horizontal" Spacing="6" Padding="2,0">
+        <controls:ToolButton x:Name="DetailsButton" x:Uid="LogbooksShowDetails" Label="Pokaż szczegóły" Icon="logbook_details_16x16.png" Click="OnDetailsClick" IsEnabled="False" />
+        <controls:ToolButton x:Name="ExportButton" x:Uid="LogbooksExport" Label="Eksport" Icon="excel_16x16.png" Click="OnExportClick" IsEnabled="False" />
+        <Border Style="{StaticResource FlotaToolbarSeparatorStyle}" />
+        <TextBlock x:Uid="LogbooksFrom" Text="Okres od" Style="{StaticResource FlotaLabelTextStyle}" />
+        <CalendarDatePicker x:Name="FromPicker" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+        <TextBlock x:Uid="LogbooksTo" Text="do" Style="{StaticResource FlotaLabelTextStyle}" />
+        <CalendarDatePicker x:Name="ToPicker" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+        <ProgressRing x:Name="Busy" Width="20" Height="20" IsActive="False" />
+      </StackPanel>
+    </controls:PanelFrame.Toolbar>
+    <StackPanel Spacing="8">
+      <controls:FlotaTable x:Name="LogbookTable" Height="300" ShowFilter="True" />
+      <TextBlock x:Uid="LogbookEntriesTitle" Text="Pozycje karty drogowej" Style="{StaticResource FlotaHeaderTextStyle}" Margin="4,6,0,0" />
+      <controls:FlotaTable x:Name="EntriesTable" Height="300" />
+    </StackPanel>
+  </controls:PanelFrame>
+</UserControl>

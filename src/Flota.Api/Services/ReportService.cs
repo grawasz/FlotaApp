@@ -65,6 +65,16 @@ public sealed class ReportService(
         return new WaypointsResponse(columns, points);
     }
 
+    /// <summary>Ślad obiektu w okresie (tryb „Śledź”; odpowiednik <c>DrawTrace</c> — wiadomości od ostatniej pozycji − 5 min).</summary>
+    public async Task<IReadOnlyList<ObjectPosition>> TraceAsync(ActiveSession s, int objectId, DateTime from, DateTime to, CancellationToken ct)
+    {
+        var o = await fleet.FindObjectAsync(s, objectId, ct);
+        var messages = await avl.GetMessagesAsync(s.AvlToken, objectId, from, to, null, ct) ?? [];
+        var positions = messages.Where(m => m.ValidGPS == true).OrderBy(m => m.Timedate)
+            .Select(m => UniAvlMapper.ToPosition(m, o?.TankCapacity)).ToList();
+        return await geocoding.WithAddressesAsync(positions, ct);
+    }
+
     public async Task<FuelReport?> FuelAsync(ActiveSession s, int objectId, DateTime from, DateTime to, CancellationToken ct)
     {
         var f = await avl.GetFuelReportAsync(s.AvlToken, objectId, from, to, ct);

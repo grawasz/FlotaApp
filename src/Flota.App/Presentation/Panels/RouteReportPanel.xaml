@@ -1,0 +1,183 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.RouteReportPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI">
+
+  <controls:PanelFrame x:Uid="PanelRouteReport" Title="Raport trasy" Icon="reports_32x32.png">
+    <controls:PanelFrame.Toolbar>
+      <StackPanel Orientation="Horizontal" Spacing="1">
+        <controls:ToolButton x:Name="GenerateButton" x:Uid="RouteGenerate" Label="Generuj raport" Icon="reports_16x16.png" Click="OnGenerateClick" />
+        <controls:ToolButton x:Name="GenerateRouteButton" x:Uid="RouteGenerateRoute" Label="Generuj raport (trasa)" Icon="reports_16x16.png" Click="OnGenerateRouteClick" />
+        <Border Style="{StaticResource FlotaToolbarSeparatorStyle}" />
+        <controls:ToolButton x:Name="FirstButton" x:Uid="RouteFirst" Label="Pierwszy" Icon="first_16x16.png" IsCompact="True" Click="OnFirstClick" />
+        <controls:ToolButton x:Name="BackButton" x:Uid="RouteBack" Label="Poprzedni" Icon="backward_16x16.png" IsCompact="True" Click="OnBackClick" />
+        <controls:ToolButton x:Name="PlayButton" x:Uid="RoutePlay" Label="Start" Icon="play_16x16.png" IsCompact="True" Click="OnPlayClick" />
+        <controls:ToolButton x:Name="StopButton" x:Uid="RouteStop" Label="Stop" Icon="stop_16x16.png" IsCompact="True" Click="OnStopClick" />
+        <controls:ToolButton x:Name="ForwardButton" x:Uid="RouteForward" Label="Następny" Icon="forward_16x16.png" IsCompact="True" Click="OnForwardClick" />
+        <controls:ToolButton x:Name="LastButton" x:Uid="RouteLast" Label="Ostatni" Icon="last_16x16.png" IsCompact="True" Click="OnLastClick" />
+        <Border Style="{StaticResource FlotaToolbarSeparatorStyle}" />
+        <controls:ToolButton x:Name="ExcelButton" x:Uid="RouteExcel" Label="Excel" Icon="excel_16x16.png">
+          <controls:ToolButton.Flyout>
+            <MenuFlyout x:Name="ExcelMenu">
+              <MenuFlyoutItem x:Name="ExportRoute" x:Uid="ExportRouteSummary" Text="Eksport podsumowania trasy" Tag="route" Click="OnExportClick" />
+              <MenuFlyoutItem x:Name="ExportStages" x:Uid="ExportStages" Text="Eksport kursów" Tag="stages" Click="OnExportClick" />
+              <MenuFlyoutItem x:Name="ExportWaypoints" x:Uid="ExportWaypoints" Text="Eksport punktów trasy" Tag="waypoints" Click="OnExportClick" />
+              <MenuFlyoutItem x:Name="ExportRefuel" x:Uid="ExportRefuel" Text="Eksport tankowań" Tag="refuel" Click="OnExportClick" />
+              <MenuFlyoutItem x:Name="ExportDefuel" x:Uid="ExportDefuel" Text="Eksport ubytków paliwa" Tag="defuel" Click="OnExportClick" />
+              <MenuFlyoutItem x:Name="ExportEvents" x:Uid="ExportEvents" Text="Eksport zdarzeń" Tag="events" Click="OnExportClick" />
+              <MenuFlyoutItem x:Name="ExportStageSummary" x:Uid="ExportStageSummary" Text="Eksport podsumowania kursów" Tag="summary" Click="OnExportClick" />
+            </MenuFlyout>
+          </controls:ToolButton.Flyout>
+        </controls:ToolButton>
+      </StackPanel>
+    </controls:PanelFrame.Toolbar>
+
+    <StackPanel Spacing="8">
+      <!-- Parametry -->
+      <Expander x:Uid="RouteParameters" Header="Parametry" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <Grid ColumnSpacing="8" RowSpacing="8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <TextBlock x:Uid="RoutePeriod" Text="Typowy okres" Style="{StaticResource FlotaFormLabelStyle}" />
+          <ComboBox x:Name="PeriodBox" Grid.Column="1" MinWidth="220" SelectionChanged="OnPeriodChanged" />
+          <TextBlock Grid.Row="1" x:Uid="RouteDateFrom" Text="Data od" Style="{StaticResource FlotaFormLabelStyle}" />
+          <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6">
+            <CalendarDatePicker x:Name="FromDate" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+            <TimePicker x:Name="FromTime" ClockIdentifier="24HourClock" MinWidth="120" TimeChanged="OnTimeChanged" />
+          </StackPanel>
+          <TextBlock Grid.Row="2" x:Uid="RouteDateTo" Text="Data do" Style="{StaticResource FlotaFormLabelStyle}" />
+          <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="6">
+            <CalendarDatePicker x:Name="ToDate" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+            <TimePicker x:Name="ToTime" ClockIdentifier="24HourClock" MinWidth="120" TimeChanged="OnTimeChanged" />
+          </StackPanel>
+          <TextBlock Grid.Row="3" x:Uid="RouteObject" Text="Obiekt" Style="{StaticResource FlotaFormLabelStyle}" />
+          <ComboBox x:Name="ObjectBox" Grid.Row="3" Grid.Column="1" MinWidth="220" HorizontalAlignment="Stretch" MaxWidth="420"
+                    x:Uid="RouteObjectPlaceholder" PlaceholderText="Wybierz obiekt..." DisplayMemberPath="Text" SelectionChanged="OnObjectChanged" />
+        </Grid>
+      </Expander>
+
+      <!-- Kryteria -->
+      <Expander x:Uid="RouteCriteria" Header="Kryteria" IsExpanded="False" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <StackPanel Spacing="10">
+          <CheckBox x:Name="SubtypeBox" x:Uid="RouteSubtype" Content="Podział kursów na podtypy" Click="OnCriteriaChanged" />
+          <TextBlock x:Uid="RouteStopGroup" Text="Postój" Style="{StaticResource FlotaHeaderTextStyle}" />
+          <Grid ColumnSpacing="8" RowSpacing="8">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <CheckBox x:Name="IgnitionBox" x:Uid="RouteIgnition" Content="Stacyjka" Click="OnCriteriaChanged" />
+            <TextBlock Grid.Column="1" x:Uid="RouteIgnitionTime" Text="Czas wyłączenia" Style="{StaticResource FlotaLabelTextStyle}" />
+            <TextBox x:Name="IgnitionTimeBox" Grid.Column="2" Width="100" PlaceholderText="00:00:00" LostFocus="OnCriteriaTextChanged" />
+            <CheckBox x:Name="StopBox" Grid.Row="1" x:Uid="RouteStopCheck" Content="Postój" Click="OnCriteriaChanged" />
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Uid="RouteStopTime" Text="Czas postoju" Style="{StaticResource FlotaLabelTextStyle}" />
+            <TextBox x:Name="StopTimeBox" Grid.Row="1" Grid.Column="2" Width="100" PlaceholderText="00:02:00" LostFocus="OnCriteriaTextChanged" />
+            <TextBlock Grid.Row="1" Grid.Column="3" x:Uid="RouteMinSpeed" Text="Prędkość min. [km/h]" Style="{StaticResource FlotaLabelTextStyle}" Margin="8,0,0,0" />
+            <NumberBox x:Name="MinSpeedBox" Grid.Row="1" Grid.Column="4" Width="100" Minimum="0" Maximum="200" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+          </Grid>
+          <TextBlock x:Uid="RouteStyleGroup" Text="Styl jazdy" Style="{StaticResource FlotaHeaderTextStyle}" />
+          <Grid ColumnSpacing="8" RowSpacing="8">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock x:Uid="RouteSpeeding" Text="Maksymalna prędkość [km/h]" Style="{StaticResource FlotaLabelTextStyle}" />
+            <NumberBox x:Name="SpeedingBox" Grid.Column="1" Width="100" Minimum="0" Maximum="300" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <TextBlock Grid.Column="2" x:Uid="RouteSuddenBraking" Text="Gwałtowne hamowania" Style="{StaticResource FlotaLabelTextStyle}" Margin="8,0,0,0" />
+            <NumberBox x:Name="BrakingBox" Grid.Column="3" Width="100" Minimum="0" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <TextBlock Grid.Row="1" x:Uid="RouteExceedRpm" Text="Maksymalne obroty [obr./min]" Style="{StaticResource FlotaLabelTextStyle}" />
+            <NumberBox x:Name="RpmBox" Grid.Row="1" Grid.Column="1" Width="100" Minimum="0" Maximum="10000" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <TextBlock Grid.Row="1" Grid.Column="2" x:Uid="RouteQuickAcceleration" Text="Gwałtowne przyspieszenia" Style="{StaticResource FlotaLabelTextStyle}" Margin="8,0,0,0" />
+            <NumberBox x:Name="AccelerationBox" Grid.Row="1" Grid.Column="3" Width="100" Minimum="0" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+          </Grid>
+        </StackPanel>
+      </Expander>
+
+      <ProgressBar x:Name="BusyBar" IsIndeterminate="True" Visibility="Collapsed" />
+
+      <!-- Zakładki -->
+      <ScrollViewer x:Name="TabsScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled" Visibility="Collapsed">
+        <StackPanel x:Name="Tabs" Orientation="Horizontal" Spacing="2">
+          <controls:ToolButton x:Uid="RouteTabRoute" Label="Trasa" Icon="map_16x16.png" Tag="Route" Click="OnTabClick" />
+          <controls:ToolButton x:Uid="RouteTabStages" Label="Kursy" Icon="list_16x16.png" Tag="Stages" Click="OnTabClick" />
+          <controls:ToolButton x:Name="TabWaypoints" x:Uid="RouteTabWaypoints" Label="Punkty trasy" Icon="distance_16x16.png" Tag="Waypoints" Click="OnTabClick" />
+          <controls:ToolButton x:Name="TabFuel" x:Uid="RouteTabFuel" Label="Paliwo" Icon="tanks_16x16.png" Tag="Fuel" Click="OnTabClick" />
+          <controls:ToolButton x:Uid="RouteTabEvents" Label="Zdarzenia" Icon="events_16x16.png" Tag="Events" Click="OnTabClick" />
+          <controls:ToolButton x:Uid="RouteTabStyle" Label="Styl jazdy" Icon="reports_eco_16x16.png" Tag="DrivingStyle" Click="OnTabClick" />
+          <controls:ToolButton x:Uid="RouteTabSummary" Label="Podsumowanie kursów" Icon="reports_daily_16x16.png" Tag="StageSummary" Click="OnTabClick" />
+        </StackPanel>
+      </ScrollViewer>
+
+      <Grid x:Name="TabHost">
+        <!-- Trasa -->
+        <StackPanel x:Name="RouteView" Spacing="8" Visibility="Collapsed" />
+
+        <!-- Kursy -->
+        <StackPanel x:Name="StagesView" Spacing="6" Visibility="Collapsed">
+          <StackPanel Orientation="Horizontal" Spacing="2">
+            <controls:ToolButton x:Uid="StagesSelectAll" Label="Zaznacz wszystkie" Icon="list_16x16.png" Click="OnSelectAllStages" />
+            <controls:ToolButton x:Uid="StagesShowOnMap" Label="Pokaż na mapie" Icon="map_16x16.png" Click="OnShowStagesOnMap" />
+          </StackPanel>
+          <controls:FlotaTable x:Name="StagesTable" Height="420" MultipleSelection="True" />
+        </StackPanel>
+
+        <!-- Punkty trasy -->
+        <Grid x:Name="WaypointsView" Visibility="Collapsed">
+          <TextBlock x:Name="WaypointsEmpty" x:Uid="WaypointsPickStage" Text="Wybierz kurs" FontStyle="Italic" Margin="8" Style="{StaticResource FlotaCaptionTextStyle}" />
+          <controls:FlotaTable x:Name="WaypointsTable" Height="420" ShowFilter="True" />
+        </Grid>
+
+        <!-- Paliwo -->
+        <StackPanel x:Name="FuelView" Spacing="8" Visibility="Collapsed">
+          <Grid x:Name="FuelSummary" ColumnSpacing="12" RowSpacing="6" />
+          <StackPanel Orientation="Horizontal" Spacing="2">
+            <controls:ToolButton x:Name="FuelTabRefuel" x:Uid="FuelTabRefuel" Label="Tankowania" Tag="0" Click="OnFuelTabClick" />
+            <controls:ToolButton x:Name="FuelTabDefuel" x:Uid="FuelTabDefuel" Label="Ubytki" Tag="1" Click="OnFuelTabClick" />
+            <controls:ToolButton x:Name="FuelTabTime" x:Uid="FuelTabTime" Label="Ilość paliwa w funkcji czasu" Tag="2" Click="OnFuelTabClick" />
+            <controls:ToolButton x:Name="FuelTabDistance" x:Uid="FuelTabDistance" Label="Ilość paliwa w funkcji drogi" Tag="3" Click="OnFuelTabClick" />
+          </StackPanel>
+          <Grid>
+            <controls:FlotaTable x:Name="RefuelTable" Height="300" />
+            <controls:FlotaTable x:Name="DefuelTable" Height="300" Visibility="Collapsed" />
+            <lvc:CartesianChart x:Name="FuelTimeChart" Height="320" Visibility="Collapsed" />
+            <lvc:CartesianChart x:Name="FuelDistanceChart" Height="320" Visibility="Collapsed" />
+          </Grid>
+        </StackPanel>
+
+        <!-- Zdarzenia -->
+        <controls:FlotaTable x:Name="EventsTable" Height="420" ShowFilter="True" Visibility="Collapsed" />
+
+        <!-- Styl jazdy -->
+        <StackPanel x:Name="StyleView" Spacing="8" Visibility="Collapsed">
+          <Grid x:Name="StyleSummary" ColumnSpacing="12" RowSpacing="6" />
+          <lvc:CartesianChart x:Name="StyleChart" Height="300" />
+        </StackPanel>
+
+        <!-- Podsumowanie kursów -->
+        <controls:FlotaTable x:Name="SummaryTable" Height="420" ShowFilter="True" Visibility="Collapsed" />
+      </Grid>
+    </StackPanel>
+  </controls:PanelFrame>
+</UserControl>

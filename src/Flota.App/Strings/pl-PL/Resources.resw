@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ApplicationName" xml:space="preserve"><value>Flota</value></data>
+  <data name="ObjectsCount" xml:space="preserve"><value>Obiekty: {0} z {1}</value></data>
+  <data name="DetailName" xml:space="preserve"><value>Nazwa:</value></data>
+  <data name="DetailRegistration" xml:space="preserve"><value>Rejestracja:</value></data>
+  <data name="DetailManufacturer" xml:space="preserve"><value>Marka:</value></data>
+  <data name="DetailModel" xml:space="preserve"><value>Model:</value></data>
+  <data name="DetailSpeed" xml:space="preserve"><value>Prędkość:</value></data>
+  <data name="DetailSpeedCan" xml:space="preserve"><value>Prędkość CAN:</value></data>
+  <data name="DetailRpm" xml:space="preserve"><value>Obrotomierz:</value></data>
+  <data name="DetailOdometer" xml:space="preserve"><value>Stan licznika:</value></data>
+  <data name="DetailFuel" xml:space="preserve"><value>Poziom paliwa:</value></data>
+  <data name="DetailAddress" xml:space="preserve"><value>Okolica:</value></data>
+  <data name="DetailArea" xml:space="preserve"><value>Obszar:</value></data>
+  <data name="DetailPublicMode" xml:space="preserve"><value>Tryb publiczny</value></data>
+  <data name="DetailIgnition" xml:space="preserve"><value>Stacyjka</value></data>
+  <data name="DetailStatus" xml:space="preserve"><value>Status:</value></data>
+  <data name="DetailDriver" xml:space="preserve"><value>Kierowca:</value></data>
+  <data name="DetailDevice" xml:space="preserve"><value>Urządzenie:</value></data>
+  <data name="UnitRpm" xml:space="preserve"><value>obr./min.</value></data>
+  <data name="Yes" xml:space="preserve"><value>Tak</value></data>
+  <data name="No" xml:space="preserve"><value>Nie</value></data>
+  <data name="PopupDriver" xml:space="preserve"><value>Kierowca:</value></data>
+  <data name="PopupSpeed" xml:space="preserve"><value>Prędkość:</value></data>
+  <data name="PopupSpeedMax" xml:space="preserve"><value>Prędkość maksymalna:</value></data>
+  <data name="PopupFuel" xml:space="preserve"><value>Stan paliwa:</value></data>
+  <data name="PopupIgnition" xml:space="preserve"><value>Włączony zapłon:</value></data>
+  <data name="PopupAddress" xml:space="preserve"><value>Okolica:</value></data>
+  <data name="LiveConnected" xml:space="preserve"><value>Na żywo</value></data>
+  <data name="LiveConnecting" xml:space="preserve"><value>Łączenie…</value></data>
+  <data name="LiveDisconnected" xml:space="preserve"><value>Brak połączenia</value></data>
+  <data name="LiveStale" xml:space="preserve"><value>Dane z pamięci urządzenia</value></data>
+  <data name="VersionFormat" xml:space="preserve"><value>Wersja {0}</value></data>
+  <data name="NoticeInfo" xml:space="preserve"><value>Informacja</value></data>
+  <data name="NoticeError" xml:space="preserve"><value>Błąd</value></data>
+  <data name="ErrorGeneral" xml:space="preserve"><value>Wystąpił nieoczekiwany błąd.</value></data>
+  <data name="ErrorNoConnection" xml:space="preserve"><value>Brak połączenia z serwerem. Sprawdź połączenie z internetem.</value></data>
+  <data name="ErrorTimeout" xml:space="preserve"><value>Przekroczono czas oczekiwania na odpowiedź serwera.</value></data>
+  <data name="ErrorNoServerAddress" xml:space="preserve"><value>Brak adresu serwera Flota w konfiguracji aplikacji.</value></data>
+  <data name="LoginFailed" xml:space="preserve"><value>Wprowadzono błędne hasło lub nazwę użytkownika</value></data>
+  <data name="SessionExpired" xml:space="preserve"><value>Sesja wygasła. Zaloguj się ponownie.</value></data>
+  <data name="DefaultViewSaved" xml:space="preserve"><value>Zapisano widok początkowy mapy.</value></data>
+  <data name="DefaultViewDeleted" xml:space="preserve"><value>Usunięto widok początkowy mapy.</value></data>
+  <data name="ExportSaved" xml:space="preserve"><value>Zapisano plik {0}.</value></data>
+  <data name="ExcelFileType" xml:space="preserve"><value>Skoroszyt programu Excel</value></data>
+  <data name="TableFilterPlaceholder" xml:space="preserve"><value>Filtr</value></data>
+  <data name="NoData" xml:space="preserve"><value>Brak danych</value></data>
+  <data name="TotalFormat" xml:space="preserve"><value>Łącznie: {0}</value></data>
+  <data name="PanelToggle" xml:space="preserve"><value>Zwiń lub rozwiń panel</value></data>
+  <data name="PickObjects" xml:space="preserve"><value>Wybierz obiekty...</value></data>
+  <data name="PickedObjects" xml:space="preserve"><value>Wybrane obiekty: {0}</value></data>
+  <data name="SelectAll" xml:space="preserve"><value>Zaznacz wszystkie</value></data>
+  <data name="PickObjectsFirst" xml:space="preserve"><value>Wybierz obiekty.</value></data>
+  <data name="PickObjectFirst" xml:space="preserve"><value>Wybierz obiekt.</value></data>
+  <data name="PickStageFirst" xml:space="preserve"><value>Wybierz kurs</value></data>
+  <data name="ColName" xml:space="preserve"><value>Nazwa</value></data>
+  <data name="ColLastName" xml:space="preserve"><value>Nazwisko</value></data>
+  <data name="ColFirstName" xml:space="preserve"><value>Imię</value></data>
+  <data name="ColActive" xml:space="preserve"><value>Aktywny</value></data>
+  <data name="ColObject" xml:space="preserve"><value>Obiekt</value></data>
+  <data name="ColDuration" xml:space="preserve"><value>Czas trwania</value></data>
+  <data name="ColValidFrom" xml:space="preserve"><value>Godz. obow. od</value></data>
+  <data name="ColValidTo" xml:space="preserve"><value>Godz. obow. do</value></data>
+  <data name="ColDue" xml:space="preserve"><value>Termin</value></data>
+  <data name="ColNotification" xml:space="preserve"><value>Powiadomienie</value></data>
+  <data name="ColRegistration" xml:space="preserve"><value>Numer rejestracyjny</value></data>
+  <data name="ColDevice" xml:space="preserve"><value>Urządzenie</value></data>
+  <data name="ColFuelProbe" xml:space="preserve"><value>Sonda paliwa</value></data>
+  <data name="ColAlcoDetector" xml:space="preserve"><value>Alko detektor</value></data>
+  <data name="ColVideoRecorder" xml:space="preserve"><value>Rejestrator wideo</value></data>
+  <data name="ColCamera" xml:space="preserve"><value>Kamera</value></data>
+  <data name="ColMonitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="ColNumber" xml:space="preserve"><value>Numer</value></data>
+  <data name="ColDate" xml:space="preserve"><value>Data</value></data>
+  <data name="ColBeginOdometer" xml:space="preserve"><value>Początkowy stan licznika</value></data>
+  <data name="ColEndOdometer" xml:space="preserve"><value>Końcowy stan licznika</value></data>
+  <data name="ColMileage" xml:space="preserve"><value>Przebieg</value></data>
+  <data name="ColDriver" xml:space="preserve"><value>Kierowca</value></data>
+  <data name="ColAimTrip" xml:space="preserve"><value>Cel wyjazdu</value></data>
+  <data name="ColDepartureTime" xml:space="preserve"><value>Wyjazd: godzina</value></data>
+  <data name="ColDepartureAddress" xml:space="preserve"><value>Wyjazd: adres</value></data>
+  <data name="ColDepartureGps" xml:space="preserve"><value>Wyjazd: GPS</value></data>
+  <data name="ColDepartureOdometer" xml:space="preserve"><value>Wyjazd: stan licznika</value></data>
+  <data name="ColArrivalTime" xml:space="preserve"><value>Dojazd: godzina</value></data>
+  <data name="ColArrivalAddress" xml:space="preserve"><value>Dojazd: adres</value></data>
+  <data name="ColArrivalGps" xml:space="preserve"><value>Dojazd: GPS</value></data>
+  <data name="ColArrivalOdometer" xml:space="preserve"><value>Dojazd: stan licznika</value></data>
+  <data name="ColMake" xml:space="preserve"><value>Marka</value></data>
+  <data name="ColOdometer" xml:space="preserve"><value>Stan licznika</value></data>
+  <data name="ColRideTime" xml:space="preserve"><value>Czas jazdy</value></data>
+  <data name="ColStopTime" xml:space="preserve"><value>Czas postoju</value></data>
+  <data name="ColDistanceKm" xml:space="preserve"><value>Dystans [km]</value></data>
+  <data name="ColAverageSpeedFleet" xml:space="preserve"><value>Prędkość średnia [km/h]</value></data>
+  <data name="ColMaxSpeedFleet" xml:space="preserve"><value>Prędkość maksymalna [km/h]</value></data>
+  <data name="ColMaxRpmFleet" xml:space="preserve"><value>Maksymalne obroty [obr./min.]</value></data>
+  <data name="ColFuelUsed" xml:space="preserve"><value>Zużycie paliwa [l]</value></data>
+  <data name="ColConsumption100" xml:space="preserve"><value>Spalanie [l/100 km]</value></data>
+  <data name="ColConsumptionHour" xml:space="preserve"><value>Spalanie [l/godz.]</value></data>
+  <data name="ColActivityNeutral" xml:space="preserve"><value>Aktywność: Bieg neutralny</value></data>
+  <data name="ColActivityNeutralMoving" xml:space="preserve"><value>Aktywność: Bieg neutralny w ruchu</value></data>
+  <data name="ColActivityDoors" xml:space="preserve"><value>Aktywność: Drzwi</value></data>
+  <data name="ColActivityBrake" xml:space="preserve"><value>Aktywność: Hamulec</value></data>
+  <data name="ColPosition" xml:space="preserve"><value>Pozycja</value></data>
+  <data name="ColEcoScore" xml:space="preserve"><value>Ocena</value></data>
+  <data name="ColEcoSpeeding" xml:space="preserve"><value>Prędkość</value></data>
+  <data name="ColEcoRpm" xml:space="preserve"><value>Obroty</value></data>
+  <data name="ColEcoBraking" xml:space="preserve"><value>Hamowanie</value></data>
+  <data name="ColEcoAcceleration" xml:space="preserve"><value>Przyspieszanie</value></data>
+  <data name="ColSpeedingTime" xml:space="preserve"><value>Czas przekroczenia prędkości</value></data>
+  <data name="ColExceedRpmTime" xml:space="preserve"><value>Czas przekroczenia obrotów</value></data>
+  <data name="ColSuddenBrakings" xml:space="preserve"><value>Gwałtowne hamowania</value></data>
+  <data name="ColQuickAccelerations" xml:space="preserve"><value>Gwałtowne przyspieszenia</value></data>
+  <data name="ColType" xml:space="preserve"><value>Typ</value></data>
+  <data name="ColBeginDate" xml:space="preserve"><value>Data początkowa</value></data>
+  <data name="ColEndDate" xml:space="preserve"><value>Data końcowa</value></data>
+  <data name="ColDurationTime" xml:space="preserve"><value>Czas trwania</value></data>
+  <data name="ColCity" xml:space="preserve"><value>Miasto</value></data>
+  <data name="ColStreet" xml:space="preserve"><value>Ulica</value></data>
+  <data name="ColAverageSpeed" xml:space="preserve"><value>Średnia prędkość [km/h]</value></data>
+  <data name="ColMaxSpeed" xml:space="preserve"><value>Maks. prędkość [km/h]</value></data>
+  <data name="ColMaxRpm" xml:space="preserve"><value>Maks. obroty</value></data>
+  <data name="ColSpeedKmh" xml:space="preserve"><value>Prędkość [km/h]</value></data>
+  <data name="ColRpm" xml:space="preserve"><value>Obroty</value></data>
+  <data name="ColOdometerKm" xml:space="preserve"><value>Stan licznika [km]</value></data>
+  <data name="ColIgnition" xml:space="preserve"><value>Stacyjka</value></data>
+  <data name="ColFuelAmount" xml:space="preserve"><value>Ilość paliwa</value></data>
+  <data name="ColDescription" xml:space="preserve"><value>Opis</value></data>
+  <data name="RouteSectionPeriod" xml:space="preserve"><value>Okres</value></data>
+  <data name="RouteSectionSummary" xml:space="preserve"><value>Podsumowanie</value></data>
+  <data name="RouteSectionFuel" xml:space="preserve"><value>Paliwo</value></data>
+  <data name="RouteSectionSensors" xml:space="preserve"><value>Aktywność czujników</value></data>
+  <data name="RouteBeginDate" xml:space="preserve"><value>Data początkowa</value></data>
+  <data name="RouteEndDate" xml:space="preserve"><value>Data końcowa</value></data>
+  <data name="RouteOdometerEnd" xml:space="preserve"><value>Końcowy stan licznika</value></data>
+  <data name="RouteDistance" xml:space="preserve"><value>Dystans</value></data>
+  <data name="RouteDistanceGps" xml:space="preserve"><value>Dystans GPS</value></data>
+  <data name="RouteRideTime" xml:space="preserve"><value>Czas jazdy</value></data>
+  <data name="RouteStopTimeValue" xml:space="preserve"><value>Czas postoju</value></data>
+  <data name="RouteHaulTime" xml:space="preserve"><value>Czas holowania</value></data>
+  <data name="RouteAverageSpeed" xml:space="preserve"><value>Średnia prędkość</value></data>
+  <data name="RouteMaxSpeed" xml:space="preserve"><value>Maks. prędkość</value></data>
+  <data name="RouteMaxRpm" xml:space="preserve"><value>Maks. obroty</value></data>
+  <data name="RouteFuelUsed" xml:space="preserve"><value>Zużycie</value></data>
+  <data name="RouteConsumption" xml:space="preserve"><value>Spalanie</value></data>
+  <data name="RouteFueled" xml:space="preserve"><value>Suma tankowań</value></data>
+  <data name="TooManyPoints" xml:space="preserve"><value>Liczba pobranych punktów trasy ({0}) nie jest możliwa do wyświetlenia na mapie. Prezentowana będzie tylko jedna, wybrana z tabeli, pozycja obiektu.</value></data>
+  <data name="FuelStartLevel" xml:space="preserve"><value>Poziom początkowy</value></data>
+  <data name="FuelFinalLevel" xml:space="preserve"><value>Poziom końcowy</value></data>
+  <data name="FuelTotalUsed" xml:space="preserve"><value>Całkowite zużycie paliwa</value></data>
+  <data name="FuelFueled" xml:space="preserve"><value>Suma tankowań</value></data>
+  <data name="FuelAverage" xml:space="preserve"><value>Średnie spalanie</value></data>
+  <data name="FuelTankCapacity" xml:space="preserve"><value>Maksymalna pojemność baku</value></data>
+  <data name="FuelChartSeries" xml:space="preserve"><value>Ilość paliwa</value></data>
+  <data name="FuelAxisDate" xml:space="preserve"><value>Data</value></data>
+  <data name="FuelAxisAmount" xml:space="preserve"><value>Ilość paliwa [l]</value></data>
+  <data name="FuelAxisDistance" xml:space="preserve"><value>Droga [km]</value></data>
+  <data name="StyleSpeedingTime" xml:space="preserve"><value>Czas jazdy z przekroczeniem prędkości</value></data>
+  <data name="StyleExceedRpmTime" xml:space="preserve"><value>Czas jazdy z przekroczonymi obrotami</value></data>
+  <data name="StyleQuickAccelerations" xml:space="preserve"><value>Liczba gwałtownych przyspieszeń</value></data>
+  <data name="StyleSuddenBrakings" xml:space="preserve"><value>Liczba gwałtownych hamowań</value></data>
+  <data name="SheetEquipment" xml:space="preserve"><value>Wyposażenie</value></data>
+  <data name="FileEquipment" xml:space="preserve"><value>Wyposażenie</value></data>
+  <data name="SheetLogbooks" xml:space="preserve"><value>Karty drogowe</value></data>
+  <data name="FileLogbooks" xml:space="preserve"><value>Karty drogowe</value></data>
+  <data name="SheetFleetSummary" xml:space="preserve"><value>Raport floty - podsumowanie</value></data>
+  <data name="SheetFleetDetails" xml:space="preserve"><value>Raport floty - szczegóły</value></data>
+  <data name="FileFleetReport" xml:space="preserve"><value>Raport floty</value></data>
+  <data name="FileDetailsSuffix" xml:space="preserve"><value>szczegóły</value></data>
+  <data name="SheetEcoDriving" xml:space="preserve"><value>Ranking Eco-Driving</value></data>
+  <data name="FileEcoDriving" xml:space="preserve"><value>Ranking Eco-Driving</value></data>
+  <data name="SheetRoute" xml:space="preserve"><value>Trasa</value></data>
+  <data name="FileRouteSummary" xml:space="preserve"><value>Podsumowanie trasy</value></data>
+  <data name="SheetStages" xml:space="preserve"><value>Kursy</value></data>
+  <data name="FileStages" xml:space="preserve"><value>Kursy</value></data>
+  <data name="SheetWaypoints" xml:space="preserve"><value>Punkty trasy</value></data>
+  <data name="FileWaypoints" xml:space="preserve"><value>Punkty trasy</value></data>
+  <data name="SheetRefuel" xml:space="preserve"><value>Tankowania</value></data>
+  <data name="FileRefuel" xml:space="preserve"><value>Tankowania</value></data>
+  <data name="SheetDefuel" xml:space="preserve"><value>Ubytki paliwa</value></data>
+  <data name="FileDefuel" xml:space="preserve"><value>Ubytki paliwa</value></data>
+  <data name="SheetEvents" xml:space="preserve"><value>Zdarzenia</value></data>
+  <data name="FileEvents" xml:space="preserve"><value>Zdarzenia</value></data>
+  <data name="FileStageSummary" xml:space="preserve"><value>Podsumowanie kursów</value></data>
+  <data name="DetailsEmpty.Text" xml:space="preserve"><value>Wybierz obiekt z listy lub na mapie.</value></data>
+  <data name="EcoDescription.Text" xml:space="preserve"><value>Ocena 0–100 wyznaczana z cech stylu jazdy UniAVL (prędkość, obroty, hamowania, przyspieszenia); wyższa ocena — jazda bardziej ekonomiczna.</value></data>
+  <data name="ExportDefuel.Text" xml:space="preserve"><value>Eksport ubytków paliwa</value></data>
+  <data name="ExportEvents.Text" xml:space="preserve"><value>Eksport zdarzeń</value></data>
+  <data name="ExportRefuel.Text" xml:space="preserve"><value>Eksport tankowań</value></data>
+  <data name="ExportRouteSummary.Text" xml:space="preserve"><value>Eksport podsumowania trasy</value></data>
+  <data name="ExportStages.Text" xml:space="preserve"><value>Eksport kursów</value></data>
+  <data name="ExportStageSummary.Text" xml:space="preserve"><value>Eksport podsumowania kursów</value></data>
+  <data name="ExportWaypoints.Text" xml:space="preserve"><value>Eksport punktów trasy</value></data>
+  <data name="FleetDateFrom.Text" xml:space="preserve"><value>Data od</value></data>
+  <data name="FleetDateTo.Text" xml:space="preserve"><value>Data do</value></data>
+  <data name="FleetVehicles.Text" xml:space="preserve"><value>Pojazdy</value></data>
+  <data name="LogbookEntriesTitle.Text" xml:space="preserve"><value>Pozycje karty drogowej</value></data>
+  <data name="LogbooksFrom.Text" xml:space="preserve"><value>Okres od</value></data>
+  <data name="LogbooksTo.Text" xml:space="preserve"><value>do</value></data>
+  <data name="LoginPasswordRequired.Text" xml:space="preserve"><value>Wprowadź hasło</value></data>
+  <data name="LoginTitle.Text" xml:space="preserve"><value>Logowanie</value></data>
+  <data name="LoginUserRequired.Text" xml:space="preserve"><value>Wprowadź prawidłowy login</value></data>
+  <data name="MapAttribution.Text" xml:space="preserve"><value>© OpenStreetMap contributors</value></data>
+  <data name="MapDefaultView.Text" xml:space="preserve"><value>Widok początkowy</value></data>
+  <data name="MapDefaultViewDelete.Text" xml:space="preserve"><value>Usuń</value></data>
+  <data name="MapDefaultViewGo.Text" xml:space="preserve"><value>Przejdź</value></data>
+  <data name="MapDefaultViewSet.Text" xml:space="preserve"><value>Ustaw bieżący</value></data>
+  <data name="MessagesUnavailable.Text" xml:space="preserve"><value>Wiadomości do urządzeń będą dostępne po udostępnieniu tej funkcji w UniAVL API.</value></data>
+  <data name="ObjectsColLocation.Text" xml:space="preserve"><value>Lokalizacja</value></data>
+  <data name="ObjectsColName.Text" xml:space="preserve"><value>Nazwa</value></data>
+  <data name="RouteDateFrom.Text" xml:space="preserve"><value>Data od</value></data>
+  <data name="RouteDateTo.Text" xml:space="preserve"><value>Data do</value></data>
+  <data name="RouteExceedRpm.Text" xml:space="preserve"><value>Maksymalne obroty [obr./min]</value></data>
+  <data name="RouteIgnitionTime.Text" xml:space="preserve"><value>Czas wyłączenia</value></data>
+  <data name="RouteMinSpeed.Text" xml:space="preserve"><value>Prędkość min. [km/h]</value></data>
+  <data name="RouteObject.Text" xml:space="preserve"><value>Obiekt</value></data>
+  <data name="RoutePeriod.Text" xml:space="preserve"><value>Typowy okres</value></data>
+  <data name="RouteQuickAcceleration.Text" xml:space="preserve"><value>Gwałtowne przyspieszenia</value></data>
+  <data name="RouteSpeeding.Text" xml:space="preserve"><value>Maksymalna prędkość [km/h]</value></data>
+  <data name="RouteStopGroup.Text" xml:space="preserve"><value>Postój</value></data>
+  <data name="RouteStopTime.Text" xml:space="preserve"><value>Czas postoju</value></data>
+  <data name="RouteStyleGroup.Text" xml:space="preserve"><value>Styl jazdy</value></data>
+  <data name="RouteSuddenBraking.Text" xml:space="preserve"><value>Gwałtowne hamowania</value></data>
+  <data name="SidebarCopyright.Text" xml:space="preserve"><value>Copyright UNI-Net Poland Sp. z o.o Ⓒ 2023</value></data>
+  <data name="SidebarProduct.Text" xml:space="preserve"><value>Flota Ⓒ 2023</value></data>
+  <data name="WaypointsPickStage.Text" xml:space="preserve"><value>Wybierz kurs</value></data>
+  <data name="EcoExport.Label" xml:space="preserve"><value>Eksport</value></data>
+  <data name="EcoGenerate.Label" xml:space="preserve"><value>Generuj raport</value></data>
+  <data name="EquipmentExport.Label" xml:space="preserve"><value>Eksport</value></data>
+  <data name="EquipmentRefresh.Label" xml:space="preserve"><value>Odśwież</value></data>
+  <data name="EventsRefresh.Label" xml:space="preserve"><value>Odśwież</value></data>
+  <data name="EventsTabReminders.Label" xml:space="preserve"><value>Terminy</value></data>
+  <data name="EventsTabTemplates.Label" xml:space="preserve"><value>Zdarzenia</value></data>
+  <data name="FleetExportDetails.Label" xml:space="preserve"><value>Eksport szczegółów</value></data>
+  <data name="FleetExportSummary.Label" xml:space="preserve"><value>Eksport podsumowania</value></data>
+  <data name="FleetGenerate.Label" xml:space="preserve"><value>Generuj raport</value></data>
+  <data name="FleetTabDetails.Label" xml:space="preserve"><value>Szczegóły</value></data>
+  <data name="FleetTabSummary.Label" xml:space="preserve"><value>Podsumowanie</value></data>
+  <data name="FuelTabDefuel.Label" xml:space="preserve"><value>Ubytki</value></data>
+  <data name="FuelTabDistance.Label" xml:space="preserve"><value>Ilość paliwa w funkcji drogi</value></data>
+  <data name="FuelTabRefuel.Label" xml:space="preserve"><value>Tankowania</value></data>
+  <data name="FuelTabTime.Label" xml:space="preserve"><value>Ilość paliwa w funkcji czasu</value></data>
+  <data name="LogbooksExport.Label" xml:space="preserve"><value>Eksport</value></data>
+  <data name="LogbooksShowDetails.Label" xml:space="preserve"><value>Pokaż szczegóły</value></data>
+  <data name="NavAreas.Label" xml:space="preserve"><value>Obszary</value></data>
+  <data name="NavDetails.Label" xml:space="preserve"><value>Szczegóły obiektu</value></data>
+  <data name="NavDrivers.Label" xml:space="preserve"><value>Kierowcy</value></data>
+  <data name="NavEcoDriving.Label" xml:space="preserve"><value>Ranking Eco-Driving</value></data>
+  <data name="NavEquipment.Label" xml:space="preserve"><value>Wyposażenie</value></data>
+  <data name="NavEvents.Label" xml:space="preserve"><value>Zdarzenia</value></data>
+  <data name="NavFleetReport.Label" xml:space="preserve"><value>Raport floty</value></data>
+  <data name="NavLogbooks.Label" xml:space="preserve"><value>Karty drogowe</value></data>
+  <data name="NavMap.Label" xml:space="preserve"><value>Mapa</value></data>
+  <data name="NavMessages.Label" xml:space="preserve"><value>Wiadomości</value></data>
+  <data name="NavObjects.Label" xml:space="preserve"><value>Obiekty</value></data>
+  <data name="NavRouteReport.Label" xml:space="preserve"><value>Raport trasy</value></data>
+  <data name="ObjectsRefresh.Label" xml:space="preserve"><value>Odśwież</value></data>
+  <data name="ObjectsTrace.Label" xml:space="preserve"><value>Śledź</value></data>
+  <data name="RouteBack.Label" xml:space="preserve"><value>Poprzedni</value></data>
+  <data name="RouteExcel.Label" xml:space="preserve"><value>Excel</value></data>
+  <data name="RouteFirst.Label" xml:space="preserve"><value>Pierwszy</value></data>
+  <data name="RouteForward.Label" xml:space="preserve"><value>Następny</value></data>
+  <data name="RouteGenerate.Label" xml:space="preserve"><value>Generuj raport</value></data>
+  <data name="RouteGenerateRoute.Label" xml:space="preserve"><value>Generuj raport (trasa)</value></data>
+  <data name="RouteLast.Label" xml:space="preserve"><value>Ostatni</value></data>
+  <data name="RoutePlay.Label" xml:space="preserve"><value>Start</value></data>
+  <data name="RouteStop.Label" xml:space="preserve"><value>Stop</value></data>
+  <data name="RouteTabEvents.Label" xml:space="preserve"><value>Zdarzenia</value></data>
+  <data name="RouteTabFuel.Label" xml:space="preserve"><value>Paliwo</value></data>
+  <data name="RouteTabRoute.Label" xml:space="preserve"><value>Trasa</value></data>
+  <data name="RouteTabStages.Label" xml:space="preserve"><value>Kursy</value></data>
+  <data name="RouteTabStyle.Label" xml:space="preserve"><value>Styl jazdy</value></data>
+  <data name="RouteTabSummary.Label" xml:space="preserve"><value>Podsumowanie kursów</value></data>
+  <data name="RouteTabWaypoints.Label" xml:space="preserve"><value>Punkty trasy</value></data>
+  <data name="StagesSelectAll.Label" xml:space="preserve"><value>Zaznacz wszystkie</value></data>
+  <data name="StagesShowOnMap.Label" xml:space="preserve"><value>Pokaż na mapie</value></data>
+  <data name="PanelAreas.Title" xml:space="preserve"><value>Obszary</value></data>
+  <data name="PanelDetails.Title" xml:space="preserve"><value>Szczegóły obiektu</value></data>
+  <data name="PanelDrivers.Title" xml:space="preserve"><value>Kierowcy</value></data>
+  <data name="PanelEcoDriving.Title" xml:space="preserve"><value>Ranking Eco-Driving</value></data>
+  <data name="PanelEquipment.Title" xml:space="preserve"><value>Wyposażenie</value></data>
+  <data name="PanelEvents.Title" xml:space="preserve"><value>Zdarzenia</value></data>
+  <data name="PanelFleetReport.Title" xml:space="preserve"><value>Raport floty</value></data>
+  <data name="PanelLogbooks.Title" xml:space="preserve"><value>Karty drogowe</value></data>
+  <data name="PanelMap.Title" xml:space="preserve"><value>Mapa</value></data>
+  <data name="PanelMessages.Title" xml:space="preserve"><value>Wiadomości</value></data>
+  <data name="PanelObjects.Title" xml:space="preserve"><value>Obiekty</value></data>
+  <data name="PanelRouteReport.Title" xml:space="preserve"><value>Raport trasy</value></data>
+  <data name="FleetParameters.Header" xml:space="preserve"><value>Parametry</value></data>
+  <data name="LoginPassword.Header" xml:space="preserve"><value>Hasło</value></data>
+  <data name="LoginUser.Header" xml:space="preserve"><value>Użytkownik</value></data>
+  <data name="RouteCriteria.Header" xml:space="preserve"><value>Kryteria</value></data>
+  <data name="RouteParameters.Header" xml:space="preserve"><value>Parametry</value></data>
+  <data name="LoginButton.Content" xml:space="preserve"><value>Zaloguj</value></data>
+  <data name="Logout.Content" xml:space="preserve"><value>Wyloguj</value></data>
+  <data name="RouteIgnition.Content" xml:space="preserve"><value>Stacyjka</value></data>
+  <data name="RouteStopCheck.Content" xml:space="preserve"><value>Postój</value></data>
+  <data name="RouteSubtype.Content" xml:space="preserve"><value>Podział kursów na podtypy</value></data>
+  <data name="ObjectsFilter.PlaceholderText" xml:space="preserve"><value>Szukaj obiektu</value></data>
+  <data name="RouteObjectPlaceholder.PlaceholderText" xml:space="preserve"><value>Wybierz obiekt...</value></data>
+</root>

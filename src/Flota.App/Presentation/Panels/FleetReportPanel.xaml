@@ -1,0 +1,45 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.FleetReportPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls">
+  <controls:PanelFrame x:Uid="PanelFleetReport" Title="Raport floty" Icon="reports_daily_16x16.png">
+    <controls:PanelFrame.Toolbar>
+      <StackPanel Orientation="Horizontal" Spacing="2">
+        <controls:ToolButton x:Name="GenerateButton" x:Uid="FleetGenerate" Label="Generuj raport" Icon="reports_16x16.png" Click="OnGenerateClick" />
+        <controls:ToolButton x:Name="ExportSummaryButton" x:Uid="FleetExportSummary" Label="Eksport podsumowania" Icon="excel_16x16.png" Click="OnExportSummaryClick" IsEnabled="False" />
+        <controls:ToolButton x:Name="ExportDetailsButton" x:Uid="FleetExportDetails" Label="Eksport szczegółów" Icon="excel_16x16.png" Click="OnExportDetailsClick" IsEnabled="False" />
+        <ProgressRing x:Name="Busy" Width="20" Height="20" IsActive="False" Margin="8,0" />
+      </StackPanel>
+    </controls:PanelFrame.Toolbar>
+    <StackPanel Spacing="8">
+      <Expander x:Uid="FleetParameters" Header="Parametry" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <Grid ColumnSpacing="8" RowSpacing="8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <TextBlock x:Uid="FleetDateFrom" Text="Data od" Style="{StaticResource FlotaFormLabelStyle}" />
+          <CalendarDatePicker x:Name="FromPicker" Grid.Column="1" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="140" />
+          <TextBlock Grid.Column="2" x:Uid="FleetDateTo" Text="Data do" Style="{StaticResource FlotaFormLabelStyle}" MinWidth="0" Margin="16,0,8,0" />
+          <CalendarDatePicker x:Name="ToPicker" Grid.Column="3" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="140" HorizontalAlignment="Left" />
+          <TextBlock Grid.Row="1" x:Uid="FleetVehicles" Text="Pojazdy" Style="{StaticResource FlotaFormLabelStyle}" />
+          <controls:ObjectsPicker x:Name="Picker" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" />
+        </Grid>
+      </Expander>
+      <StackPanel Orientation="Horizontal" Spacing="2">
+        <controls:ToolButton x:Name="TabSummary" x:Uid="FleetTabSummary" Label="Podsumowanie" Icon="reports_daily_16x16.png" Tag="0" Click="OnTabClick" IsChecked="True" />
+        <controls:ToolButton x:Name="TabDetails" x:Uid="FleetTabDetails" Label="Szczegóły" Icon="list_16x16.png" Tag="1" Click="OnTabClick" />
+      </StackPanel>
+      <Grid>
+        <controls:FlotaTable x:Name="SummaryTable" Height="440" ShowFilter="True" />
+        <controls:FlotaTable x:Name="DetailsTable" Height="440" ShowFilter="True" Visibility="Collapsed" />
+      </Grid>
+    </StackPanel>
+  </controls:PanelFrame>
+</UserControl>

@@ -1,0 +1,184 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Flota.App.Controls">
+
+  <!-- Pędzle z palety (Styles/ColorPaletteOverride.xaml) -->
+  <SolidColorBrush x:Key="FlotaAccentBrush" Color="{ThemeResource FlotaAccentColor}" />
+  <SolidColorBrush x:Key="FlotaToolbarBrush" Color="{ThemeResource FlotaToolbarColor}" />
+  <SolidColorBrush x:Key="FlotaSeparatorBrush" Color="{ThemeResource FlotaSeparatorColor}" />
+  <SolidColorBrush x:Key="FlotaSensorOnBrush" Color="{ThemeResource FlotaSensorOnColor}" />
+  <SolidColorBrush x:Key="FlotaSensorOffBrush" Color="{ThemeResource FlotaSensorOffColor}" />
+  <SolidColorBrush x:Key="FlotaPopupNameBrush" Color="{ThemeResource FlotaPopupNameColor}" />
+  <SolidColorBrush x:Key="FlotaPopupRegistrationBrush" Color="{ThemeResource FlotaPopupRegistrationColor}" />
+  <SolidColorBrush x:Key="StatusMovingBrush" Color="{ThemeResource StatusMovingColor}" />
+  <SolidColorBrush x:Key="StatusStoppedBrush" Color="{ThemeResource StatusStoppedColor}" />
+  <SolidColorBrush x:Key="StatusNoGpsBrush" Color="{ThemeResource StatusNoGpsColor}" />
+  <SolidColorBrush x:Key="StatusOutdatedBrush" Color="{ThemeResource StatusOutdatedColor}" />
+  <SolidColorBrush x:Key="StatusUnknownBrush" Color="{ThemeResource StatusUnknownColor}" />
+
+  <x:Double x:Key="FlotaBodyFontSize">13</x:Double>
+  <x:Double x:Key="FlotaSmallFontSize">12</x:Double>
+  <x:Double x:Key="FlotaTableFontSize">12</x:Double>
+
+  <!-- Tekst etykiety w stylu aplikacji źródłowej (#1A126C, 12 px, półgrube) -->
+  <Style x:Key="FlotaLabelTextStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{ThemeResource FlotaAccentBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource FlotaSmallFontSize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="TextWrapping" Value="NoWrap" />
+  </Style>
+
+  <Style x:Key="FlotaHeaderTextStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{ThemeResource FlotaAccentBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource FlotaBodyFontSize}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style x:Key="FlotaBodyTextStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{ThemeResource OnSurfaceBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource FlotaBodyFontSize}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <Style x:Key="FlotaCaptionTextStyle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{ThemeResource OnSurfaceVariantBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource FlotaSmallFontSize}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Separator paska narzędzi (2 px, jak w aplikacji źródłowej) -->
+  <Style x:Key="FlotaToolbarSeparatorStyle" TargetType="Border">
+    <Setter Property="Width" Value="2" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Margin" Value="6,0" />
+    <Setter Property="Background" Value="{ThemeResource FlotaSeparatorBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Przycisk paska narzędzi: płaski; najechanie — tło półprzezroczyste; stan „wciśnięty” — jak w aplikacji źródłowej -->
+  <Style TargetType="controls:ToolButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{ThemeResource FlotaAccentBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Padding" Value="6,3" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="MinWidth" Value="32" />
+    <Setter Property="CornerRadius" Value="2" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="controls:ToolButton">
+          <Grid x:Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}">
+            <Border x:Name="Hover" Background="{ThemeResource OnSurfaceBrush}" Opacity="0" CornerRadius="{TemplateBinding CornerRadius}" />
+            <ContentPresenter x:Name="Content"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Content="{TemplateBinding Content}" />
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Hover.Opacity" Value="0.08" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Hover.Opacity" Value="0.16" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Content.Opacity" Value="0.38" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="CheckStates">
+                <VisualState x:Name="Unchecked" />
+                <VisualState x:Name="Checked">
+                  <VisualState.Setters>
+                    <Setter Target="Content.Opacity" Value="0.5" />
+                    <Setter Target="Root.BorderBrush" Value="{ThemeResource OutlineBrush}" />
+                    <Setter Target="Root.Background" Value="{ThemeResource SurfaceBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Panel zwijany -->
+  <Style TargetType="controls:PanelFrame">
+    <Setter Property="Background" Value="{ThemeResource SurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource OutlineVariantBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="4" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="controls:PanelFrame">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{TemplateBinding CornerRadius}">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <Grid Padding="10,6,4,6" ColumnSpacing="6">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Image Width="16" Height="16" Source="{TemplateBinding IconSource}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{TemplateBinding Title}" Style="{StaticResource FlotaHeaderTextStyle}" TextTrimming="CharacterEllipsis" />
+                <ContentPresenter Grid.Column="2" Content="{TemplateBinding HeaderContent}" VerticalAlignment="Center" />
+                <Button x:Name="PART_Toggle" Grid.Column="3" Width="32" Height="28" Padding="0"
+                        Background="Transparent" BorderThickness="0" MinWidth="0" MinHeight="0"
+                        Style="{StaticResource TextButtonStyle}">
+                  <FontIcon Glyph="{TemplateBinding ChevronGlyph}" FontSize="12" FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                            Foreground="{ThemeResource OnSurfaceVariantBrush}" />
+                </Button>
+              </Grid>
+              <Border Grid.Row="1" Visibility="{TemplateBinding ToolbarVisibility}" Background="{ThemeResource FlotaToolbarBrush}"
+                      MinHeight="36" Padding="2">
+                <ContentPresenter Content="{TemplateBinding Toolbar}" VerticalAlignment="Center" />
+              </Border>
+              <ContentPresenter Grid.Row="2" Visibility="{TemplateBinding BodyVisibility}"
+                                Margin="{TemplateBinding Padding}"
+                                Content="{TemplateBinding Content}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Pola formularzy raportów: kompaktowe -->
+  <Style x:Key="FlotaFormLabelStyle" TargetType="TextBlock" BasedOn="{StaticResource FlotaLabelTextStyle}">
+    <Setter Property="Margin" Value="0,0,8,0" />
+    <Setter Property="MinWidth" Value="96" />
+  </Style>
+</ResourceDictionary>

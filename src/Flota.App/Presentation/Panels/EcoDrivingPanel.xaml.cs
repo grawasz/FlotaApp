@@ -1,0 +1,84 @@
+using Flota.App.Controls;
+using Flota.App.Presentation.Fleet;
+using Flota.App.Services;
+using Flota.Client;
+using Flota.Core.Contracts;
+using Flota.Core.Reports;
+
+namespace Flota.App.Presentation.Panels;
+
+/// <summary>Panel „Ranking Eco-Driving”: ocena stylu jazdy obiektów w okresie.</summary>
+public sealed partial class EcoDrivingPanel : UserControl
+{
+    static TableColumn Score(string header, Func<EcoDrivingRow, double?> v) => new()
+    {
+        Header = Loc.Get(header), Text = o => Loc.N0(v((EcoDrivingRow)o)), SortKey = o => v((EcoDrivingRow)o),
+        ExportValue = o => Loc.Raw(v((EcoDrivingRow)o)), ExportKind = ExportColumnKind.Number, Width = 110, Alignment = TextAlignment.Right,
+    };
+
+    static readonly IReadOnlyList<TableColumn> Columns =
+    [
+        new() { Header = Loc.Get("ColPosition"), Text = o => ((EcoDrivingRow)o).Position.ToString(Loc.Pl), SortKey = o => ((EcoDrivingRow)o).Position, Width = 70,
+                Alignment = TextAlignment.Right, ExportValue = o => Loc.Raw(((EcoDrivingRow)o).Position), ExportKind = ExportColumnKind.WholeNumber },
+        new() { Header = Loc.Get("ColObject"), Text = o => ((EcoDrivingRow)o).ObjectName, Width = 150 },
+        new() { Header = Loc.Get("ColRegistration"), Text = o => ((EcoDrivingRow)o).RegistrationNumber, Width = 120 },
+        Score("ColEcoScore", r => r.Score),
+        Score("ColEcoSpeeding", r => r.Speeding),
+        Score("ColEcoRpm", r => r.ExceedRpm),
+        Score("ColEcoBraking", r => r.SuddenBraking),
+        Score("ColEcoAcceleration", r => r.QuickAcceleration),
+        new() { Header = Loc.Get("ColSpeedingTime"), Text = o => ReportRules.FormatDuration(((EcoDrivingRow)o).SpeedingTime), SortKey = o => ((EcoDrivingRow)o).SpeedingTime, Width = 120, Alignment = TextAlignment.Right },
+        new() { Header = Loc.Get("ColExceedRpmTime"), Text = o => ReportRules.FormatDuration(((EcoDrivingRow)o).ExceedRpmTime), SortKey = o => ((EcoDrivingRow)o).ExceedRpmTime, Width = 120, Alignment = TextAlignment.Right },
+        new() { Header = Loc.Get("ColSuddenBrakings"), Text = o => ((EcoDrivingRow)o).SuddenBrakings?.ToString(Loc.Pl), SortKey = o => ((EcoDrivingRow)o).SuddenBrakings, Width = 110,
+                Alignment = TextAlignment.Right, ExportValue = o => Loc.Raw(((EcoDrivingRow)o).SuddenBrakings), ExportKind = ExportColumnKind.WholeNumber },
+        new() { Header = Loc.Get("ColQuickAccelerations"), Text = o => ((EcoDrivingRow)o).QuickAccelerations?.ToString(Loc.Pl), SortKey = o => ((EcoDrivingRow)o).QuickAccelerations, Width = 110,
+                Alignment = TextAlignment.Right, ExportValue = o => Loc.Raw(((EcoDrivingRow)o).QuickAccelerations), ExportKind = ExportColumnKind.WholeNumber },
+    ];
+
+    readonly FleetViewModel _fleet;
+
+    public EcoDrivingPanel()
+    {
+        InitializeComponent();
+        _fleet = App.Services.GetRequiredService<FleetViewModel>();
+        FromPicker.Date = DateTimeOffset.Now.Date.AddDays(-7);
+        ToPicker.Date = DateTimeOffset.Now.Date;
+        _fleet.ObjectsReset += (_, _) => Picker.SetObjects(_fleet.FleetObjects);
+        Picker.SetObjects(_fleet.FleetObjects);
+        Table.SetData(Columns, Array.Empty<object>());
+    }
+
+    async void OnGenerateClick(object sender, RoutedEventArgs e)
+    {
+        var ids = Picker.SelectedIds;
+        if (ids.Count == 0)
+        {
+            App.Services.GetRequiredService<Notifier>().Info(Loc.Get("PickObjectsFirst"));
+            return;
+        }
+        if (FromPicker.Date is not { } from || ToPicker.Date is not { } to) return;
+        Busy.IsActive = true;
+        GenerateButton.IsEnabled = false;
+        try
+        {
+            var rows = await App.Services.GetRequiredService<FlotaApiClient>().GetEcoDrivingAsync(
+                new EcoDrivingRequest(ids, from.Date, to.Date.AddDays(1).AddSeconds(-1)), CancellationToken.None);
+            Table.SetData(Columns, rows);
+            ExportButton.IsEnabled = rows.Count > 0;
+        }
+        catch (Exception ex) when (ex is not SessionExpiredException)
+        {
+            App.Services.GetRequiredService<Notifier>().Error(ex);
+        }
+        finally
+        {
+            Busy.IsActive = false;
+            GenerateButton.IsEnabled = true;
+        }
+    }
+
+    async void OnExportClick(object sender, RoutedEventArgs e) =>
+        await App.Services.GetRequiredService<ExportService>().ExportAsync(
+            Table.ToExport(Loc.Get("SheetEcoDriving")),
+            $"{Loc.Get("FileEcoDriving")} {FromPicker.Date:yyyyMMdd} {ToPicker.Date:yyyyMMdd}.xlsx");
+}

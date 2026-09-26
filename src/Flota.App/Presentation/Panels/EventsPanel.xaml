@@ -1,0 +1,30 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.EventsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls">
+  <controls:PanelFrame x:Uid="PanelEvents" Title="Zdarzenia" Icon="events_16x16.png">
+    <controls:PanelFrame.Toolbar>
+      <Grid ColumnSpacing="6" Padding="2,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <controls:ToolButton x:Name="RefreshButton" x:Uid="EventsRefresh" Label="Odśwież" Icon="refresh_16x16.png" Click="OnRefreshClick" />
+        <controls:ObjectsPicker x:Name="Picker" Grid.Column="1" VerticalAlignment="Center" />
+      </Grid>
+    </controls:PanelFrame.Toolbar>
+    <Grid RowSpacing="4">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <StackPanel Orientation="Horizontal" Spacing="2">
+        <controls:ToolButton x:Name="TabTemplates" x:Uid="EventsTabTemplates" Label="Zdarzenia" Icon="events_16x16.png" Tag="0" Click="OnTabClick" IsChecked="True" />
+        <controls:ToolButton x:Name="TabReminders" x:Uid="EventsTabReminders" Label="Terminy" Icon="calendars_16x16.png" Tag="1" Click="OnTabClick" />
+        <ProgressRing x:Name="Busy" Width="20" Height="20" IsActive="False" Margin="8,0" />
+      </StackPanel>
+      <controls:FlotaTable x:Name="TemplatesTable" Grid.Row="1" Height="420" ShowFilter="True" />
+      <controls:FlotaTable x:Name="RemindersTable" Grid.Row="1" Height="420" ShowFilter="True" Visibility="Collapsed" />
+    </Grid>
+  </controls:PanelFrame>
+</UserControl>

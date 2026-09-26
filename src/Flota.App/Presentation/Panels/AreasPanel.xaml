@@ -1,0 +1,8 @@
+<UserControl x:Class="Flota.App.Presentation.Panels.AreasPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Flota.App.Controls">
+  <controls:PanelFrame x:Uid="PanelAreas" Title="Obszary" Icon="areas_16x16.png">
+    <controls:FlotaTable x:Name="Table" Height="240" ShowFilter="False" />
+  </controls:PanelFrame>
+</UserControl>
