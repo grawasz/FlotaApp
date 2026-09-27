@@ -120,12 +120,23 @@ public sealed partial class DetailsPanel : UserControl
         Rows.Children.Add(g);
     }
 
+    /// <summary>Ikona jednobarwna w kolorze akcentu motywu.</summary>
+    static BitmapIcon Icon(string file, double left) => new()
+    {
+        UriSource = new Uri($"ms-appx:///Assets/Images/{file}"),
+        ShowAsMonochrome = true,
+        Foreground = Res<Brush>("FlotaAccentBrush"),
+        Width = 16,
+        Height = 16,
+        Margin = new Thickness(left, 0, 0, 0),
+    };
+
     void DateRow(DateTime time)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(0, 8, 0, 0) };
-        p.Children.Add(new Image { Source = new BitmapImage(new Uri("ms-appx:///Assets/Images/calendars_16x16.png")), Width = 16, Height = 16 });
+        p.Children.Add(Icon("calendars_16x16.png", 0));
         p.Children.Add(new TextBlock { Text = Loc.Date(time), FontSize = 13, VerticalAlignment = VerticalAlignment.Center });
-        p.Children.Add(new Image { Source = new BitmapImage(new Uri("ms-appx:///Assets/Images/clock_16x16.png")), Width = 16, Height = 16, Margin = new Thickness(12, 0, 0, 0) });
+        p.Children.Add(Icon("clock_16x16.png", 12));
         p.Children.Add(new TextBlock { Text = Loc.Time(time), FontSize = 13, VerticalAlignment = VerticalAlignment.Center });
         Rows.Children.Add(p);
     }

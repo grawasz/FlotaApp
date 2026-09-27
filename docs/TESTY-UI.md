@@ -35,6 +35,8 @@ node tools/TestyUi/testy.mjs http://localhost:5294/ <katalog zrzutów>
 
 Logowanie kontem symulatora ([SYMULATOR.md](SYMULATOR.md)). Kod wyjścia 0 — wszystkie sprawdzenia zakończone powodzeniem. Opcjonalny katalog zrzutów zawiera obraz każdej sekcji w obu szerokościach. Przeglądarka: zmienna `BROWSER` lub domyślna instalacja Edge/Chrome.
 
+Przeglądarka bez interfejsu potrafi nie potwierdzić zdarzenia kółka myszy, choć strona działa (JavaScript odpowiada w 1–2 ms); sterownik czeka na potwierdzenie kółka najwyżej 3 s, a na pozostałe wywołania — 60 s (błąd zamiast oczekiwania bez końca). Zmienna `FLOTA_UI_DEBUG=1` włącza dziennik zdarzeń wejścia i wywołań trwających ponad 2 s.
+
 Po ponownej publikacji aplikacji przeglądarkowej Flota.Api należy uruchomić ponownie — działający proces może udostępniać pliki poprzedniej wersji.
 
 ### Wynik
@@ -42,6 +44,7 @@ Po ponownej publikacji aplikacji przeglądarkowej Flota.Api należy uruchomić p
 | Data | Wersja | Wynik |
 |---|---|---|
 | 2026-09-27 | zatwierdzenie z T1.4, T1.7, T7.4 | 37 sprawdzeń zakończonych powodzeniem (24 — sekcje, 13 — dostępność) |
+| 2026-09-27 | zatwierdzenie z T7.2 (motywy, ikony jednobarwne) | 37 sprawdzeń zakończonych powodzeniem |
 
 ## Ograniczenia
 

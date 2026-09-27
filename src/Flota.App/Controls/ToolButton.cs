@@ -4,11 +4,13 @@ namespace Flota.App.Controls;
 
 /// <summary>
 /// Przycisk paska narzędzi: ikona 16×16 i etykieta w kolorze akcentu; w trybie kompaktowym tylko ikona z podpowiedzią.
+/// Ikony źródłowe są jednobarwne (kolor akcentu) — rysowane jako <see cref="BitmapIcon"/> w kolorze pierwszego planu,
+/// co zachowuje wygląd w motywie jasnym i czytelność w ciemnym.
 /// Stan <see cref="IsChecked"/> — wygląd wciśnięty (przezroczystość 0,5, obramowanie wklęsłe), jak w aplikacji źródłowej.
 /// </summary>
 public sealed partial class ToolButton : Button
 {
-    readonly Image _image = new() { Width = 16, Height = 16, VerticalAlignment = VerticalAlignment.Center };
+    readonly BitmapIcon _image = new() { Width = 16, Height = 16, ShowAsMonochrome = true, VerticalAlignment = VerticalAlignment.Center };
     readonly TextBlock _label = new() { Margin = new Thickness(5, 0, 0, 0) };
     readonly StackPanel _panel = new() { Orientation = Orientation.Horizontal };
 
@@ -66,7 +68,8 @@ public sealed partial class ToolButton : Button
 
     void Update()
     {
-        _image.Source = string.IsNullOrEmpty(Icon) ? null : new BitmapImage(new Uri($"ms-appx:///Assets/Images/{Icon}"));
+        _image.UriSource = string.IsNullOrEmpty(Icon) ? null : new Uri($"ms-appx:///Assets/Images/{Icon}");
+        _image.Visibility = string.IsNullOrEmpty(Icon) ? Visibility.Collapsed : Visibility.Visible;
         _label.Text = Label ?? string.Empty;
         _label.Visibility = IsCompact || string.IsNullOrEmpty(Label) ? Visibility.Collapsed : Visibility.Visible;
         ToolTipService.SetToolTip(this, string.IsNullOrEmpty(Label) ? null : Label);

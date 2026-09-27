@@ -18,7 +18,9 @@ export class Browser {
     const exe = candidates.find(p => existsSync(p));
     if (!exe) throw new Error('Brak przeglądarki Edge/Chrome (zmienna BROWSER).');
     const profile = mkdtempSync(join(tmpdir(), 'flota-ui-'));
+    // Bez wstrzymywania klatek i zegarów strony w tle: potwierdzenia zdarzeń wejścia czekają na klatkę
     const proc = spawn(exe, ['--headless=new', `--remote-debugging-port=${port}`, '--no-first-run', '--no-default-browser-check',
+      '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows',
       `--user-data-dir=${profile}`, `--window-size=${width},${height}`, '--force-device-scale-factor=1', 'about:blank'], { stdio: 'ignore' });
     let page;
     for (let i = 0; i < 100 && !page; i++) {
@@ -40,8 +42,21 @@ export class Browser {
     });
   }
 
-  send(method, params = {}) {
-    return new Promise(r => { const i = ++this.id; this.pending.set(i, r); this.ws.send(JSON.stringify({ id: i, method, params })); });
+  /** Wywołanie CDP; brak odpowiedzi w limicie czasu (np. zawieszona strona) — błąd zamiast oczekiwania bez końca. */
+  send(method, params = {}, timeoutMs = 60000) {
+    return new Promise((resolve, reject) => {
+      const i = ++this.id;
+      const timer = setTimeout(() => { this.pending.delete(i); reject(new Error(`CDP ${method}: brak odpowiedzi w ${timeoutMs} ms (strona nie odpowiada)`)); }, timeoutMs);
+      const start = Date.now();
+      this.pending.set(i, m => {
+        clearTimeout(timer);
+        // FLOTA_UI_DEBUG=1: wywołania dłuższe niż 2 s w dzienniku
+        if (process.env.FLOTA_UI_DEBUG && Date.now() - start > 2000) console.error(`[cdp] ${method} ${JSON.stringify(params).slice(0, 120)} — ${Date.now() - start} ms`);
+        resolve(m);
+      });
+      if (process.env.FLOTA_UI_DEBUG && method.startsWith('Input.')) console.error(`[cdp] → ${method} ${JSON.stringify(params).slice(0, 120)}`);
+      this.ws.send(JSON.stringify({ id: i, method, params }));
+    });
   }
 
   async resize(width, height) {
@@ -63,8 +78,13 @@ export class Browser {
     await sleep(200);
   }
 
+  /**
+   * Zdarzenie kółka. Przeglądarka bez interfejsu potrafi nie potwierdzić zdarzenia kółka, choć strona działa
+   * (sprawdzone: JavaScript odpowiada w 1–2 ms) — potwierdzenie oczekiwane najwyżej 3 s.
+   */
   async wheel(x, y, deltaX, deltaY = 0) {
-    await this.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x, y, deltaX, deltaY });
+    const ack = this.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x, y, deltaX, deltaY }, 600000).catch(() => { });
+    await Promise.race([ack, sleep(3000)]);
     await sleep(200);
   }
 
@@ -104,6 +124,8 @@ export class UnoApp {
            && !await this.b.eval("!document.querySelector('.uno-loader') && !!document.getElementById('uno-canvas') && !!document.getElementById('uno-enable-accessibility')"))
       await sleep(500);
     await sleep(2000);
+    // Po przeładowaniu strony warstwa może być już włączona — ponowne kliknięcie by ją wyłączyło
+    if (await this.b.eval("document.querySelectorAll('#uno-semantics-root *').length") > 0) return;
     await this.b.eval("document.getElementById('uno-enable-accessibility').click(); true");
     while (Date.now() - start < timeoutMs) {
       if (await this.b.eval("document.querySelectorAll('#uno-semantics-root *').length") > 0) return;

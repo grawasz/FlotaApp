@@ -26,7 +26,7 @@ public sealed partial class PanelFrame : ContentControl
 
     public static readonly DependencyProperty IconProperty = DependencyProperty.Register(
         nameof(Icon), typeof(string), typeof(PanelFrame), new PropertyMetadata(null, (d, e) =>
-            ((PanelFrame)d).IconSource = e.NewValue is string s && s.Length > 0 ? new BitmapImage(new Uri($"ms-appx:///Assets/Images/{s}")) : null));
+            ((PanelFrame)d).IconUri = e.NewValue is string s && s.Length > 0 ? new Uri($"ms-appx:///Assets/Images/{s}") : null));
 
     /// <summary>Nazwa pliku ikony w <c>Assets/Images</c>.</summary>
     public string? Icon
@@ -35,13 +35,14 @@ public sealed partial class PanelFrame : ContentControl
         set => SetValue(IconProperty, value);
     }
 
-    public static readonly DependencyProperty IconSourceProperty = DependencyProperty.Register(
-        nameof(IconSource), typeof(ImageSource), typeof(PanelFrame), new PropertyMetadata(null));
+    public static readonly DependencyProperty IconUriProperty = DependencyProperty.Register(
+        nameof(IconUri), typeof(Uri), typeof(PanelFrame), new PropertyMetadata(null));
 
-    public ImageSource? IconSource
+    /// <summary>Adres ikony (jednobarwnej — rysowanej w kolorze akcentu motywu).</summary>
+    public Uri? IconUri
     {
-        get => (ImageSource?)GetValue(IconSourceProperty);
-        private set => SetValue(IconSourceProperty, value);
+        get => (Uri?)GetValue(IconUriProperty);
+        private set => SetValue(IconUriProperty, value);
     }
 
     public static readonly DependencyProperty ToolbarProperty = DependencyProperty.Register(

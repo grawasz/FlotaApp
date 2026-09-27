@@ -26,6 +26,11 @@
           <TextBlock x:Name="UserNameText" Style="{StaticResource FlotaLabelTextStyle}" HorizontalAlignment="Center" />
           <TextBlock x:Name="UserCompanyText" Style="{StaticResource FlotaCaptionTextStyle}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
           <Button x:Uid="Logout" Content="Wyloguj" HorizontalAlignment="Center" Margin="0,8,0,0" Click="OnLogoutClick" Style="{StaticResource OutlinedButtonStyle}" />
+          <!-- Etykieta poza listą: styl Material listy w Uno nie wyświetla nagłówka -->
+          <TextBlock x:Uid="ThemeLabel" Text="Motyw" Style="{StaticResource FlotaLabelTextStyle}" Margin="0,16,0,0" />
+          <ComboBox x:Name="ThemeBox" x:Uid="ThemeBox" AutomationProperties.Name="Motyw" HorizontalAlignment="Stretch" SelectionChanged="OnThemeChanged" />
+          <TextBlock x:Uid="ThemeRestartHint" Text="Zmiana motywu po ponownym uruchomieniu aplikacji." Style="{StaticResource FlotaCaptionTextStyle}"
+                     TextWrapping="Wrap" />
         </StackPanel>
         <StackPanel Grid.Row="4" Spacing="2">
           <TextBlock x:Name="VersionText" Style="{StaticResource FlotaCaptionTextStyle}" HorizontalAlignment="Center" />

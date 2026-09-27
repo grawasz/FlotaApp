@@ -31,6 +31,16 @@ public sealed partial class ShellPage : Page
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         VersionText.Text = Loc.Format("VersionFormat", AppVersion());
+        ThemeBox.ItemsSource = ThemeChoices.All.Select(c => Loc.Get(ThemeChoices.TextKey(c))).ToList();
+        ThemeBox.SelectedIndex = (int)ThemeSettings.Load();
+    }
+
+    /// <summary>Wybór motywu — zapis w ustawieniach urządzenia; obowiązuje od następnego uruchomienia.</summary>
+    void OnThemeChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ThemeBox.SelectedIndex < 0 || (ThemeChoice)ThemeBox.SelectedIndex == ThemeSettings.Load()) return;
+        ThemeSettings.Save((ThemeChoice)ThemeBox.SelectedIndex);
+        _notifier.Info(Loc.Get("ThemeRestartNotice"));
     }
 
     async void OnLoaded(object sender, RoutedEventArgs e)

@@ -265,3 +265,24 @@ public sealed class ShellAndNotifierTests
         Assert.Equal("BrakKlucza", Loc.Get("BrakKlucza"));
     }
 }
+
+/// <summary>Wybór motywu (T7.2).</summary>
+public sealed class ThemeChoiceTests
+{
+    [Theory]
+    [InlineData("Dark", ThemeChoice.Dark)]
+    [InlineData("System", ThemeChoice.System)]
+    [InlineData("Light", ThemeChoice.Light)]
+    [InlineData(null, ThemeChoice.Light)]
+    [InlineData("", ThemeChoice.Light)]
+    [InlineData("dark", ThemeChoice.Light)]
+    [InlineData("7", ThemeChoice.Light)]
+    public void Parse_UnknownValue_DefaultsToLight(string? stored, ThemeChoice expected) => Assert.Equal(expected, ThemeChoices.Parse(stored));
+
+    [Fact]
+    public void TextKeys_InDisplayOrder()
+    {
+        Assert.Equal([ThemeChoice.Light, ThemeChoice.Dark, ThemeChoice.System], ThemeChoices.All);
+        Assert.Equal("ThemeSystem", ThemeChoices.TextKey(ThemeChoice.System));
+    }
+}

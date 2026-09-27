@@ -330,4 +330,11 @@
   <data name="RouteStopTimeBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Czas postoju</value></data>
   <data name="RouteToDate.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Data do</value></data>
   <data name="RouteToTime.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Godzina do</value></data>
+  <data name="ThemeBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Motyw</value></data>
+  <data name="ThemeLabel.Text" xml:space="preserve"><value>Motyw</value></data>
+  <data name="ThemeRestartHint.Text" xml:space="preserve"><value>Zmiana motywu po ponownym uruchomieniu aplikacji.</value></data>
+  <data name="ThemeRestartNotice" xml:space="preserve"><value>Zmiana motywu po ponownym uruchomieniu aplikacji.</value></data>
+  <data name="ThemeLight" xml:space="preserve"><value>Jasny</value></data>
+  <data name="ThemeDark" xml:space="preserve"><value>Ciemny</value></data>
+  <data name="ThemeSystem" xml:space="preserve"><value>Zgodny z systemem</value></data>
 </root>

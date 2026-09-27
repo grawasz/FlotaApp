@@ -1,7 +1,7 @@
 <Application x:Class="Flota.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             RequestedTheme="Light">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Motyw ustawiany w konstruktorze App z ustawień użytkownika (domyślnie jasny) -->
 
   <Application.Resources>
     <ResourceDictionary>

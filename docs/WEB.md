@@ -34,6 +34,10 @@ Build Release (tryb interpretera), Flota.Api na tym samym komputerze, Microsoft 
 
 Pomiar na komputerze lokalnym nie uwzględnia czasu transmisji przez sieć: przy łączu 50 Mb/s pierwsze uruchomienie wydłuża się o ok. 2 s. Aplikacja Blazor ([POMIAR-BAZOWY.md](POMIAR-BAZOWY.md)) wyświetla stronę od razu, ale dane floty po ok. 18,6 s (geokodowanie sekwencyjne); w nowej architekturze dane floty pochodzą z `/fleet/snapshot` Flota.Api niezależnie od platformy.
 
+### Czas od zalogowania do danych floty
+
+Pomiar na danych symulatora UniAVL (build Release, Edge bez interfejsu, dziennik Flota.Api): od odpowiedzi `POST /auth/login` do żądania `GET /fleet/snapshot` mija 21–23 s, a odpowiedź `/fleet/snapshot` trwa 60–460 ms. Czas zajmuje przeglądarka — budowa strony głównej ze wszystkimi panelami w trybie interpretera WebAssembly. Możliwe działania: tworzenie paneli przy pierwszym otwarciu zamiast przy starcie strony, kompilacja AOT (większy rozmiar pobieranych plików) — do decyzji przy T9.3.
+
 ## Weryfikacja do wykonania przez Jurka (⏸)
 
 | Scenariusz | Wynik |

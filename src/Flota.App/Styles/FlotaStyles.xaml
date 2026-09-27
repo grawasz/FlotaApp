@@ -150,7 +150,8 @@
                   <ColumnDefinition Width="Auto" />
                   <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Image Width="16" Height="16" Source="{TemplateBinding IconSource}" VerticalAlignment="Center" />
+                <BitmapIcon Width="16" Height="16" UriSource="{TemplateBinding IconUri}" ShowAsMonochrome="True"
+                            Foreground="{ThemeResource FlotaAccentBrush}" VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1" Text="{TemplateBinding Title}" Style="{StaticResource FlotaHeaderTextStyle}" TextTrimming="CharacterEllipsis" />
                 <Button x:Name="PART_Toggle" Grid.Column="3" Width="32" Height="28" Padding="0"
                         Background="Transparent" BorderThickness="0" MinWidth="0" MinHeight="0"

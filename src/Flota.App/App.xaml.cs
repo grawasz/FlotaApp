@@ -9,6 +9,7 @@ public partial class App : Application
 {
     public App()
     {
+        if (ThemeSettings.ToApplicationTheme(ThemeSettings.Load()) is { } theme) RequestedTheme = theme;
         InitializeComponent();
         UnhandledException += (_, e) => WriteCrashLog(e.Exception);
     }
