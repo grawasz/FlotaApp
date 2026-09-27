@@ -26,6 +26,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Flota.Api\Flota.Api.csproj" />
     <ProjectReference Include="..\..\src\Flota.Api.Infrastructure\Flota.Api.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Flota.Client\Flota.Client.csproj" />
+    <ProjectReference Include="..\..\tools\Flota.UniAvlSim\Flota.UniAvlSim.csproj" />
   </ItemGroup>
 
   <ItemGroup>

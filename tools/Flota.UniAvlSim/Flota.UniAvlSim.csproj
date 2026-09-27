@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Flota.UniAvlSim</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Kontrakt UniAVL (DTO) współdzielony z Flota.Api -->
+    <ProjectReference Include="..\..\src\Flota.Api.Infrastructure\Flota.Api.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Flota.Api.Tests" />
+  </ItemGroup>
+
+</Project>

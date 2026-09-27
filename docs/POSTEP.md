@@ -22,8 +22,8 @@
 | T2.5 | w toku | baza tworzona przez `EnsureCreated` | odstępstwo O5 |
 | T2.6 | zakończone | `AuthIntegrationTests` (WebApplicationFactory, WireMock): logowanie, błędne hasło, rotacja tokenu odświeżania, wylogowanie, 401 UniAVL → 401 | — |
 | T2.7 | w toku | migawka floty działa z UniAVL; dopasowanie wiadomości — `UniAvlMapperTests`; brak pomiaru czasu względem [POMIAR-BAZOWY.md](POMIAR-BAZOWY.md) | — |
-| T2.8 | w toku | hub `/hubs/fleet` z odpytywaniem UniAVL co 10 s | odstępstwo O1; wymaga K3 |
-| T2.9 | w toku | punkty końcowe raportów, kart drogowych, słowników i ustawień; testy mapowania raportu trasy i floty | brak testów porównawczych z aplikacją Blazor |
+| T2.8 | w toku | hub `/hubs/fleet` z odpytywaniem UniAVL co 10 s; `FleetHubTests` (symulator UniAVL): pierwsze odpytanie — wszystkie obiekty, kolejne — wyłącznie zmienione pozycje | odstępstwo O1; test z atrapą WebSocket UniAVL wymaga K3 |
+| T2.9 | zakończone | `ApiEndpointsTests`: każdy punkt końcowy wywoływany klientem `FlotaApiClient` na danych symulatora UniAVL (stan floty, trasa, punkty trasy, ślad, paliwo z redukcją serii LTTB, zdarzenia, styl jazdy, podsumowanie kursów, raport floty, Eco-Driving, karty drogowe, słowniki, ustawienia, eksport XLSX) | [SYMULATOR.md](SYMULATOR.md) |
 | T2.10 | zakończone | `docker compose up` (Flota.Api + PostgreSQL 17): `GET /health` → 200 `Healthy`, tabele utworzone w PostgreSQL, `GET /me/settings` bez tokenu → 401; obraz uruchomiony również z SQLite | konfiguracja w `.env` (wzór `.env.example`); obraz uruchamiany bez uprawnień administratora |
 | T2.11 | zakończone | `dotnet build src/Flota.Client` | odstępstwo O2 |
 | T3.1–T3.7 | w toku | funkcje zaimplementowane i sprawdzone ręcznie na Windows (logowanie, mapa, obiekty, szczegóły, śledzenie); brak testów modelu widoku i testów interfejsu | odstępstwo O3 (T3.2) |
@@ -49,4 +49,4 @@
 | Projekt | Liczba testów | Wynik |
 |---|---|---|
 | `Flota.Core.Tests` | 70 | wszystkie zakończone powodzeniem |
-| `Flota.Api.Tests` | 36 | wszystkie zakończone powodzeniem |
+| `Flota.Api.Tests` | 53 | wszystkie zakończone powodzeniem |

@@ -10,4 +10,7 @@
     <Project Path="tests/Flota.Api.Tests/Flota.Api.Tests.csproj" />
     <Project Path="tests/Flota.Core.Tests/Flota.Core.Tests.csproj" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Flota.UniAvlSim/Flota.UniAvlSim.csproj" />
+  </Folder>
 </Solution>
