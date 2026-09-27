@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Flota.App.Presentation.Fleet;
 using Flota.App.Services;
 
 namespace Flota.App.Presentation.Panels;

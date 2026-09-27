@@ -1,4 +1,4 @@
-namespace Flota.App.Services;
+namespace Flota.Presentation;
 
 public enum NoticeSeverity
 {

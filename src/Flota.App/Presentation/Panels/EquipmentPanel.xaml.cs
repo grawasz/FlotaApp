@@ -1,6 +1,5 @@
 using Flota.App.Controls;
 using Flota.App.Services;
-using Flota.Client;
 using Flota.Core.Contracts;
 
 namespace Flota.App.Presentation.Panels;
@@ -31,46 +30,35 @@ public sealed partial class EquipmentPanel : UserControl
         Count("ColMonitor", e => e.Monitors),
     ];
 
-    bool _loaded;
+    readonly EquipmentViewModel _vm = App.Services.GetRequiredService<EquipmentViewModel>();
 
     public EquipmentPanel()
     {
         InitializeComponent();
         Table.SetData(Columns, Array.Empty<object>());
         ExportButton.IsEnabled = false;
+        _vm.PropertyChanged += (_, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(EquipmentViewModel.Items):
+                    Table.SetData(Columns, _vm.Items);
+                    ExportButton.IsEnabled = _vm.Items.Count > 0;
+                    break;
+                case nameof(EquipmentViewModel.IsBusy):
+                    Busy.IsActive = _vm.IsBusy;
+                    RefreshButton.IsEnabled = !_vm.IsBusy;
+                    break;
+            }
+        };
         RegisterPropertyChangedCallback(VisibilityProperty, async (_, _) =>
         {
-            if (Visibility == Visibility.Visible && !_loaded) await LoadAsync(refresh: false);
+            if (Visibility == Visibility.Visible) await _vm.EnsureLoadedAsync();
         });
     }
 
-    async void OnRefreshClick(object sender, RoutedEventArgs e) => await LoadAsync(refresh: true);
-
-    async Task LoadAsync(bool refresh)
-    {
-        _loaded = true;
-        Busy.IsActive = true;
-        RefreshButton.IsEnabled = false;
-        try
-        {
-            var items = await App.Services.GetRequiredService<FlotaApiClient>().GetEquipmentAsync(refresh, CancellationToken.None);
-            Table.SetData(Columns, items);
-            ExportButton.IsEnabled = items.Count > 0;
-        }
-        catch (Exception ex) when (ex is not SessionExpiredException)
-        {
-            _loaded = false;
-            App.Services.GetRequiredService<Notifier>().Error(ex);
-        }
-        finally
-        {
-            Busy.IsActive = false;
-            RefreshButton.IsEnabled = true;
-        }
-    }
+    async void OnRefreshClick(object sender, RoutedEventArgs e) => await _vm.RefreshAsync();
 
     async void OnExportClick(object sender, RoutedEventArgs e) =>
-        await App.Services.GetRequiredService<ExportService>().ExportAsync(
-            Table.ToExport(Loc.Get("SheetEquipment")),
-            $"{Loc.Get("FileEquipment")} {DateTime.Now:yyyyMMdd_HHmm}.xlsx");
+        await App.Services.GetRequiredService<ExportService>().ExportAsync(Table.ToExport(Loc.Get("SheetEquipment")), _vm.FileName);
 }

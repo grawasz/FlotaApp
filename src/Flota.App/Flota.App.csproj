@@ -53,5 +53,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Flota.Core\Flota.Core.csproj" />
     <ProjectReference Include="..\Flota.Client\Flota.Client.csproj" />
+    <ProjectReference Include="..\Flota.Presentation\Flota.Presentation.csproj" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,11 @@
 using System.Globalization;
-using Flota.App.Presentation.Fleet;
-using Flota.App.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flota.Client;
 using Flota.Core.Contracts;
 using Flota.Core.Periods;
+using Flota.Presentation.Fleet;
 
-namespace Flota.App.Presentation.Reports;
+namespace Flota.Presentation.Reports;
 
 /// <summary>Zakładki raportu trasy.</summary>
 public enum RouteTab
@@ -23,7 +23,7 @@ public enum RouteTab
 /// Raport trasy (odpowiednik <c>Components/Reports.razor</c>): parametry, kryteria postoju i stylu jazdy, zakładki ładowane leniwie,
 /// odtwarzanie trasy, ślad na mapie.
 /// </summary>
-public sealed partial class RouteReportViewModel : ObservableObject
+public sealed partial class RouteReportViewModel : ObservableObject, IDisposable
 {
     /// <summary>Liczba punktów, powyżej której ślad nie jest rysowany (jak w aplikacji źródłowej).</summary>
     public const int MaxDrawnPoints = 5000;
@@ -32,15 +32,17 @@ public sealed partial class RouteReportViewModel : ObservableObject
     readonly FlotaApiClient _api;
     readonly FleetViewModel _fleet;
     readonly Notifier _notifier;
+    readonly TimeProvider _time;
     readonly HashSet<RouteTab> _loaded = [];
     CancellationTokenSource? _playback;
     RouteQuery? _query;
 
-    public RouteReportViewModel(FlotaApiClient api, FleetViewModel fleet, Notifier notifier)
+    public RouteReportViewModel(FlotaApiClient api, FleetViewModel fleet, Notifier notifier, TimeProvider time)
     {
         _api = api;
         _fleet = fleet;
         _notifier = notifier;
+        _time = time;
         ApplyPeriod();
         _fleet.PropertyChanged += (_, e) =>
         {
@@ -91,7 +93,7 @@ public sealed partial class RouteReportViewModel : ObservableObject
         if (!value && !IgnitionOffEnabled) IgnitionOffEnabled = true;
     }
 
-    void ApplyPeriod() => (From, To) = PeriodPreset.Compute(Period, DateTime.Now, (From, To));
+    void ApplyPeriod() => (From, To) = PeriodPreset.Compute(Period, _time.GetLocalNow().DateTime, (From, To));
 
     // ---------------- Stan ----------------
 
@@ -284,6 +286,7 @@ public sealed partial class RouteReportViewModel : ObservableObject
     public async Task PlayAsync()
     {
         if (Waypoints is not { Points.Count: > 0 } || IsPlaying) return;
+        _playback?.Dispose();
         _playback = new CancellationTokenSource();
         var ct = _playback.Token;
         IsPlaying = true;
@@ -294,7 +297,7 @@ public sealed partial class RouteReportViewModel : ObservableObject
             for (var i = Math.Max(0, CurrentWaypoint); i < Waypoints.Points.Count && !ct.IsCancellationRequested; i++)
             {
                 SetCurrent(i);
-                await Task.Delay(PlaybackStep, ct);
+                await Task.Delay(PlaybackStep, _time, ct);
             }
         }
         catch (TaskCanceledException)
@@ -309,6 +312,8 @@ public sealed partial class RouteReportViewModel : ObservableObject
     }
 
     public void Stop() => _playback?.Cancel();
+
+    public void Dispose() => _playback?.Dispose();
 
     public void Reset()
     {

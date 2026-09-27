@@ -1,7 +1,5 @@
 using Flota.App.Controls;
-using Flota.App.Presentation.Fleet;
 using Flota.App.Services;
-using Flota.Client;
 using Flota.Core.Contracts;
 
 namespace Flota.App.Presentation.Panels;
@@ -29,11 +27,28 @@ public sealed partial class EventsPanel : UserControl
     ];
 
     readonly FleetViewModel _fleet;
+    readonly EventsViewModel _vm = App.Services.GetRequiredService<EventsViewModel>();
 
     public EventsPanel()
     {
         InitializeComponent();
         _fleet = App.Services.GetRequiredService<FleetViewModel>();
+        _vm.PropertyChanged += (_, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(EventsViewModel.Templates):
+                    TemplatesTable.SetData(TemplateColumns, _vm.Templates);
+                    break;
+                case nameof(EventsViewModel.Reminders):
+                    RemindersTable.SetData(ReminderColumns, _vm.Reminders);
+                    break;
+                case nameof(EventsViewModel.IsBusy):
+                    Busy.IsActive = _vm.IsBusy;
+                    RefreshButton.IsEnabled = !_vm.IsBusy;
+                    break;
+            }
+        };
         TemplatesTable.FooterText = Loc.Get("TotalFormat");
         RemindersTable.FooterText = Loc.Get("TotalFormat");
         TemplatesTable.SetData(TemplateColumns, Array.Empty<object>());
@@ -56,30 +71,5 @@ public sealed partial class EventsPanel : UserControl
         RemindersTable.Visibility = reminders ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    async void OnRefreshClick(object sender, RoutedEventArgs e)
-    {
-        var ids = Picker.SelectedIds;
-        if (ids.Count == 0)
-        {
-            App.Services.GetRequiredService<Notifier>().Info(Loc.Get("PickObjectsFirst"));
-            return;
-        }
-        Busy.IsActive = true;
-        RefreshButton.IsEnabled = false;
-        try
-        {
-            var all = await App.Services.GetRequiredService<FlotaApiClient>().GetEventTemplatesAsync(ids, CancellationToken.None);
-            TemplatesTable.SetData(TemplateColumns, all.Where(t => !t.IsReminder));
-            RemindersTable.SetData(ReminderColumns, all.Where(t => t.IsReminder));
-        }
-        catch (Exception ex) when (ex is not SessionExpiredException)
-        {
-            App.Services.GetRequiredService<Notifier>().Error(ex);
-        }
-        finally
-        {
-            Busy.IsActive = false;
-            RefreshButton.IsEnabled = true;
-        }
-    }
+    async void OnRefreshClick(object sender, RoutedEventArgs e) => await _vm.LoadAsync(Picker.SelectedIds);
 }

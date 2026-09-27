@@ -62,7 +62,7 @@ internal static class DevSnapshot
     /// <summary>Polecenia: <c>select &lt;id&gt;</c>, <c>track</c>, <c>zoom &lt;poziom&gt;</c>, <c>wait &lt;ms&gt;</c>.</summary>
     static async Task RunCommandsAsync(IEnumerable<string> lines)
     {
-        var fleet = App.Services.GetRequiredService<Presentation.Fleet.FleetViewModel>();
+        var fleet = App.Services.GetRequiredService<FleetViewModel>();
         foreach (var line in lines)
         {
             var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);

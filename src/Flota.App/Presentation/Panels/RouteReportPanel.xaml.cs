@@ -1,7 +1,5 @@
 using System.ComponentModel;
 using Flota.App.Controls;
-using Flota.App.Presentation.Fleet;
-using Flota.App.Presentation.Reports;
 using Flota.App.Services;
 using Flota.Core.Contracts;
 using Flota.Core.Periods;

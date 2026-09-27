@@ -5,10 +5,12 @@
     <Project Path="src/Flota.App/Flota.App.csproj" />
     <Project Path="src/Flota.Client/Flota.Client.csproj" />
     <Project Path="src/Flota.Core/Flota.Core.csproj" />
+    <Project Path="src/Flota.Presentation/Flota.Presentation.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Flota.Api.Tests/Flota.Api.Tests.csproj" />
     <Project Path="tests/Flota.Core.Tests/Flota.Core.Tests.csproj" />
+    <Project Path="tests/Flota.Presentation.Tests/Flota.Presentation.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/Flota.UniAvlSim/Flota.UniAvlSim.csproj" />

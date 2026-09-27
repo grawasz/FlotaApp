@@ -13,8 +13,22 @@ public enum LiveConnectionState
     Reconnecting,
 }
 
+/// <summary>Strumień zmian pozycji floty.</summary>
+public interface IFleetLiveFeed
+{
+    event EventHandler<IReadOnlyList<PositionChanged>>? PositionsChanged;
+    event EventHandler<AddressResolved>? AddressResolved;
+    event EventHandler<LiveConnectionState>? StateChanged;
+
+    LiveConnectionState State { get; }
+
+    Task StartAsync(CancellationToken ct);
+
+    Task StopAsync();
+}
+
 /// <summary>Klient huba pozycji floty (SignalR, automatyczne wznawianie — D10).</summary>
-public sealed class FleetHubClient(FlotaApiClient api) : IAsyncDisposable
+public sealed class FleetHubClient(FlotaApiClient api) : IFleetLiveFeed, IAsyncDisposable
 {
     HubConnection? _connection;
 

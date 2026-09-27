@@ -97,7 +97,7 @@ public sealed partial class PanelFrame : ContentControl
         {
             toggle.Click -= OnToggle;
             toggle.Click += OnToggle;
-            AutomationProperties.SetName(toggle, Services.Loc.Get("PanelToggle"));
+            AutomationProperties.SetName(toggle, Flota.Presentation.Loc.Get("PanelToggle"));
         }
         UpdateExpanded();
     }

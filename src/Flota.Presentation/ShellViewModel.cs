@@ -1,4 +1,6 @@
-namespace Flota.App.Presentation;
+using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace Flota.Presentation;
 
 /// <summary>Widoczność paneli strony głównej (przełączniki paska nagłówka).</summary>
 public sealed partial class ShellViewModel : ObservableObject

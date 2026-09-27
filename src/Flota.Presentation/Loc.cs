@@ -1,22 +1,19 @@
 using System.Globalization;
 
-namespace Flota.App.Services;
+namespace Flota.Presentation;
 
 /// <summary>Teksty interfejsu z zasobów (<c>Strings/pl-PL/Resources.resw</c>) i formatowanie wartości (pl-PL).</summary>
 public static class Loc
 {
     public static readonly CultureInfo Pl = CultureInfo.GetCultureInfo("pl-PL");
 
-    static IStringLocalizer? _localizer;
+    static Func<string, string?>? _lookup;
 
-    public static void Initialize(IStringLocalizer localizer) => _localizer = localizer;
+    /// <summary>Źródło tekstów: tekst zasobu albo <c>null</c>, gdy zasobu brak.</summary>
+    public static void Initialize(Func<string, string?> lookup) => _lookup = lookup;
 
-    /// <summary>Tekst zasobu; klucz w postaci <c>Nazwa</c> (bez właściwości).</summary>
-    public static string Get(string key)
-    {
-        var value = _localizer?[key];
-        return value is null || value.ResourceNotFound ? key : value.Value;
-    }
+    /// <summary>Tekst zasobu; klucz w postaci <c>Nazwa</c> (bez właściwości). Brak zasobu — klucz.</summary>
+    public static string Get(string key) => _lookup?.Invoke(key) ?? key;
 
     public static string Format(string key, params object?[] args) => string.Format(Pl, Get(key), args);
 

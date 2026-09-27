@@ -1,7 +1,6 @@
 using BruTile.Cache;
 using BruTile.Predefined;
 using BruTile.Web;
-using Flota.App.Presentation.Fleet;
 using Flota.App.Services;
 using Flota.Core.Contracts;
 using Flota.Core.Status;

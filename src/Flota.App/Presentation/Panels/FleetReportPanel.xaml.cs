@@ -1,7 +1,5 @@
 using Flota.App.Controls;
-using Flota.App.Presentation.Fleet;
 using Flota.App.Services;
-using Flota.Client;
 using Flota.Core.Contracts;
 
 namespace Flota.App.Presentation.Panels;
@@ -13,14 +11,32 @@ namespace Flota.App.Presentation.Panels;
 public sealed partial class FleetReportPanel : UserControl
 {
     readonly FleetViewModel _fleet;
-    FleetReportResponse? _report;
+    readonly FleetReportViewModel _vm = App.Services.GetRequiredService<FleetReportViewModel>();
 
     public FleetReportPanel()
     {
         InitializeComponent();
         _fleet = App.Services.GetRequiredService<FleetViewModel>();
-        FromPicker.Date = DateTimeOffset.Now.Date.AddDays(-1);
-        ToPicker.Date = DateTimeOffset.Now.Date;
+        FromPicker.Date = _vm.From;
+        ToPicker.Date = _vm.To;
+        _vm.PropertyChanged += (_, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(FleetReportViewModel.Summary):
+                    SummaryTable.SetData(Columns(_vm.Summary, details: false), _vm.Summary);
+                    ExportSummaryButton.IsEnabled = _vm.Summary.Count > 0;
+                    break;
+                case nameof(FleetReportViewModel.Details):
+                    DetailsTable.SetData(Columns(_vm.Details, details: true), _vm.Details);
+                    ExportDetailsButton.IsEnabled = _vm.Details.Count > 0;
+                    break;
+                case nameof(FleetReportViewModel.IsBusy):
+                    Busy.IsActive = _vm.IsBusy;
+                    GenerateButton.IsEnabled = !_vm.IsBusy;
+                    break;
+            }
+        };
         _fleet.ObjectsReset += (_, _) => Picker.SetObjects(_fleet.FleetObjects);
         Picker.SetObjects(_fleet.FleetObjects);
         SummaryTable.SetData(Columns([], details: false), Array.Empty<object>());
@@ -39,13 +55,13 @@ public sealed partial class FleetReportPanel : UserControl
 
         void Num(string h, Func<FleetReportRow, double?> v, Func<double?, string> fmt)
         {
-            if (rows.Count > 0 && rows.All(r => v(r) is null)) return;
+            if (!FleetReportViewModel.IsColumnVisible(rows, v)) return;
             list.Add(new() { Header = Loc.Get(h), Text = o => fmt(v((FleetReportRow)o)), SortKey = o => v((FleetReportRow)o),
                              ExportValue = o => Loc.Raw(v((FleetReportRow)o)), ExportKind = ExportColumnKind.Number, Width = 120, Alignment = TextAlignment.Right });
         }
         void Txt(string h, Func<FleetReportRow, string?> v, double width = 110)
         {
-            if (rows.Count > 0 && rows.All(r => string.IsNullOrEmpty(v(r)))) return;
+            if (!FleetReportViewModel.IsColumnVisible(rows, v)) return;
             list.Add(new() { Header = Loc.Get(h), Text = o => v((FleetReportRow)o), Width = width, Alignment = TextAlignment.Right });
         }
 
@@ -77,39 +93,15 @@ public sealed partial class FleetReportPanel : UserControl
 
     async void OnGenerateClick(object sender, RoutedEventArgs e)
     {
-        var ids = Picker.SelectedIds;
-        if (ids.Count == 0)
-        {
-            App.Services.GetRequiredService<Notifier>().Info(Loc.Get("PickObjectsFirst"));
-            return;
-        }
         if (FromPicker.Date is not { } from || ToPicker.Date is not { } to) return;
-        Busy.IsActive = true;
-        GenerateButton.IsEnabled = false;
-        try
-        {
-            _report = await App.Services.GetRequiredService<FlotaApiClient>().GetFleetReportAsync(new FleetReportRequest(ids, from.Date, to.Date), CancellationToken.None);
-            SummaryTable.SetData(Columns(_report.Summary, details: false), _report.Summary);
-            DetailsTable.SetData(Columns(_report.Details, details: true), _report.Details);
-            ExportSummaryButton.IsEnabled = _report.Summary.Count > 0;
-            ExportDetailsButton.IsEnabled = _report.Details.Count > 0;
-        }
-        catch (Exception ex) when (ex is not SessionExpiredException)
-        {
-            App.Services.GetRequiredService<Notifier>().Error(ex);
-        }
-        finally
-        {
-            Busy.IsActive = false;
-            GenerateButton.IsEnabled = true;
-        }
+        _vm.From = from.Date;
+        _vm.To = to.Date;
+        await _vm.GenerateAsync(Picker.SelectedIds);
     }
 
     async void OnExportSummaryClick(object sender, RoutedEventArgs e) =>
-        await App.Services.GetRequiredService<ExportService>().ExportAsync(SummaryTable.ToExport(Loc.Get("SheetFleetSummary")), $"{FileBase()}.xlsx");
+        await App.Services.GetRequiredService<ExportService>().ExportAsync(SummaryTable.ToExport(Loc.Get("SheetFleetSummary")), $"{_vm.FileBase}.xlsx");
 
     async void OnExportDetailsClick(object sender, RoutedEventArgs e) =>
-        await App.Services.GetRequiredService<ExportService>().ExportAsync(DetailsTable.ToExport(Loc.Get("SheetFleetDetails")), $"{FileBase()} {Loc.Get("FileDetailsSuffix")}.xlsx");
-
-    string FileBase() => $"{Loc.Get("FileFleetReport")} {FromPicker.Date:yyyyMMdd} {ToPicker.Date:yyyyMMdd}";
+        await App.Services.GetRequiredService<ExportService>().ExportAsync(DetailsTable.ToExport(Loc.Get("SheetFleetDetails")), $"{_vm.FileBase} {Loc.Get("FileDetailsSuffix")}.xlsx");
 }

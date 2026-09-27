@@ -5,7 +5,7 @@ using Windows.Storage;
 namespace Flota.App.Services;
 
 /// <summary>Ostatni znany stan floty na urządzeniu — natychmiastowe wyświetlenie przy starcie (plan, 6.1, P4).</summary>
-public sealed class SnapshotCache
+public sealed class SnapshotCache : ISnapshotStore
 {
     const string FileName = "fleet-snapshot.json";
 

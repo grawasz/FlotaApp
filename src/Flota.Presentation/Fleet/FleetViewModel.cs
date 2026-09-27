@@ -1,9 +1,10 @@
 using System.Collections.ObjectModel;
-using Flota.App.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Flota.Client;
 using Flota.Core.Contracts;
 
-namespace Flota.App.Presentation.Fleet;
+namespace Flota.Presentation.Fleet;
 
 /// <summary>Sortowanie listy obiektów.</summary>
 public enum ObjectSort
@@ -31,19 +32,20 @@ public enum TraceMode
 public sealed partial class FleetViewModel : ObservableObject
 {
     readonly FlotaApiClient _api;
-    readonly FleetHubClient _hub;
-    readonly SnapshotCache _cache;
+    readonly IFleetLiveFeed _hub;
+    readonly ISnapshotStore _cache;
     readonly Notifier _notifier;
+    readonly TimeProvider _time;
     readonly Dictionary<int, ObjectItem> _byId = [];
-    DispatcherQueue? _dispatcher;
-    DispatcherQueueTimer? _statusTimer;
+    SynchronizationContext? _ui;
 
-    public FleetViewModel(FlotaApiClient api, FleetHubClient hub, SnapshotCache cache, Notifier notifier)
+    public FleetViewModel(FlotaApiClient api, IFleetLiveFeed hub, ISnapshotStore cache, Notifier notifier, TimeProvider time)
     {
         _api = api;
         _hub = hub;
         _cache = cache;
         _notifier = notifier;
+        _time = time;
         _hub.PositionsChanged += (_, p) => Dispatch(() => ApplyPositions(p));
         _hub.AddressResolved += (_, a) => Dispatch(() => ApplyAddress(a));
         _hub.StateChanged += (_, s) => Dispatch(() => LiveState = s);
@@ -56,6 +58,9 @@ public sealed partial class FleetViewModel : ObservableObject
     public ObservableCollection<ObjectItem> Objects { get; } = [];
 
     public IReadOnlyList<AreaInfo> Areas { get; private set; } = [];
+
+    /// <summary>Obszary aktywne w kolejności nazw (panel „Obszary”).</summary>
+    public IReadOnlyList<AreaInfo> ActiveAreas => Areas.Where(a => a.IsActive).OrderBy(a => a.Name, StringComparer.Create(Loc.Pl, ignoreCase: true)).ToList();
 
     public IReadOnlyList<FleetObject> FleetObjects => _byId.Values.Select(o => o.Source).ToList();
 
@@ -104,20 +109,15 @@ public sealed partial class FleetViewModel : ObservableObject
     public event EventHandler<(double Lat, double Lon, double? Zoom)>? CenterRequested;
     public event EventHandler? AreasChanged;
 
-    public void AttachDispatcher(DispatcherQueue dispatcher)
+    /// <summary>Kontekst wątku interfejsu, do którego przekazywane są zdarzenia huba.</summary>
+    public void AttachUiContext(SynchronizationContext context) => _ui = context;
+
+    /// <summary>Przeliczenie statusów — status „Nieaktualny” zależy od upływu czasu (wywoływane co minutę).</summary>
+    public void RefreshStatuses()
     {
-        _dispatcher = dispatcher;
-        if (_statusTimer is not null) return;
-        // Status „Nieaktualny” zależy od upływu czasu — przeliczenie co minutę
-        _statusTimer = dispatcher.CreateTimer();
-        _statusTimer.Interval = TimeSpan.FromMinutes(1);
-        _statusTimer.Tick += (_, _) =>
-        {
-            foreach (var o in _byId.Values) o.RefreshStatus();
-            if (Sort == ObjectSort.Status) ApplyView();
-            ObjectsUpdated?.Invoke(this, _byId.Values.ToList());
-        };
-        _statusTimer.Start();
+        foreach (var o in _byId.Values) o.RefreshStatus();
+        if (Sort == ObjectSort.Status) ApplyView();
+        ObjectsUpdated?.Invoke(this, _byId.Values.ToList());
     }
 
     /// <summary>Start: stan z pamięci lokalnej, następnie odświeżenie z Flota.Api i połączenie z hubem.</summary>
@@ -175,7 +175,7 @@ public sealed partial class FleetViewModel : ObservableObject
         foreach (var o in snapshot.Objects)
         {
             if (_byId.TryGetValue(o.Id, out var item)) item.Replace(o);
-            else _byId[o.Id] = new ObjectItem(o);
+            else _byId[o.Id] = new ObjectItem(o, _time);
         }
         Areas = snapshot.Areas;
         if (SelectedObject is not null && !_byId.ContainsKey(SelectedObject.Id)) SelectedObject = null;
@@ -290,7 +290,7 @@ public sealed partial class FleetViewModel : ObservableObject
         if (SelectedObject is not { Position: { } p } item) return;
         try
         {
-            var trace = await _api.GetTraceAsync(item.Id, p.Time.AddMinutes(-5), DateTime.Now, default);
+            var trace = await _api.GetTraceAsync(item.Id, p.Time.AddMinutes(-5), _time.GetLocalNow().DateTime, default);
             if (IsTracking && SelectedObject == item) SetTrace(trace, TraceMode.Tracking);
         }
         catch (Exception ex) when (ex is not SessionExpiredException)
@@ -379,7 +379,7 @@ public sealed partial class FleetViewModel : ObservableObject
 
     void Dispatch(Action action)
     {
-        if (_dispatcher is null || _dispatcher.HasThreadAccess) action();
-        else _dispatcher.TryEnqueue(() => action());
+        if (_ui is null || SynchronizationContext.Current == _ui) action();
+        else _ui.Post(_ => action(), null);
     }
 }

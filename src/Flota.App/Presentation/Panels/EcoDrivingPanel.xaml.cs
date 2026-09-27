@@ -1,7 +1,5 @@
 using Flota.App.Controls;
-using Flota.App.Presentation.Fleet;
 using Flota.App.Services;
-using Flota.Client;
 using Flota.Core.Contracts;
 using Flota.Core.Reports;
 
@@ -36,13 +34,28 @@ public sealed partial class EcoDrivingPanel : UserControl
     ];
 
     readonly FleetViewModel _fleet;
+    readonly EcoDrivingViewModel _vm = App.Services.GetRequiredService<EcoDrivingViewModel>();
 
     public EcoDrivingPanel()
     {
         InitializeComponent();
         _fleet = App.Services.GetRequiredService<FleetViewModel>();
-        FromPicker.Date = DateTimeOffset.Now.Date.AddDays(-7);
-        ToPicker.Date = DateTimeOffset.Now.Date;
+        FromPicker.Date = _vm.From;
+        ToPicker.Date = _vm.To;
+        _vm.PropertyChanged += (_, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(EcoDrivingViewModel.Rows):
+                    Table.SetData(Columns, _vm.Rows);
+                    ExportButton.IsEnabled = _vm.Rows.Count > 0;
+                    break;
+                case nameof(EcoDrivingViewModel.IsBusy):
+                    Busy.IsActive = _vm.IsBusy;
+                    GenerateButton.IsEnabled = !_vm.IsBusy;
+                    break;
+            }
+        };
         _fleet.ObjectsReset += (_, _) => Picker.SetObjects(_fleet.FleetObjects);
         Picker.SetObjects(_fleet.FleetObjects);
         Table.SetData(Columns, Array.Empty<object>());
@@ -50,35 +63,12 @@ public sealed partial class EcoDrivingPanel : UserControl
 
     async void OnGenerateClick(object sender, RoutedEventArgs e)
     {
-        var ids = Picker.SelectedIds;
-        if (ids.Count == 0)
-        {
-            App.Services.GetRequiredService<Notifier>().Info(Loc.Get("PickObjectsFirst"));
-            return;
-        }
         if (FromPicker.Date is not { } from || ToPicker.Date is not { } to) return;
-        Busy.IsActive = true;
-        GenerateButton.IsEnabled = false;
-        try
-        {
-            var rows = await App.Services.GetRequiredService<FlotaApiClient>().GetEcoDrivingAsync(
-                new EcoDrivingRequest(ids, from.Date, to.Date.AddDays(1).AddSeconds(-1)), CancellationToken.None);
-            Table.SetData(Columns, rows);
-            ExportButton.IsEnabled = rows.Count > 0;
-        }
-        catch (Exception ex) when (ex is not SessionExpiredException)
-        {
-            App.Services.GetRequiredService<Notifier>().Error(ex);
-        }
-        finally
-        {
-            Busy.IsActive = false;
-            GenerateButton.IsEnabled = true;
-        }
+        _vm.From = from.Date;
+        _vm.To = to.Date;
+        await _vm.GenerateAsync(Picker.SelectedIds);
     }
 
     async void OnExportClick(object sender, RoutedEventArgs e) =>
-        await App.Services.GetRequiredService<ExportService>().ExportAsync(
-            Table.ToExport(Loc.Get("SheetEcoDriving")),
-            $"{Loc.Get("FileEcoDriving")} {FromPicker.Date:yyyyMMdd} {ToPicker.Date:yyyyMMdd}.xlsx");
+        await App.Services.GetRequiredService<ExportService>().ExportAsync(Table.ToExport(Loc.Get("SheetEcoDriving")), _vm.FileName);
 }

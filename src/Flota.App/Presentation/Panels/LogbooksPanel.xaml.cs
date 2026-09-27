@@ -1,6 +1,5 @@
 using Flota.App.Controls;
 using Flota.App.Services;
-using Flota.Client;
 using Flota.Core.Contracts;
 
 namespace Flota.App.Presentation.Panels;
@@ -49,7 +48,7 @@ public sealed partial class LogbooksPanel : UserControl
         new() { Header = Loc.Get("ColDriver"), Text = o => ((LogbookEntry)o).DriverName, Width = 150 },
     ];
 
-    bool _loaded;
+    readonly LogbooksViewModel _vm = App.Services.GetRequiredService<LogbooksViewModel>();
     bool _init;
 
     public LogbooksPanel()
@@ -57,73 +56,53 @@ public sealed partial class LogbooksPanel : UserControl
         InitializeComponent();
         LogbookTable.SetData(LogbookColumns, Array.Empty<object>());
         EntriesTable.SetData(EntryColumns, Array.Empty<object>());
-        // Domyślnie: wczoraj — dziś (jak parametry raportu floty w aplikacji źródłowej)
         _init = true;
-        FromPicker.Date = DateTimeOffset.Now.Date.AddDays(-1);
-        ToPicker.Date = DateTimeOffset.Now.Date;
+        FromPicker.Date = _vm.From;
+        ToPicker.Date = _vm.To;
         _init = false;
+        _vm.PropertyChanged += (_, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(LogbooksViewModel.Logbooks):
+                    LogbookTable.SetData(LogbookColumns, _vm.Logbooks);
+                    ExportButton.IsEnabled = _vm.Logbooks.Count > 0;
+                    break;
+                case nameof(LogbooksViewModel.Entries) when _vm.Entries.Count == 0:
+                    EntriesTable.Clear();
+                    break;
+                case nameof(LogbooksViewModel.Entries):
+                    EntriesTable.SetData(EntryColumns, _vm.Entries);
+                    break;
+                case nameof(LogbooksViewModel.IsBusy):
+                    Busy.IsActive = _vm.IsBusy;
+                    break;
+            }
+        };
         LogbookTable.SelectionChanged += async (_, items) =>
         {
             DetailsButton.IsEnabled = items.Count > 0;
-            if (items.FirstOrDefault() is LogbookInfo l) await LoadEntriesAsync(l);
+            if (items.FirstOrDefault() is LogbookInfo l) await _vm.LoadEntriesAsync(l);
         };
         RegisterPropertyChangedCallback(VisibilityProperty, async (_, _) =>
         {
-            if (Visibility == Visibility.Visible && !_loaded) await LoadAsync();
+            if (Visibility == Visibility.Visible && !_vm.IsLoaded) await _vm.LoadAsync();
         });
     }
 
     async void OnDateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
     {
-        if (!_init) await LoadAsync();
-    }
-
-    async Task LoadAsync()
-    {
-        if (FromPicker.Date is not { } from || ToPicker.Date is not { } to) return;
-        _loaded = true;
-        Busy.IsActive = true;
-        try
-        {
-            var list = await App.Services.GetRequiredService<FlotaApiClient>().GetLogbooksAsync(from.Date, to.Date, CancellationToken.None);
-            LogbookTable.SetData(LogbookColumns, list);
-            EntriesTable.Clear();
-            ExportButton.IsEnabled = list.Count > 0;
-        }
-        catch (Exception ex) when (ex is not SessionExpiredException)
-        {
-            App.Services.GetRequiredService<Notifier>().Error(ex);
-        }
-        finally
-        {
-            Busy.IsActive = false;
-        }
+        if (_init || FromPicker.Date is not { } from || ToPicker.Date is not { } to) return;
+        _vm.From = from.Date;
+        _vm.To = to.Date;
+        await _vm.LoadAsync();
     }
 
     async void OnDetailsClick(object sender, RoutedEventArgs e)
     {
-        if (LogbookTable.SelectedItem is LogbookInfo l) await LoadEntriesAsync(l);
-    }
-
-    async Task LoadEntriesAsync(LogbookInfo logbook)
-    {
-        Busy.IsActive = true;
-        try
-        {
-            EntriesTable.SetData(EntryColumns, await App.Services.GetRequiredService<FlotaApiClient>().GetLogbookEntriesAsync(logbook.Id, CancellationToken.None));
-        }
-        catch (Exception ex) when (ex is not SessionExpiredException)
-        {
-            App.Services.GetRequiredService<Notifier>().Error(ex);
-        }
-        finally
-        {
-            Busy.IsActive = false;
-        }
+        if (LogbookTable.SelectedItem is LogbookInfo l) await _vm.LoadEntriesAsync(l);
     }
 
     async void OnExportClick(object sender, RoutedEventArgs e) =>
-        await App.Services.GetRequiredService<ExportService>().ExportAsync(
-            LogbookTable.ToExport(Loc.Get("SheetLogbooks")),
-            $"{Loc.Get("FileLogbooks")} {FromPicker.Date:yyyyMMdd} {ToPicker.Date:yyyyMMdd}.xlsx");
+        await App.Services.GetRequiredService<ExportService>().ExportAsync(LogbookTable.ToExport(Loc.Get("SheetLogbooks")), _vm.FileName);
 }

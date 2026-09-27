@@ -1,20 +1,22 @@
-using Flota.App.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flota.Core.Contracts;
 using Flota.Core.Geo;
 using Flota.Core.Objects;
 using Flota.Core.Status;
 
-namespace Flota.App.Presentation.Fleet;
+namespace Flota.Presentation.Fleet;
 
 /// <summary>Obiekt floty na liście i mapie.</summary>
-[Microsoft.UI.Xaml.Data.Bindable]
 public sealed partial class ObjectItem : ObservableObject
 {
+    readonly TimeProvider _clock;
     FleetObject _source;
 
-    public ObjectItem(FleetObject source)
+    /// <param name="clock">Zegar statusu (próg nieaktualności).</param>
+    public ObjectItem(FleetObject source, TimeProvider clock)
     {
         _source = source;
+        _clock = clock;
         _isVisibleOnMap = source.Enabled;
     }
 
@@ -48,24 +50,13 @@ public sealed partial class ObjectItem : ObservableObject
         }
     }
 
-    public TrackingObjectStatus Status => _source.StatusAt(DateTime.Now);
+    public TrackingObjectStatus Status => _source.StatusAt(_clock.GetLocalNow().DateTime);
 
     public string StatusName => TrackingObjectStatusResolver.DisplayName(Status);
-
-    public Brush StatusBrush => StatusBrushFor(Status);
 
     public string LocationText => Position?.Address is { IsEmpty: false } a && Enabled ? a.CityOrProvince : string.Empty;
 
     public string Tooltip => string.IsNullOrEmpty(RegistrationNumber) ? $"{Name} — {StatusName}" : $"{Name} ({RegistrationNumber}) — {StatusName}";
-
-    public static Brush StatusBrushFor(TrackingObjectStatus status) => (Brush)Application.Current.Resources[status switch
-    {
-        TrackingObjectStatus.Move => "StatusMovingBrush",
-        TrackingObjectStatus.Stop => "StatusStoppedBrush",
-        TrackingObjectStatus.InvalidGps => "StatusNoGpsBrush",
-        TrackingObjectStatus.Outdated => "StatusOutdatedBrush",
-        _ => "StatusUnknownBrush",
-    }];
 
     /// <summary>
     /// Scalenie nowej pozycji (odpowiednik <c>TrackingMessage.Load</c>): położenie zastępowane tylko przy poprawnym GPS.
@@ -102,7 +93,6 @@ public sealed partial class ObjectItem : ObservableObject
     {
         OnPropertyChanged(nameof(Status));
         OnPropertyChanged(nameof(StatusName));
-        OnPropertyChanged(nameof(StatusBrush));
     }
 
     void RaiseAll() => OnPropertyChanged(string.Empty);

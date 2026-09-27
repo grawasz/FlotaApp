@@ -49,6 +49,9 @@ jobs:
       - name: Testy Flota.Api
         run: dotnet test tests/Flota.Api.Tests -c Release
 
+      - name: Testy Flota.Presentation
+        run: dotnet test tests/Flota.Presentation.Tests -c Release
+
       - name: Build Windows
         run: dotnet build src/Flota.App -f net10.0-windows10.0.26100 -c Release
 

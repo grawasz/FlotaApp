@@ -26,9 +26,23 @@
 | T2.9 | zakończone | `ApiEndpointsTests`: każdy punkt końcowy wywoływany klientem `FlotaApiClient` na danych symulatora UniAVL (stan floty, trasa, punkty trasy, ślad, paliwo z redukcją serii LTTB, zdarzenia, styl jazdy, podsumowanie kursów, raport floty, Eco-Driving, karty drogowe, słowniki, ustawienia, eksport XLSX) | [SYMULATOR.md](SYMULATOR.md) |
 | T2.10 | zakończone | `docker compose up` (Flota.Api + PostgreSQL 17): `GET /health` → 200 `Healthy`, tabele utworzone w PostgreSQL, `GET /me/settings` bez tokenu → 401; obraz uruchomiony również z SQLite | konfiguracja w `.env` (wzór `.env.example`); obraz uruchamiany bez uprawnień administratora |
 | T2.11 | zakończone | `dotnet build src/Flota.Client` | odstępstwo O2 |
-| T3.1–T3.7 | w toku | funkcje zaimplementowane i sprawdzone ręcznie na Windows (logowanie, mapa, obiekty, szczegóły, śledzenie); brak testów modelu widoku i testów interfejsu | odstępstwo O3 (T3.2) |
-| T4.1–T4.6 | w toku | funkcje zaimplementowane; eksport XLSX — `XlsxExporterTests`; brak testów porównawczych z aplikacją Blazor | odstępstwo O4 (T4.6) |
-| T5.1–T5.4 | w toku | funkcje zaimplementowane; brak testów porównawczych i testów modelu widoku | — |
+| T3.1 | w toku | logowanie, odświeżanie tokenu, wylogowanie sprawdzone ręcznie (Windows, przeglądarka); wygaśnięcie sesji — `PanelViewModelTests.SessionExpired_NoErrorNotice` | brak testu interfejsu logowania; logika logowania w kodzie strony |
+| T3.2 | w toku | start ze stanu zapisanego, następnie odświeżenie — `FleetViewModelTests.LoadAsync_CachedSnapshotFirst_ThenRefreshAndLiveFeed` | odstępstwo O3; brak pomiaru czasu startu na urządzeniu |
+| T3.3 | w toku | mapa z obiektami, zaznaczenie, wyśrodkowanie, obszary — sprawdzone ręcznie i na zrzutach (przeglądarka, symulator UniAVL); wyśrodkowanie po wyborze — `FleetViewModelTests.Select_CentersMapAndShowsObject` | brak testu interfejsu |
+| T3.4 | zakończone | `FleetViewModelTests`: sortowanie (status, nazwa, lokalizacja, odwrócenie kierunku), filtr (nazwa, numer rejestracyjny, lokalizacja), widoczność na mapie | — |
+| T3.5 | w toku | szczegóły obiektu wyświetlane; klasyfikacja urządzenia — testy `Flota.Core` | brak testu porównawczego z aplikacją Blazor |
+| T3.6 | zakończone | `FleetViewModelTests` z atrapą strumienia pozycji (`IFleetLiveFeed`): aktualizacja pozycji, adresy, przekazanie do wątku interfejsu, tryb „Śledź”; `FleetHubTests`: hub Flota.Api na symulatorze UniAVL | wznawianie połączenia sprawdzone ręcznie |
+| T3.7 | zakończone | `FleetViewModelTests.DefaultView_LoadGoSaveDelete`; `ApiEndpointsTests.Settings_SaveAndRead` | — |
+| T4.1 | zakończone | `RouteReportViewModelTests`: okres domyślny, kryteria postoju (co najmniej jedno aktywne), parametry zapytania, wybór obiektu | — |
+| T4.2 | w toku | kursy, trasa na mapie, strzałki kierunku, odtwarzanie — `RouteReportViewModelTests` (punkty trasy, nawigacja, odtwarzanie co 3 s, limit 5000 punktów) | brak testu porównawczego etapów z aplikacją Blazor |
+| T4.3 | w toku | kolumny czujników punktów trasy — `ApiEndpointsTests.Waypoints_PointsAndSensorColumns` | brak testu porównawczego z aplikacją Blazor |
+| T4.4 | w toku | tankowania, ubytki, wykresy — `ApiEndpointsTests.Fuel_RefuelingAndDownsampledSeries` | brak testu porównawczego sum z aplikacją Blazor |
+| T4.5 | w toku | zdarzenia, styl jazdy, podsumowanie kursów — `ApiEndpointsTests` | brak testów porównawczych z aplikacją Blazor |
+| T4.6 | zakończone | `XlsxExporterTests`: nazwy arkuszy, nagłówki, formaty liczb | odstępstwo O4 |
+| T5.1 | w toku | raport floty — `FleetReportViewModel` (`PanelViewModelTests`), `ApiEndpointsTests.FleetReport_SummaryAndDailyDetails` | brak testu porównawczego z plikiem z aplikacji Blazor |
+| T5.2 | w toku | ranking Eco-Driving — `PanelViewModelTests.EcoDriving_FullDaysAndRanking`, `ApiEndpointsTests.EcoDriving_RankingByScore` | brak testu porównawczego z aplikacją Blazor |
+| T5.3 | zakończone | `PanelViewModelTests.Logbooks_LoadListThenEntries` (`LogbooksViewModel`) | — |
+| T5.4 | zakończone | `PanelViewModelTests`: kierowcy (wczytanie jednorazowe, ponowienie po błędzie), wyposażenie (odświeżenie pamięci podręcznej Flota.Api), zdarzenia i terminy; obszary — `FleetViewModelTests.ActiveAreas_SortedByNameIgnoringCase` | — |
 | T5.5 | nierozpoczęte | — | — |
 | T9.1 | w toku | build `net10.0-browserwasm` Release; ekran logowania w Edge; pomiar ładowania (4,1–4,4 s pierwsze, 3,5–5,5 s kolejne); `WebAppHostingTests` | [WEB.md](WEB.md); ⏸ oczekuje na weryfikację Jurka: logowanie, mapa, raport trasy w Chrome i Edge |
 
@@ -43,6 +57,7 @@
 | O5 | T2.5 | Schemat bazy tworzony przez `EnsureCreated` zamiast migracji. | Dostawca bazy produkcyjnej nierozstrzygnięty (K6). |
 | O6 | T1.2 | Wersja Windows uruchamiana jako zarejestrowany pakiet deweloperski MSIX. | Uno.Material i lokalizacja zasobów wymagają tożsamości pakietu WinAppSDK. |
 | O7 | T0.5, T4.3 | Tabele raportów w kontrolce własnej `FlotaTable` zamiast `DataGrid`. | Port `DataGrid` niesprawny z Uno 6.7 (wynik T0.5). |
+| O8 | T1.3, T3.x–T5.x | Modele widoku w osobnym projekcie `Flota.Presentation` (net10.0, bez zależności od Uno); zależności platformowe przez interfejsy `ISnapshotStore`, `IFleetLiveFeed` i `TimeProvider`. Projekt spoza struktury z [5.3](Plan-migracji-Uno.md#53-struktura-rozwiązania). | Testy modeli widoku bez uruchamiania aplikacji Uno (`Flota.Presentation.Tests`). |
 
 ## Testy automatyczne
 
@@ -50,3 +65,4 @@
 |---|---|---|
 | `Flota.Core.Tests` | 70 | wszystkie zakończone powodzeniem |
 | `Flota.Api.Tests` | 53 | wszystkie zakończone powodzeniem |
+| `Flota.Presentation.Tests` | 61 | wszystkie zakończone powodzeniem |

@@ -1,6 +1,4 @@
 using Flota.App.Controls;
-using Flota.App.Services;
-using Flota.Client;
 using Flota.Core.Contracts;
 
 namespace Flota.App.Presentation.Panels;
@@ -15,35 +13,20 @@ public sealed partial class DriversPanel : UserControl
         new() { Header = Loc.Get("ColActive"), Text = o => ((DriverInfo)o).IsActive ? "✓" : string.Empty, Width = 70, Alignment = TextAlignment.Center,
                 ExportValue = o => ((DriverInfo)o).IsActive ? "true" : "false", ExportKind = ExportColumnKind.Boolean },
     ];
-    bool _loaded;
+    readonly DriversViewModel _vm = App.Services.GetRequiredService<DriversViewModel>();
 
     public DriversPanel()
     {
         InitializeComponent();
         Table.SetData(_columns, Array.Empty<object>());
+        _vm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(DriversViewModel.Drivers)) Table.SetData(_columns, _vm.Drivers);
+            else if (e.PropertyName == nameof(DriversViewModel.IsBusy)) Busy.IsActive = _vm.IsBusy;
+        };
         RegisterPropertyChangedCallback(VisibilityProperty, async (_, _) =>
         {
-            if (Visibility == Visibility.Visible && !_loaded) await LoadAsync();
+            if (Visibility == Visibility.Visible) await _vm.EnsureLoadedAsync();
         });
-    }
-
-    async Task LoadAsync()
-    {
-        _loaded = true;
-        Busy.IsActive = true;
-        try
-        {
-            var drivers = await App.Services.GetRequiredService<FlotaApiClient>().GetDriversAsync(CancellationToken.None);
-            Table.SetData(_columns, drivers);
-        }
-        catch (Exception ex) when (ex is not SessionExpiredException)
-        {
-            _loaded = false;
-            App.Services.GetRequiredService<Notifier>().Error(ex);
-        }
-        finally
-        {
-            Busy.IsActive = false;
-        }
     }
 }

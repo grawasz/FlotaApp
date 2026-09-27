@@ -1,6 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Flota.App.Presentation.Fleet;
-using Flota.App.Presentation.Reports;
 using Flota.App.Services;
 using Flota.Client;
 using Uno.Resizetizer;
@@ -34,6 +32,7 @@ public partial class App : Application
     public static IServiceProvider Services { get; private set; } = null!;
 
     Frame? _frame;
+    DispatcherQueueTimer? _statusTimer;
 
     [SuppressMessage("Trimming", "IL2026", Justification = "Uno.Extensions Hosting — konfiguracja bez refleksji w kodzie aplikacji.")]
     protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -72,8 +71,9 @@ public partial class App : Application
         MainAppWindow.Title = "Flota";
         var host = builder.Build();
         Services = host.Services;
-        Loc.Initialize(Services.GetRequiredService<IStringLocalizer>());
-        Services.GetRequiredService<FleetViewModel>().AttachDispatcher(DispatcherQueue.GetForCurrentThread());
+        var localizer = Services.GetRequiredService<IStringLocalizer>();
+        Loc.Initialize(key => localizer[key] is { ResourceNotFound: false } s ? s.Value : null);
+        AttachFleet(Services.GetRequiredService<FleetViewModel>());
         Services.GetRequiredService<FlotaApiClient>().SessionExpired += (_, _) =>
             MainAppWindow.DispatcherQueue.TryEnqueue(async () => await SignOutAsync(expired: true));
 
@@ -112,14 +112,32 @@ public partial class App : Application
             if (!string.IsNullOrWhiteSpace(baseUrl)) http.BaseAddress = new Uri(baseUrl);
             return new FlotaApiClient(http, sp.GetRequiredService<ITokenStore>());
         });
+        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<FleetHubClient>();
-        services.AddSingleton<SnapshotCache>();
+        services.AddSingleton<IFleetLiveFeed>(sp => sp.GetRequiredService<FleetHubClient>());
+        services.AddSingleton<ISnapshotStore, SnapshotCache>();
         services.AddSingleton<Notifier>();
         services.AddSingleton<MapImages>();
         services.AddSingleton<ExportService>();
         services.AddSingleton<FleetViewModel>();
-        services.AddSingleton<Presentation.ShellViewModel>();
+        services.AddSingleton<ShellViewModel>();
         services.AddSingleton<RouteReportViewModel>();
+        services.AddTransient<FleetReportViewModel>();
+        services.AddTransient<EcoDrivingViewModel>();
+        services.AddTransient<LogbooksViewModel>();
+        services.AddTransient<DriversViewModel>();
+        services.AddTransient<EquipmentViewModel>();
+        services.AddTransient<EventsViewModel>();
+    }
+
+    /// <summary>Zdarzenia huba w wątku interfejsu; przeliczenie statusów co minutę (próg nieaktualności).</summary>
+    void AttachFleet(FleetViewModel fleet)
+    {
+        if (SynchronizationContext.Current is { } ui) fleet.AttachUiContext(ui);
+        _statusTimer = MainAppWindow.DispatcherQueue.CreateTimer();
+        _statusTimer.Interval = TimeSpan.FromMinutes(1);
+        _statusTimer.Tick += (_, _) => fleet.RefreshStatuses();
+        _statusTimer.Start();
     }
 
     public void ShowLogin()

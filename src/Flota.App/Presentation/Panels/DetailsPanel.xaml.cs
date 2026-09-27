@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Flota.App.Presentation.Fleet;
 using Flota.App.Services;
 using Flota.Core.Objects;
 using Microsoft.UI.Xaml.Media.Imaging;

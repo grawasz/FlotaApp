@@ -1,5 +1,4 @@
 using Flota.App.Controls;
-using Flota.App.Presentation.Fleet;
 using Flota.App.Services;
 using Flota.Core.Contracts;
 
@@ -26,5 +25,5 @@ public sealed partial class AreasPanel : UserControl
         Fill();
     }
 
-    void Fill() => Table.SetData(_columns, _fleet.Areas.Where(a => a.IsActive).OrderBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase));
+    void Fill() => Table.SetData(_columns, _fleet.ActiveAreas);
 }

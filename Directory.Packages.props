@@ -4,6 +4,8 @@
     <PackageVersion Include="Mapsui.Uno.WinUI" Version="5.1.0" />
     <PackageVersion Include="LiveChartsCore.SkiaSharpView.Uno.WinUI" Version="2.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.12" />
+    <!-- Wersja zgodna z pakietem dołączanym przez Uno.Sdk (funkcja Mvvm) -->
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
   </ItemGroup>
 
   <ItemGroup Label="Flota.Api">
@@ -36,5 +38,6 @@
     <PackageVersion Include="WireMock.Net" Version="2.18.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.10.0" />
   </ItemGroup>
 </Project>
