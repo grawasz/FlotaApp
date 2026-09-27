@@ -25,9 +25,9 @@
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
           <TextBlock x:Uid="FleetDateFrom" Text="Data od" Style="{StaticResource FlotaFormLabelStyle}" />
-          <CalendarDatePicker x:Name="FromPicker" Grid.Column="1" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="140" />
+          <CalendarDatePicker x:Name="FromPicker" x:Uid="FleetFromPicker" AutomationProperties.Name="Data od" Grid.Column="1" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="140" />
           <TextBlock Grid.Column="2" x:Uid="FleetDateTo" Text="Data do" Style="{StaticResource FlotaFormLabelStyle}" MinWidth="0" Margin="16,0,8,0" />
-          <CalendarDatePicker x:Name="ToPicker" Grid.Column="3" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="140" HorizontalAlignment="Left" />
+          <CalendarDatePicker x:Name="ToPicker" x:Uid="FleetToPicker" AutomationProperties.Name="Data do" Grid.Column="3" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="140" HorizontalAlignment="Left" />
           <TextBlock Grid.Row="1" x:Uid="FleetVehicles" Text="Pojazdy" Style="{StaticResource FlotaFormLabelStyle}" />
           <controls:ObjectsPicker x:Name="Picker" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" />
         </Grid>

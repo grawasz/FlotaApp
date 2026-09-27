@@ -47,7 +47,8 @@
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+        <!-- Przewijanie poziome: wszystkie sekcje osiągalne na wąskim ekranie -->
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
           <StackPanel x:Name="Toolbar" Orientation="Horizontal" Padding="4,2" Spacing="2">
             <controls:ToolButton x:Uid="NavObjects" Label="Obiekty" Icon="tracking_objects_16x16.png" Tag="objects" Click="OnToggle" />
             <controls:ToolButton x:Uid="NavDetails" Label="Szczegóły obiektu" Icon="tracking_object_16x16.png" Tag="details" Click="OnToggle" />

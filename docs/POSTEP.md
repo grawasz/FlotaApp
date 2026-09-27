@@ -11,10 +11,10 @@
 | T1.1 | zakończone | `git log` zawiera zatwierdzenie początkowe | repozytorium w `C:\Projects\FlotaApp` |
 | T1.2 | zakończone | `dotnet build src/Flota.App -f net10.0-windows10.0.26100` i `-f net10.0-android`: 0 błędów; uruchomienie na Windows (pakiet deweloperski MSIX) i emulatorze Android 15 | odstępstwo O6 |
 | T1.3 | zakończone | `dotnet build FlotaUno.slnx`: 0 błędów | — |
-| T1.4 | w toku | paleta w `Styles/ColorPaletteOverride.xaml`; brak testu porównującego wartości z paletą źródłową | — |
+| T1.4 | zakończone | `PaletteTests`: wartości motywu jasnego zgodne z tabelą 7.1 planu (13 zasobów, w tym pędzle statusów); motyw ciemny kompletny | [TESTY-UI.md](TESTY-UI.md) |
 | T1.5 | zakończone | zasoby w `src/Flota.App/Assets/Images`, wyświetlane w aplikacji; ikona aplikacji i ekran startowy odtworzone w SVG z `avl.ico` (Windows, Android — ikona adaptacyjna, iOS) | — |
 | T1.6 | w toku | `.github/workflows/ci.yml`: testy, build Windows i Android (`windows-latest`), build iOS dla symulatora (`macos-latest`), obraz Flota.Api z testem `/health` (`ubuntu-latest`); brak przebiegu potoku — repozytorium bez zdalnego GitHub | — |
-| T1.7 | w toku | powłoka z panelami sekcji działa na Windows; brak testu interfejsu na szerokości 400 px | — |
+| T1.7 | zakończone | `tools/TestyUi` (przeglądarka, symulator UniAVL): każda z 12 sekcji wyświetlana przy 400 px i 1400 px; pasek sekcji przewijany w poziomie na wąskim ekranie | [TESTY-UI.md](TESTY-UI.md) |
 | T2.1 | zakończone | deserializacja próbek z `$id`/`$ref`/`$values` — `UniAvlMapperTests` | próbki fikcyjne w `tests/Flota.Api.Tests/Samples` |
 | T2.2 | zakończone | `UniAvlClientTests` (WireMock): 401, 5xx, niepoprawny JSON, 204, parametry niezależne od kultury | — |
 | T2.3 | zakończone | geokodowanie adresów pozycji w działającej usłudze | dane uwierzytelniające w User Secrets Flota.Api |
@@ -44,6 +44,7 @@
 | T5.3 | zakończone | `PanelViewModelTests.Logbooks_LoadListThenEntries` (`LogbooksViewModel`) | — |
 | T5.4 | zakończone | `PanelViewModelTests`: kierowcy (wczytanie jednorazowe, ponowienie po błędzie), wyposażenie (odświeżenie pamięci podręcznej Flota.Api), zdarzenia i terminy; obszary — `FleetViewModelTests.ActiveAreas_SortedByNameIgnoringCase` | — |
 | T5.5 | nierozpoczęte | — | — |
+| T7.4 | zakończone | `ViewRulesTests` (nazwa dostępna każdej kontrolki interaktywnej w XAML, teksty w `.resw`); `tools/TestyUi`: ekran logowania i 12 sekcji bez kontrolek bez nazwy dostępnej | obszary dotyku mniejsze niż 48 dp — [TESTY-UI.md](TESTY-UI.md#ograniczenia) |
 | T9.1 | w toku | build `net10.0-browserwasm` Release; ekran logowania w Edge; pomiar ładowania (4,1–4,4 s pierwsze, 3,5–5,5 s kolejne); `WebAppHostingTests` | [WEB.md](WEB.md); ⏸ oczekuje na weryfikację Jurka: logowanie, mapa, raport trasy w Chrome i Edge |
 
 ## Odstępstwa od planu
@@ -66,3 +67,5 @@
 | `Flota.Core.Tests` | 70 | wszystkie zakończone powodzeniem |
 | `Flota.Api.Tests` | 53 | wszystkie zakończone powodzeniem |
 | `Flota.Presentation.Tests` | 61 | wszystkie zakończone powodzeniem |
+| `Flota.App.Tests` | 21 | wszystkie zakończone powodzeniem |
+| `tools/TestyUi` (przeglądarka) | 37 sprawdzeń | wszystkie zakończone powodzeniem |

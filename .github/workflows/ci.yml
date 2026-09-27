@@ -52,11 +52,37 @@ jobs:
       - name: Testy Flota.Presentation
         run: dotnet test tests/Flota.Presentation.Tests -c Release
 
+      - name: Testy statyczne zasobów aplikacji
+        run: dotnet test tests/Flota.App.Tests -c Release
+
       - name: Build Windows
         run: dotnet build src/Flota.App -f net10.0-windows10.0.26100 -c Release
 
       - name: Build WebAssembly
         run: dotnet publish src/Flota.App -f net10.0-browserwasm -c Release -o artifacts/web
+
+      # Aplikacja przeglądarkowa na danych symulatora UniAVL: sekcje (400 i 1400 px) i nazwy dostępne (docs/TESTY-UI.md)
+      - name: Testy interfejsu (przeglądarka)
+        shell: pwsh
+        run: |
+          $root = (Get-Location).Path
+          $job = Start-Job { & "$using:root/tools/Start-Symulacja.ps1" -WebApp "$using:root/artifacts/web/wwwroot" }
+          for ($i = 0; $i -lt 150; $i++) {
+            try { if ((Invoke-WebRequest http://localhost:5294/health -UseBasicParsing).StatusCode -eq 200) { break } } catch { }
+            Start-Sleep 2
+          }
+          node tools/TestyUi/testy.mjs http://localhost:5294/ artifacts/ui
+          $code = $LASTEXITCODE
+          Stop-Job $job
+          exit $code
+
+      - name: Zrzuty testów interfejsu
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testy-ui
+          path: artifacts/ui
+          if-no-files-found: ignore
 
       - name: Zależności Android SDK
         run: dotnet build src/Flota.App -f net10.0-android -t:InstallAndroidDependencies -p:AndroidSdkDirectory="$env:ANDROID_SDK_ROOT" -p:AcceptAndroidSDKLicenses=True

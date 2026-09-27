@@ -9,6 +9,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Flota.Api.Tests/Flota.Api.Tests.csproj" />
+    <Project Path="tests/Flota.App.Tests/Flota.App.Tests.csproj" />
     <Project Path="tests/Flota.Core.Tests/Flota.Core.Tests.csproj" />
     <Project Path="tests/Flota.Presentation.Tests/Flota.Presentation.Tests.csproj" />
   </Folder>

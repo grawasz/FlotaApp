@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
         <controls:ToolButton x:Name="RefreshButton" x:Uid="ObjectsRefresh" Label="Odśwież" Icon="refresh_16x16.png" Click="OnRefreshClick" />
         <controls:ToolButton x:Name="TraceButton" Grid.Column="1" x:Uid="ObjectsTrace" Label="Śledź" Icon="trace_16x16.png" Click="OnTraceClick" />
-        <TextBox x:Name="FilterBox" Grid.Column="2" x:Uid="ObjectsFilter" PlaceholderText="Szukaj obiektu"
+        <TextBox x:Name="FilterBox" Grid.Column="2" x:Uid="ObjectsFilter" PlaceholderText="Szukaj obiektu" AutomationProperties.Name="Szukaj obiektu"
                  MinWidth="80" Style="{StaticResource DefaultTextBoxStyle}" FontSize="13" VerticalAlignment="Center" Margin="4,0,2,0" TextChanged="OnFilterChanged" />
       </Grid>
     </controls:PanelFrame.Toolbar>
@@ -37,17 +37,17 @@
         </Grid.ColumnDefinitions>
         <CheckBox x:Name="AllVisibleBox" MinWidth="0" Padding="0" HorizontalAlignment="Center" IsThreeState="False"
                   x:Uid="ObjectsAllVisible" AutomationProperties.Name="Pokaż wszystkie na mapie" Click="OnAllVisibleClick" />
-        <Button Grid.Column="1" Tag="Name" Click="OnSortClick" Style="{StaticResource TextButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="4,0">
+        <Button Grid.Column="1" Tag="Name" x:Uid="ObjectsSortName" AutomationProperties.Name="Sortuj według nazwy" Click="OnSortClick" Style="{StaticResource TextButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="4,0">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock x:Uid="ObjectsColName" Text="Nazwa" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource OnSurfaceBrush}" />
             <FontIcon x:Name="SortName" FontSize="9" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
           </StackPanel>
         </Button>
         <Button Grid.Column="2" Tag="Status" Click="OnSortClick" Style="{StaticResource TextButtonStyle}" Padding="0" HorizontalAlignment="Stretch"
-                x:Uid="ObjectsColStatus" AutomationProperties.Name="Status">
+                x:Uid="ObjectsColStatus" AutomationProperties.Name="Sortuj według statusu">
           <FontIcon x:Name="SortStatus" FontSize="9" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
         </Button>
-        <Button Grid.Column="3" Tag="Location" Click="OnSortClick" Style="{StaticResource TextButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="4,0">
+        <Button Grid.Column="3" Tag="Location" x:Uid="ObjectsSortLocation" AutomationProperties.Name="Sortuj według lokalizacji" Click="OnSortClick" Style="{StaticResource TextButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="4,0">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <TextBlock x:Uid="ObjectsColLocation" Text="Lokalizacja" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource OnSurfaceBrush}" />
             <FontIcon x:Name="SortLocation" FontSize="9" FontFamily="{ThemeResource SymbolThemeFontFamily}" />

@@ -48,20 +48,20 @@
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
           <TextBlock x:Uid="RoutePeriod" Text="Typowy okres" Style="{StaticResource FlotaFormLabelStyle}" />
-          <ComboBox x:Name="PeriodBox" Grid.Column="1" MinWidth="220" SelectionChanged="OnPeriodChanged" />
+          <ComboBox x:Name="PeriodBox" x:Uid="RoutePeriodBox" AutomationProperties.Name="Okres" Grid.Column="1" MinWidth="220" SelectionChanged="OnPeriodChanged" />
           <TextBlock Grid.Row="1" x:Uid="RouteDateFrom" Text="Data od" Style="{StaticResource FlotaFormLabelStyle}" />
           <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6">
-            <CalendarDatePicker x:Name="FromDate" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
-            <TimePicker x:Name="FromTime" ClockIdentifier="24HourClock" MinWidth="120" TimeChanged="OnTimeChanged" />
+            <CalendarDatePicker x:Name="FromDate" x:Uid="RouteFromDate" AutomationProperties.Name="Data od" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+            <TimePicker x:Name="FromTime" x:Uid="RouteFromTime" AutomationProperties.Name="Godzina od" ClockIdentifier="24HourClock" MinWidth="120" TimeChanged="OnTimeChanged" />
           </StackPanel>
           <TextBlock Grid.Row="2" x:Uid="RouteDateTo" Text="Data do" Style="{StaticResource FlotaFormLabelStyle}" />
           <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="6">
-            <CalendarDatePicker x:Name="ToDate" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
-            <TimePicker x:Name="ToTime" ClockIdentifier="24HourClock" MinWidth="120" TimeChanged="OnTimeChanged" />
+            <CalendarDatePicker x:Name="ToDate" x:Uid="RouteToDate" AutomationProperties.Name="Data do" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+            <TimePicker x:Name="ToTime" x:Uid="RouteToTime" AutomationProperties.Name="Godzina do" ClockIdentifier="24HourClock" MinWidth="120" TimeChanged="OnTimeChanged" />
           </StackPanel>
           <TextBlock Grid.Row="3" x:Uid="RouteObject" Text="Obiekt" Style="{StaticResource FlotaFormLabelStyle}" />
           <ComboBox x:Name="ObjectBox" Grid.Row="3" Grid.Column="1" MinWidth="220" HorizontalAlignment="Stretch" MaxWidth="420"
-                    x:Uid="RouteObjectPlaceholder" PlaceholderText="Wybierz obiekt..." DisplayMemberPath="Text" SelectionChanged="OnObjectChanged" />
+                    x:Uid="RouteObjectPlaceholder" PlaceholderText="Wybierz obiekt..." AutomationProperties.Name="Obiekt" DisplayMemberPath="Text" SelectionChanged="OnObjectChanged" />
         </Grid>
       </Expander>
 
@@ -84,12 +84,12 @@
             </Grid.RowDefinitions>
             <CheckBox x:Name="IgnitionBox" x:Uid="RouteIgnition" Content="Stacyjka" Click="OnCriteriaChanged" />
             <TextBlock Grid.Column="1" x:Uid="RouteIgnitionTime" Text="Czas wyłączenia" Style="{StaticResource FlotaLabelTextStyle}" />
-            <TextBox x:Name="IgnitionTimeBox" Grid.Column="2" Width="100" PlaceholderText="00:00:00" LostFocus="OnCriteriaTextChanged" />
+            <TextBox x:Name="IgnitionTimeBox" x:Uid="RouteIgnitionTimeBox" AutomationProperties.Name="Czas wyłączenia stacyjki" Grid.Column="2" Width="100" PlaceholderText="00:00:00" LostFocus="OnCriteriaTextChanged" />
             <CheckBox x:Name="StopBox" Grid.Row="1" x:Uid="RouteStopCheck" Content="Postój" Click="OnCriteriaChanged" />
             <TextBlock Grid.Row="1" Grid.Column="1" x:Uid="RouteStopTime" Text="Czas postoju" Style="{StaticResource FlotaLabelTextStyle}" />
-            <TextBox x:Name="StopTimeBox" Grid.Row="1" Grid.Column="2" Width="100" PlaceholderText="00:02:00" LostFocus="OnCriteriaTextChanged" />
+            <TextBox x:Name="StopTimeBox" x:Uid="RouteStopTimeBox" AutomationProperties.Name="Czas postoju" Grid.Row="1" Grid.Column="2" Width="100" PlaceholderText="00:02:00" LostFocus="OnCriteriaTextChanged" />
             <TextBlock Grid.Row="1" Grid.Column="3" x:Uid="RouteMinSpeed" Text="Prędkość min. [km/h]" Style="{StaticResource FlotaLabelTextStyle}" Margin="8,0,0,0" />
-            <NumberBox x:Name="MinSpeedBox" Grid.Row="1" Grid.Column="4" Width="100" Minimum="0" Maximum="200" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <NumberBox x:Name="MinSpeedBox" x:Uid="RouteMinSpeedBox" AutomationProperties.Name="Prędkość minimalna [km/h]" Grid.Row="1" Grid.Column="4" Width="100" Minimum="0" Maximum="200" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
           </Grid>
           <TextBlock x:Uid="RouteStyleGroup" Text="Styl jazdy" Style="{StaticResource FlotaHeaderTextStyle}" />
           <Grid ColumnSpacing="8" RowSpacing="8">
@@ -104,13 +104,13 @@
               <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock x:Uid="RouteSpeeding" Text="Maksymalna prędkość [km/h]" Style="{StaticResource FlotaLabelTextStyle}" />
-            <NumberBox x:Name="SpeedingBox" Grid.Column="1" Width="100" Minimum="0" Maximum="300" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <NumberBox x:Name="SpeedingBox" x:Uid="RouteSpeedingBox" AutomationProperties.Name="Maksymalna prędkość [km/h]" Grid.Column="1" Width="100" Minimum="0" Maximum="300" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
             <TextBlock Grid.Column="2" x:Uid="RouteSuddenBraking" Text="Gwałtowne hamowania" Style="{StaticResource FlotaLabelTextStyle}" Margin="8,0,0,0" />
-            <NumberBox x:Name="BrakingBox" Grid.Column="3" Width="100" Minimum="0" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <NumberBox x:Name="BrakingBox" x:Uid="RouteBrakingBox" AutomationProperties.Name="Gwałtowne hamowania" Grid.Column="3" Width="100" Minimum="0" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
             <TextBlock Grid.Row="1" x:Uid="RouteExceedRpm" Text="Maksymalne obroty [obr./min]" Style="{StaticResource FlotaLabelTextStyle}" />
-            <NumberBox x:Name="RpmBox" Grid.Row="1" Grid.Column="1" Width="100" Minimum="0" Maximum="10000" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <NumberBox x:Name="RpmBox" x:Uid="RouteRpmBox" AutomationProperties.Name="Maksymalne obroty [obr./min]" Grid.Row="1" Grid.Column="1" Width="100" Minimum="0" Maximum="10000" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
             <TextBlock Grid.Row="1" Grid.Column="2" x:Uid="RouteQuickAcceleration" Text="Gwałtowne przyspieszenia" Style="{StaticResource FlotaLabelTextStyle}" Margin="8,0,0,0" />
-            <NumberBox x:Name="AccelerationBox" Grid.Row="1" Grid.Column="3" Width="100" Minimum="0" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
+            <NumberBox x:Name="AccelerationBox" x:Uid="RouteAccelerationBox" AutomationProperties.Name="Gwałtowne przyspieszenia" Grid.Row="1" Grid.Column="3" Width="100" Minimum="0" SpinButtonPlacementMode="Hidden" ValueChanged="OnNumberChanged" />
           </Grid>
         </StackPanel>
       </Expander>

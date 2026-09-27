@@ -9,9 +9,9 @@
         <controls:ToolButton x:Name="ExportButton" x:Uid="LogbooksExport" Label="Eksport" Icon="excel_16x16.png" Click="OnExportClick" IsEnabled="False" />
         <Border Style="{StaticResource FlotaToolbarSeparatorStyle}" />
         <TextBlock x:Uid="LogbooksFrom" Text="Okres od" Style="{StaticResource FlotaLabelTextStyle}" />
-        <CalendarDatePicker x:Name="FromPicker" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+        <CalendarDatePicker x:Name="FromPicker" x:Uid="LogbooksFromPicker" AutomationProperties.Name="Okres od" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
         <TextBlock x:Uid="LogbooksTo" Text="do" Style="{StaticResource FlotaLabelTextStyle}" />
-        <CalendarDatePicker x:Name="ToPicker" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
+        <CalendarDatePicker x:Name="ToPicker" x:Uid="LogbooksToPicker" AutomationProperties.Name="Okres do" DateFormat="{}{year.full}-{month.integer(2)}-{day.integer(2)}" MinWidth="130" DateChanged="OnDateChanged" />
         <ProgressRing x:Name="Busy" Width="20" Height="20" IsActive="False" />
       </StackPanel>
     </controls:PanelFrame.Toolbar>

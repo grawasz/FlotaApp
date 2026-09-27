@@ -302,4 +302,32 @@
   <data name="RouteSubtype.Content" xml:space="preserve"><value>Podział kursów na podtypy</value></data>
   <data name="ObjectsFilter.PlaceholderText" xml:space="preserve"><value>Szukaj obiektu</value></data>
   <data name="RouteObjectPlaceholder.PlaceholderText" xml:space="preserve"><value>Wybierz obiekt...</value></data>
+  <data name="EcoFromPicker.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Data od</value></data>
+  <data name="EcoToPicker.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Data do</value></data>
+  <data name="FleetFromPicker.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Data od</value></data>
+  <data name="FleetToPicker.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Data do</value></data>
+  <data name="LogbooksFromPicker.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Okres od</value></data>
+  <data name="LogbooksToPicker.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Okres do</value></data>
+  <data name="MapZoomIn.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Przybliż</value></data>
+  <data name="MapZoomOut.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Oddal</value></data>
+  <data name="MenuButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Menu</value></data>
+  <data name="ObjectsAllVisible.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Pokaż wszystkie na mapie</value></data>
+  <data name="ObjectsColStatus.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Sortuj według statusu</value></data>
+  <data name="ObjectsFilter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Szukaj obiektu</value></data>
+  <data name="ObjectsSortLocation.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Sortuj według lokalizacji</value></data>
+  <data name="ObjectsSortName.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Sortuj według nazwy</value></data>
+  <data name="PopupClose.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Zamknij</value></data>
+  <data name="RouteAccelerationBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Gwałtowne przyspieszenia</value></data>
+  <data name="RouteBrakingBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Gwałtowne hamowania</value></data>
+  <data name="RouteFromDate.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Data od</value></data>
+  <data name="RouteFromTime.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Godzina od</value></data>
+  <data name="RouteIgnitionTimeBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Czas wyłączenia stacyjki</value></data>
+  <data name="RouteMinSpeedBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Prędkość minimalna [km/h]</value></data>
+  <data name="RouteObjectPlaceholder.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Obiekt</value></data>
+  <data name="RoutePeriodBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Okres</value></data>
+  <data name="RouteRpmBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Maksymalne obroty [obr./min]</value></data>
+  <data name="RouteSpeedingBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Maksymalna prędkość [km/h]</value></data>
+  <data name="RouteStopTimeBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Czas postoju</value></data>
+  <data name="RouteToDate.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Data do</value></data>
+  <data name="RouteToTime.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Godzina do</value></data>
 </root>
