@@ -37,6 +37,8 @@ Logowanie kontem symulatora ([SYMULATOR.md](SYMULATOR.md)). Kod wyjścia 0 — w
 
 Przeglądarka bez interfejsu potrafi nie potwierdzić zdarzenia kółka myszy, choć strona działa (JavaScript odpowiada w 1–2 ms); sterownik czeka na potwierdzenie kółka najwyżej 3 s, a na pozostałe wywołania — 60 s (błąd zamiast oczekiwania bez końca). Zmienna `FLOTA_UI_DEBUG=1` włącza dziennik zdarzeń wejścia i wywołań trwających ponad 2 s.
 
+Przełączanie sekcji: przycisk przewijany do widocznej części paska (położenie odczytywane po ustaniu ruchu paska — zdarzenia kółka wysłane w trakcie budowy panelu bywają przetwarzane z opóźnieniem), następnie wywołanie przez element semantyczny przycisku (współrzędne węzłów paska po przewinięciu bywają nieaktualne). Zamknięcie sekcji potwierdzane zniknięciem nagłówka. Przy niepowodzeniu skrypt zapisuje zrzut ekranu w katalogu tymczasowym oraz wypisuje widoczne nagłówki i błędy konsoli strony.
+
 Po ponownej publikacji aplikacji przeglądarkowej Flota.Api należy uruchomić ponownie — działający proces może udostępniać pliki poprzedniej wersji.
 
 ### Wynik

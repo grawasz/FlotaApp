@@ -19,6 +19,9 @@ public sealed partial class ObjectsPanel : UserControl
         _fleet.ObjectsReset += (_, _) => UpdateAllVisible();
         UpdateSortIcons();
         UpdateCount();
+        // Panel tworzony przy pierwszym wyświetleniu — stan zaznaczenia, śledzenia i wczytywania z modelu
+        foreach (var property in new[] { nameof(FleetViewModel.SelectedObject), nameof(FleetViewModel.IsTracking), nameof(FleetViewModel.IsLoading) })
+            OnFleetChanged(this, new PropertyChangedEventArgs(property));
     }
 
     void OnFleetChanged(object? sender, PropertyChangedEventArgs e)

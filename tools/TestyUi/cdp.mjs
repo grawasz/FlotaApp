@@ -35,12 +35,16 @@ export class Browser {
   }
 
   constructor(proc, profile, ws) {
-    this.proc = proc; this.profile = profile; this.ws = ws; this.id = 0; this.pending = new Map();
+    this.proc = proc; this.profile = profile; this.ws = ws; this.id = 0; this.pending = new Map(); this.listeners = [];
     ws.addEventListener('message', e => {
       const m = JSON.parse(e.data);
       if (m.id && this.pending.has(m.id)) { this.pending.get(m.id)(m); this.pending.delete(m.id); }
+      else if (m.method) for (const l of this.listeners) l(m.method, m.params);
     });
   }
+
+  /** Zdarzenia CDP (np. Network.requestWillBeSent po włączeniu domeny Network). */
+  on(listener) { this.listeners.push(listener); }
 
   /** Wywołanie CDP; brak odpowiedzi w limicie czasu (np. zawieszona strona) — błąd zamiast oczekiwania bez końca. */
   send(method, params = {}, timeoutMs = 60000) {
@@ -154,6 +158,17 @@ export class UnoApp {
       await sleep(500);
     }
     return null;
+  }
+
+  /**
+   * Oczekiwanie na wolny wątek strony: zadanie z kolejki strony (setTimeout) wykonane dwukrotnie z przerwą
+   * (requestAnimationFrame w przeglądarce bez interfejsu nie jest wywoływane niezawodnie).
+   */
+  async idle() {
+    for (let i = 0; i < 2; i++) {
+      await this.b.eval('new Promise(r => setTimeout(() => r(true), 0))');
+      await sleep(300);
+    }
   }
 
   /** Kliknięcie w środek węzła; kursor odsuwany potem na krawędź okna (bez podpowiedzi nad treścią). */

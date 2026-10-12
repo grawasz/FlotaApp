@@ -120,26 +120,36 @@ public sealed partial class FleetViewModel : ObservableObject
         ObjectsUpdated?.Invoke(this, _byId.Values.ToList());
     }
 
-    /// <summary>Start: stan z pamięci lokalnej, następnie odświeżenie z Flota.Api i połączenie z hubem.</summary>
+    /// <summary>
+    /// Start: żądanie stanu floty wysyłane od razu, równolegle z odczytem stanu z pamięci lokalnej;
+    /// stan lokalny wyświetlany tylko wtedy, gdy odpowiedź Flota.Api jeszcze nie nadeszła. Następnie połączenie z hubem.
+    /// </summary>
     public async Task LoadAsync(CancellationToken ct = default)
     {
-        if (_byId.Count == 0 && await _cache.LoadAsync() is { } cached)
+        IsLoading = true;
+        var request = _api.GetSnapshotAsync(ct);
+        if (_byId.Count == 0 && await _cache.LoadAsync() is { } cached && !request.IsCompleted)
         {
             ApplySnapshot(cached);
             IsStale = true;
         }
-        await RefreshAsync(ct);
+        await ApplyRefreshAsync(request);
         _ = LoadSettingsAsync(ct);
         await _hub.StartAsync(ct);
     }
 
     [RelayCommand]
-    public async Task RefreshAsync(CancellationToken ct = default)
+    public Task RefreshAsync(CancellationToken ct = default)
     {
         IsLoading = true;
+        return ApplyRefreshAsync(_api.GetSnapshotAsync(ct));
+    }
+
+    async Task ApplyRefreshAsync(Task<FleetSnapshot> request)
+    {
         try
         {
-            var snapshot = await _api.GetSnapshotAsync(ct);
+            var snapshot = await request;
             ApplySnapshot(snapshot);
             IsStale = false;
             await _cache.SaveAsync(snapshot);

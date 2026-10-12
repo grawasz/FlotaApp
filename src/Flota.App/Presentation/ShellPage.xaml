@@ -82,7 +82,8 @@
         </StackPanel>
       </Grid>
 
-      <!-- Obszar roboczy: układ ustalany w kodzie (szeroki: trzy kolumny; kompaktowy: mapa i panele pod nią) -->
+      <!-- Obszar roboczy: układ ustalany w kodzie (szeroki: trzy kolumny; kompaktowy: mapa i panele pod nią).
+           Panele poza mapą tworzone przy pierwszym wyświetleniu (ShellPage.EnsurePanel). -->
       <Grid x:Name="Workspace" Grid.Row="1" Padding="6" ColumnSpacing="6" RowSpacing="6">
         <Grid x:Name="LeftHost" RowSpacing="6">
           <Grid.RowDefinitions>
@@ -91,22 +92,10 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
-          <panels:ObjectsPanel x:Name="ObjectsPanel" />
-          <panels:DetailsPanel x:Name="DetailsPanel" Grid.Row="1" />
-          <panels:AreasPanel x:Name="AreasPanel" Grid.Row="2" />
-          <panels:DriversPanel x:Name="DriversPanel" Grid.Row="3" />
         </Grid>
         <panels:MapPanel x:Name="MapPanel" />
         <ScrollViewer x:Name="RightScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled">
-          <StackPanel x:Name="RightHost" Spacing="6">
-            <panels:EventsPanel x:Name="EventsPanel" />
-            <panels:MessagesPanel x:Name="MessagesPanel" />
-            <panels:RouteReportPanel x:Name="RouteReportPanel" />
-            <panels:FleetReportPanel x:Name="FleetReportPanel" />
-            <panels:EcoDrivingPanel x:Name="EcoDrivingPanel" />
-            <panels:LogbooksPanel x:Name="LogbooksPanel" />
-            <panels:EquipmentPanel x:Name="EquipmentPanel" />
-          </StackPanel>
+          <StackPanel x:Name="RightHost" Spacing="6" />
         </ScrollViewer>
         <ScrollViewer x:Name="CompactScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" Visibility="Collapsed">
           <StackPanel x:Name="CompactHost" Spacing="6" />

@@ -14,23 +14,29 @@ public sealed class MapImages
     {
         if (IsLoaded) return;
         var names = Enumerable.Range(0, 23).Select(TrackingObjectIcons.IconKey).Distinct()
-            .Select(k => $"{k}.png");
-        foreach (var name in names)
-        {
-            try
-            {
-                var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Assets/Images/{name}"));
-                var buffer = await FileIO.ReadBufferAsync(file);
-                var bytes = new byte[buffer.Length];
-                using (var reader = Windows.Storage.Streams.DataReader.FromBuffer(buffer)) reader.ReadBytes(bytes);
-                _sources[name] = "base64-content://" + Convert.ToBase64String(bytes);
-            }
-            catch (Exception ex) when (ex is FileNotFoundException or IOException or ArgumentException)
-            {
-                // Brak pliku — obiekt rysowany bez ikony
-            }
-        }
+            .Select(k => $"{k}.png").ToList();
+        // Odczyt równoległy: w przeglądarce każdy plik to osobne żądanie HTTP
+        var sources = await Task.WhenAll(names.Select(LoadSourceAsync));
+        for (var i = 0; i < names.Count; i++)
+            if (sources[i] is { } source) _sources[names[i]] = source;
         IsLoaded = true;
+    }
+
+    static async Task<string?> LoadSourceAsync(string name)
+    {
+        try
+        {
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri($"ms-appx:///Assets/Images/{name}"));
+            var buffer = await FileIO.ReadBufferAsync(file);
+            var bytes = new byte[buffer.Length];
+            using (var reader = Windows.Storage.Streams.DataReader.FromBuffer(buffer)) reader.ReadBytes(bytes);
+            return "base64-content://" + Convert.ToBase64String(bytes);
+        }
+        catch (Exception ex) when (ex is FileNotFoundException or IOException or ArgumentException)
+        {
+            // Brak pliku — obiekt rysowany bez ikony
+            return null;
+        }
     }
 
     /// <summary>Źródło ikony typu obiektu.</summary>

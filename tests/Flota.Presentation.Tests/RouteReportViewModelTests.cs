@@ -80,6 +80,16 @@ public sealed class RouteReportViewModelTests : IDisposable
     }
 
     [Fact]
+    public async Task CreatedAfterSelection_TakesSelectedObject()
+    {
+        // Panel raportu tworzony przy pierwszym otwarciu — obiekt zaznaczony wcześniej na liście
+        await _fleet.RefreshAsync(TestContext.Current.CancellationToken);
+        _fleet.Select(_fleet.Find(2)!, center: false);
+        using var late = new RouteReportViewModel(_api.Client(Data.Tokens), _fleet, _notifier, _clock);
+        Assert.Equal(2, late.ObjectId);
+    }
+
+    [Fact]
     public async Task Generate_WithoutObject_AsksToPickObject()
     {
         await _vm.GenerateAsync(showRoute: false);

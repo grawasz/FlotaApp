@@ -52,6 +52,7 @@ public partial class App : Application
     [SuppressMessage("Trimming", "IL2026", Justification = "Uno.Extensions Hosting — konfiguracja bez refleksji w kodzie aplikacji.")]
     void Launch(LaunchActivatedEventArgs args)
     {
+        Pomiar.Mark("app.launch");
         var builder = this.CreateBuilder(args)
             .Configure(host => host
 #if DEBUG
@@ -85,6 +86,8 @@ public partial class App : Application
         DevSnapshot.Start(MainAppWindow);
 #endif
 
+        Pomiar.Mark("app.activated");
+        Pomiar.MarkNextFrame("app.rendered");
         var tokens = Services.GetRequiredService<ITokenStore>();
         if (tokens.Current is not null) ShowShell();
         else ShowLogin();
@@ -147,9 +150,15 @@ public partial class App : Application
         _frame?.BackStack.Clear();
     }
 
+    /// <summary>
+    /// Strona główna. Wczytanie stanu floty startuje przed budową strony — żądanie <c>/fleet/snapshot</c> jest wysyłane,
+    /// zanim interfejs zajmie wątek (WebAssembly: jeden wątek); strona oczekuje na przekazane zadanie.
+    /// </summary>
     public void ShowShell()
     {
-        _frame?.Navigate(typeof(Presentation.ShellPage));
+        Pomiar.Mark("shell.start");
+        var load = Services.GetRequiredService<FleetViewModel>().LoadAsync();
+        _frame?.Navigate(typeof(Presentation.ShellPage), load);
         _frame?.BackStack.Clear();
     }
 

@@ -40,6 +40,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <!--
+    WebAssembly: profilowana kompilacja AOT (T9.3a) — wyłącznie na żądanie: -p:FlotaWasmAot=true -p:FlotaAotProfile=<ścieżka aot.profile>.
+    Profil zbierany buildem z -p:WasmShellGenerateAOTProfile=true i skryptem tools/TestyUi/profil-aot.mjs.
+  -->
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('-browserwasm')) and '$(FlotaWasmAot)' == 'true'">
+    <WasmShellMonoRuntimeExecutionMode>InterpreterAndAOT</WasmShellMonoRuntimeExecutionMode>
+  </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-browserwasm')) and '$(FlotaWasmAot)' == 'true' and '$(FlotaAotProfile)' != ''">
+    <WasmShellEnableAotProfile Include="$(FlotaAotProfile)" />
+  </ItemGroup>
+
   <!-- Ikona AVL (z avl.ico aplikacji źródłowej): na Windows tło z zaokrąglonymi narożnikami; Android i iOS maskują kształt samodzielnie -->
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <UnoIconBackgroundFile>Assets\Icons\icon_windows.svg</UnoIconBackgroundFile>

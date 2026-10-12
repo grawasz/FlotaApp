@@ -17,6 +17,7 @@ public sealed partial class ShellPage : Page
     readonly FleetViewModel _fleet;
     readonly Notifier _notifier;
     bool _initialized;
+    Task? _load;
 
     public ShellPage()
     {
@@ -33,6 +34,15 @@ public sealed partial class ShellPage : Page
         VersionText.Text = Loc.Format("VersionFormat", AppVersion());
         ThemeBox.ItemsSource = ThemeChoices.All.Select(c => Loc.Get(ThemeChoices.TextKey(c))).ToList();
         ThemeBox.SelectedIndex = (int)ThemeSettings.Load();
+        Pomiar.Mark("shell.created");
+        _fleet.ObjectsReset += OnFirstObjects;
+    }
+
+    void OnFirstObjects(object? sender, EventArgs e)
+    {
+        _fleet.ObjectsReset -= OnFirstObjects;
+        Pomiar.Mark("objects.applied");
+        Pomiar.MarkNextFrame("objects.rendered");
     }
 
     /// <summary>Wybór motywu — zapis w ustawieniach urządzenia; obowiązuje od następnego uruchomienia.</summary>
@@ -43,8 +53,16 @@ public sealed partial class ShellPage : Page
         _notifier.Info(Loc.Get("ThemeRestartNotice"));
     }
 
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        _load = e.Parameter as Task;
+    }
+
     async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        Pomiar.Mark("shell.loaded");
+        Pomiar.MarkNextFrame("shell.rendered");
         if (!_initialized)
         {
             _initialized = true;
@@ -55,7 +73,10 @@ public sealed partial class ShellPage : Page
         UpdateLive();
         try
         {
-            await _fleet.LoadAsync();
+            // Wczytanie rozpoczęte przed budową strony (App.ShowShell); ponowne Loaded — odświeżenie
+            var load = _load ?? _fleet.LoadAsync();
+            _load = null;
+            await load;
         }
         catch (SessionExpiredException)
         {
@@ -130,21 +151,18 @@ public sealed partial class ShellPage : Page
             return; // ponowne wywołanie przez PropertyChanged
         }
 
-        ObjectsPanel.Visibility = Vis(_vm.ShowObjects);
-        DetailsPanel.Visibility = Vis(_vm.ShowDetails);
-        AreasPanel.Visibility = Vis(_vm.ShowAreas);
-        DriversPanel.Visibility = Vis(_vm.ShowDrivers);
         MapPanel.Visibility = Vis(_vm.ShowMap);
-        EventsPanel.Visibility = Vis(_vm.ShowEvents);
-        MessagesPanel.Visibility = Vis(_vm.ShowMessages);
-        RouteReportPanel.Visibility = Vis(_vm.ShowRouteReport);
-        FleetReportPanel.Visibility = Vis(_vm.ShowFleetReport);
-        EcoDrivingPanel.Visibility = Vis(_vm.ShowEcoDriving);
-        LogbooksPanel.Visibility = Vis(_vm.ShowLogbooks);
-        EquipmentPanel.Visibility = Vis(_vm.ShowEquipment);
+        // Panel tworzony przy pierwszym wyświetleniu; utworzone panele ukrywane, nie usuwane
+        foreach (var def in PanelDefs)
+        {
+            var shown = def.IsShown(_vm);
+            if (shown) EnsurePanel(def);
+            if (_panels.TryGetValue(def.Tag, out var p)) p.Visibility = Vis(shown);
+        }
 
-        UIElement[] leftPanels = [ObjectsPanel, DetailsPanel, AreasPanel, DriversPanel];
-        UIElement[] rightPanels = [EventsPanel, MessagesPanel, RouteReportPanel, FleetReportPanel, EcoDrivingPanel, LogbooksPanel, EquipmentPanel];
+        var leftPanels = Created(left: true);
+        var rightPanels = Created(left: false);
+        var objectsPanel = _panels.GetValueOrDefault("objects");
 
         Workspace.ColumnDefinitions.Clear();
         Workspace.RowDefinitions.Clear();
@@ -153,7 +171,7 @@ public sealed partial class ShellPage : Page
         {
             // Panele w jednej kolumnie pod mapą
             MoveAll(leftPanels.Concat(rightPanels), CompactHost);
-            ObjectsPanel.Height = 360;
+            if (objectsPanel is not null) objectsPanel.Height = 360;
             LeftHost.Visibility = Visibility.Collapsed;
             RightScroll.Visibility = Visibility.Collapsed;
             var anyPanel = _vm.AnyLeft || _vm.AnyRight;
@@ -167,12 +185,11 @@ public sealed partial class ShellPage : Page
         }
         else
         {
-            MoveTo(ObjectsPanel, LeftHost, 0);
-            MoveTo(DetailsPanel, LeftHost, 1);
-            MoveTo(AreasPanel, LeftHost, 2);
-            MoveTo(DriversPanel, LeftHost, 3);
-            for (var i = 0; i < rightPanels.Length; i++) MoveTo(rightPanels[i], RightHost, i);
-            ObjectsPanel.Height = double.NaN;
+            // Lewa kolumna: stały wiersz siatki panelu; prawa: kolejność paneli utworzonych
+            foreach (var def in PanelDefs.Where(d => d.Left && _panels.ContainsKey(d.Tag)))
+                MoveTo(_panels[def.Tag], LeftHost, def.Order);
+            for (var i = 0; i < rightPanels.Count; i++) MoveTo(rightPanels[i], RightHost, i);
+            if (objectsPanel is not null) objectsPanel.Height = double.NaN;
             LeftHost.RowDefinitions[0].Height = _vm.ShowObjects ? new GridLength(1, GridUnitType.Star) : GridLength.Auto;
             CompactScroll.Visibility = Visibility.Collapsed;
 
@@ -193,6 +210,43 @@ public sealed partial class ShellPage : Page
             Grid.SetColumn(RightScroll, 2);
         }
     }
+
+    /// <summary>Panel strony: klucz przełącznika, kolumna w układzie szerokim, kolejność, widoczność i fabryka.</summary>
+    sealed record PanelDef(string Tag, bool Left, int Order, Func<ShellViewModel, bool> IsShown, Func<FrameworkElement> Create);
+
+    static readonly PanelDef[] PanelDefs =
+    [
+        new("objects", true, 0, vm => vm.ShowObjects, () => new Panels.ObjectsPanel()),
+        new("details", true, 1, vm => vm.ShowDetails, () => new Panels.DetailsPanel()),
+        new("areas", true, 2, vm => vm.ShowAreas, () => new Panels.AreasPanel()),
+        new("drivers", true, 3, vm => vm.ShowDrivers, () => new Panels.DriversPanel()),
+        new("events", false, 0, vm => vm.ShowEvents, () => new Panels.EventsPanel()),
+        new("messages", false, 1, vm => vm.ShowMessages, () => new Panels.MessagesPanel()),
+        new("route", false, 2, vm => vm.ShowRouteReport, () => new Panels.RouteReportPanel()),
+        new("fleet", false, 3, vm => vm.ShowFleetReport, () => new Panels.FleetReportPanel()),
+        new("eco", false, 4, vm => vm.ShowEcoDriving, () => new Panels.EcoDrivingPanel()),
+        new("logbooks", false, 5, vm => vm.ShowLogbooks, () => new Panels.LogbooksPanel()),
+        new("equipment", false, 6, vm => vm.ShowEquipment, () => new Panels.EquipmentPanel()),
+    ];
+
+    readonly Dictionary<string, FrameworkElement> _panels = [];
+
+    /// <summary>
+    /// Utworzenie panelu przy pierwszym wyświetleniu. Panel zaczyna jako zwinięty — zmiana na widoczny
+    /// uruchamia wczytanie danych paneli słownikowych (wywołanie zwrotne właściwości Visibility).
+    /// </summary>
+    void EnsurePanel(PanelDef def)
+    {
+        if (_panels.ContainsKey(def.Tag)) return;
+        Pomiar.Mark($"panel.{def.Tag}.start");
+        var panel = def.Create();
+        Pomiar.Mark($"panel.{def.Tag}.created");
+        panel.Visibility = Visibility.Collapsed;
+        _panels[def.Tag] = panel;
+    }
+
+    List<FrameworkElement> Created(bool left) =>
+        PanelDefs.Where(d => d.Left == left && _panels.ContainsKey(d.Tag)).Select(d => _panels[d.Tag]).ToList();
 
     static void MoveAll(IEnumerable<UIElement> elements, Panel target)
     {

@@ -3,6 +3,7 @@
 //   T7.4 — nazwa dostępna (aria-label) każdej kontrolki interaktywnej we wszystkich sekcjach
 // Użycie: node tools/TestyUi/testy.mjs [adres] [katalog zrzutów]
 import { mkdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Browser, UnoApp, sleep } from './cdp.mjs';
 
@@ -28,28 +29,65 @@ const isHeader = (n, name) => n.text.trim() === name && n.tag !== 'BUTTON' && !n
 const panelHeader = (nodes, name) => nodes.find(n => isHeader(n, name));
 
 /**
+ * Położenie paska po ustaniu ruchu: dwa kolejne odczyty (co 600 ms) bez zmiany położenia przycisku.
+ * Zdarzenia kółka wysłane, gdy wątek strony jest zajęty (np. budowa nowo utworzonego panelu), bywają przetwarzane
+ * z opóźnieniem — odczyt wcześniejszy dawałby nieaktualne współrzędne.
+ */
+async function settledNodes(app, name, timeoutMs = 15000) {
+  const start = Date.now();
+  let previous = null;
+  for (;;) {
+    const nodes = await app.nodes();
+    const n = nodes.find(x => isToolbarButton(x, name));
+    if (previous !== null && n?.x === previous || Date.now() - start > timeoutMs) return { nodes, n };
+    previous = n?.x;
+    await sleep(600);
+  }
+}
+
+/**
  * Przycisk sekcji na pasku, w całości w widocznej części paska (prawą część zajmują wskaźnik połączenia i menu);
  * w razie potrzeby pasek przewijany w poziomie.
  */
 async function toolbarButton(app, name) {
   let previous;
   for (let i = 0; i < 16; i++) {
-    const nodes = await app.nodes();
+    // Kliknięcie wysłane, gdy wątek strony kończy układ po poprzedniej akcji, bywa pomijane
+    await app.idle();
+    const { nodes, n } = await settledNodes(app, name);
     const menu = nodes.find(x => x.tag === 'BUTTON' && x.label === 'Menu' && x.y < toolbarHeight);
     const limit = (menu?.x ?? app.b.width) - (app.b.width >= 600 ? 130 : 60);
-    const n = nodes.find(x => isToolbarButton(x, name));
     if (n && n.x >= 0 && n.x + n.w <= limit) return n;
     // Koniec paska: przewijanie nie zmienia już położenia przycisku
     if (n && previous && n.x === previous.x) return n;
     previous = n;
     await app.b.wheel(Math.min(limit, app.b.width) / 2, toolbarHeight / 2, n && n.x < 0 ? -120 : 120);
-    await sleep(300);
   }
   return null;
 }
 
+/**
+ * Przełączenie sekcji: przycisk przewinięty do widocznej części paska (sprawdzenie dostępności na wąskim ekranie),
+ * kliknięcie przez element semantyczny przycisku — współrzędne węzłów paska po przewinięciu bywają nieaktualne.
+ */
+async function toggleSection(app, button) {
+  if (!button) return false;
+  await app.b.eval(`(() => { const b = [...document.querySelectorAll('#uno-semantics-root button')]
+      .find(e => e.getAttribute('aria-label') === ${JSON.stringify(button.label)} && e.getBoundingClientRect().y < ${toolbarHeight});
+    b?.click(); return !!b; })()`);
+  return true;
+}
+
 async function sectionsAt(width, height) {
   const browser = await Browser.launch({ width, height });
+  // Błędy konsoli strony (diagnostyka niepowodzeń)
+  const consoleErrors = [];
+  await browser.send('Runtime.enable');
+  browser.on((method, p) => {
+    if (method === 'Runtime.exceptionThrown') consoleErrors.push(p.exceptionDetails?.exception?.description ?? p.exceptionDetails?.text);
+    else if (method === 'Runtime.consoleAPICalled' && ['error', 'warning'].includes(p.type))
+      consoleErrors.push((p.args ?? []).map(a => a.value ?? a.description).join(' '));
+  });
   try {
     const app = new UnoApp(browser);
     await app.open(url);
@@ -61,15 +99,33 @@ async function sectionsAt(width, height) {
       if (!shown) {
         const button = await toolbarButton(app, name);
         if (!button) { check(false, `${width} px: brak przycisku sekcji „${name}”`); continue; }
-        await app.clickNode(button);
+        await toggleSection(app, button);
         await sleep(1500);
       }
-      const header = await app.waitFor(n => isHeader(n, name), 5000);
+      // Panel tworzony przy pierwszym wyświetleniu (ShellPage.EnsurePanel) — dłuższy czas na układ wąski
+      const header = await app.waitFor(n => isHeader(n, name), 15000);
       check(!!header, `${width} px: sekcja „${name}” wyświetlona`);
+      if (!header) {
+        // Zrzut stanu przy niepowodzeniu (diagnostyka)
+        const failShot = join(tmpdir(), `flota-ui-blad-${width}-${sections.indexOf(name) + 1}.png`);
+        await browser.screenshot(failShot);
+        console.log(`     zrzut: ${failShot}`);
+        const nodes = await app.nodes();
+        console.log(`     włączone: ${nodes.filter(n => n.tag === 'BUTTON' && n.y < toolbarHeight && /tabindex="0"/.test(n.html)).map(n => n.label).join(', ')}`);
+        console.log(`     nagłówki: ${sections.filter(s => nodes.some(n => isHeader(n, s))).join(', ')}`);
+        for (const e of consoleErrors.slice(-8)) console.log(`     konsola: ${String(e).slice(0, 400).replace(/\s+/g, ' ')}`);
+      }
       if (shots) await browser.screenshot(join(shots, `sekcja-${width}-${sections.indexOf(name) + 1}.png`));
       if (!shown) {
-        const button = await toolbarButton(app, name);
-        if (button) { await app.clickNode(button); await sleep(1000); }
+        // Zamknięcie potwierdzane zniknięciem nagłówka: kliknięcie w trakcie układu nowo utworzonego panelu
+        // bywa pomijane — wtedy kolejne sekcje otwierałyby się poniżej, poza widokiem
+        for (let attempt = 0; attempt < 2 && (await app.nodes()).some(n => isHeader(n, name)); attempt++) {
+          const button = await toolbarButton(app, name);
+          if (!button) break;
+          await toggleSection(app, button);
+          // Nagłówek znika z warstwy semantycznej z opóźnieniem — ponowne kliknięcie dopiero po 6 s bez zmiany
+          for (let t = 0; t < 12 && (await app.nodes()).some(n => isHeader(n, name)); t++) await sleep(500);
+        }
       }
     }
   } finally {
@@ -92,11 +148,11 @@ async function accessibility() {
       const button = await toolbarButton(app, name);
       if (!button) { check(false, `dostępność: brak przycisku „${name}”`); continue; }
       const visible = !!panelHeader(await app.nodes(), name);
-      if (!visible) { await app.clickNode(button); await sleep(2000); }
+      if (!visible) { await toggleSection(app, button); await sleep(2000); }
       unnamed = unnamedIn(await app.nodes());
       check(unnamed.length === 0, `dostępność: sekcja „${name}” — kontrolki bez nazwy: ${unnamed.length}`
         + unnamed.slice(0, 5).map(n => ` [${n.role || n.tag} ${Math.round(n.w)}×${Math.round(n.h)} @${Math.round(n.x)},${Math.round(n.y)} ${n.html}]`).join(''));
-      if (!visible) { await app.clickNode(await toolbarButton(app, name)); await sleep(1000); }
+      if (!visible) { await toggleSection(app, await toolbarButton(app, name)); await sleep(1000); }
     }
   } finally {
     await browser.close();

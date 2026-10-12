@@ -60,6 +60,8 @@ public sealed partial class EventsPanel : UserControl
                 Picker.SetSelected([s.Id]);
         };
         Picker.SetObjects(_fleet.FleetObjects);
+        // Panel tworzony przy pierwszym wyświetleniu — obiekt zaznaczony wcześniej
+        if (_fleet.SelectedObject is { } selected) Picker.SetSelected([selected.Id]);
     }
 
     void OnTabClick(object sender, RoutedEventArgs e)

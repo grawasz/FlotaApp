@@ -51,7 +51,13 @@ public sealed class FleetViewModelTests : IDisposable
             if (e.PropertyName == nameof(FleetViewModel.IsStale)) stale.Add(_vm.IsStale);
         };
 
-        await _vm.LoadAsync(Ct);
+        // Odpowiedź Flota.Api po odczycie pamięci lokalnej: najpierw stan zapisany, potem bieżący
+        _api.Hold("fleet/snapshot");
+        var load = _vm.LoadAsync(Ct);
+        Assert.Equal(1, _api.Count("fleet/snapshot")); // żądanie wysłane przed odczytem pamięci lokalnej
+        Assert.Equal([1], counts);
+        _api.Release("fleet/snapshot");
+        await load;
 
         Assert.Equal([1, 4], counts);
         Assert.Equal([true, false], stale);
@@ -60,6 +66,20 @@ public sealed class FleetViewModelTests : IDisposable
         Assert.Equal(1, _feed.Starts);
         Assert.Equal(LiveConnectionState.Connected, _vm.LiveState);
         Assert.Equal("Firma testowa", _vm.User?.CompanyName);
+    }
+
+    [Fact]
+    public async Task LoadAsync_ResponseBeforeCache_SkipsCachedSnapshot()
+    {
+        _store.Stored = Data.Snapshot(Data.Object(9, "Z pamięci", Data.Position(Data.Now.AddDays(-1))));
+        var counts = new List<int>();
+        _vm.ObjectsReset += (_, _) => counts.Add(_vm.AllObjects.Count);
+
+        await _vm.LoadAsync(Ct);
+
+        Assert.Equal([4], counts);
+        Assert.False(_vm.IsStale);
+        Assert.Null(_vm.Find(9));
     }
 
     [Fact]

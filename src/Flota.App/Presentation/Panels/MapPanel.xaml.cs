@@ -59,7 +59,9 @@ public sealed partial class MapPanel : UserControl
     {
         if (_initialized) return;
         _initialized = true;
+        Pomiar.Mark("map.init.start");
         await _images.LoadAsync();
+        Pomiar.Mark("map.images.loaded");
 
         _map.BackColor = Col("SurfaceVariantColor");
         _map.Layers.Add(CreateTileLayer());
@@ -92,6 +94,8 @@ public sealed partial class MapPanel : UserControl
         RebuildObjects();
         RebuildTrace();
         _fleet.GoToDefaultView();
+        Pomiar.Mark("map.init.done");
+        Pomiar.MarkNextFrame("map.rendered");
     }
 
     TileLayer CreateTileLayer()

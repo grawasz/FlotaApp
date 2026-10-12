@@ -29,6 +29,16 @@ sealed class FakeApi : HttpMessageHandler
         return this;
     }
 
+    readonly Dictionary<string, TaskCompletionSource> _holds = [];
+
+    /// <summary>Wstrzymanie odpowiedzi dla ścieżki do wywołania <see cref="Release"/>.</summary>
+    public void Hold(string path) => _holds[path] = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    public void Release(string path)
+    {
+        if (_holds.Remove(path, out var hold)) hold.SetResult();
+    }
+
     /// <summary>Liczba wywołań ścieżki (początek ścieżki bez parametrów).</summary>
     public int Count(string path) => Requests.Count(r => r.RequestUri!.AbsolutePath.StartsWith("/" + path, StringComparison.Ordinal));
 
@@ -37,6 +47,8 @@ sealed class FakeApi : HttpMessageHandler
         Requests.Add(request);
         Bodies.Add(request.Content is null ? string.Empty : await request.Content.ReadAsStringAsync(cancellationToken));
         var path = request.RequestUri!.AbsolutePath.TrimStart('/');
+        if (_holds.FirstOrDefault(h => path.StartsWith(h.Key, StringComparison.Ordinal)).Value is { } hold)
+            await hold.Task.WaitAsync(cancellationToken);
         var route = _routes.FirstOrDefault(r => r.Method == request.Method && path.StartsWith(r.Path, StringComparison.Ordinal));
         return route.Respond is null ? new HttpResponseMessage(HttpStatusCode.NotFound) : route.Respond(request);
     }

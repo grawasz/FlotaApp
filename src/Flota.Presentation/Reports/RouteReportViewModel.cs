@@ -44,6 +44,8 @@ public sealed partial class RouteReportViewModel : ObservableObject, IDisposable
         _notifier = notifier;
         _time = time;
         ApplyPeriod();
+        // Model tworzony razem z panelem (przy pierwszym otwarciu) — obiekt zaznaczony wcześniej
+        if (_fleet.SelectedObject is { } selected) ObjectId = selected.Id;
         _fleet.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(FleetViewModel.SelectedObject) && _fleet.SelectedObject is { } o && o.Id != ObjectId)
