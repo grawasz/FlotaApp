@@ -46,7 +46,7 @@
 | T5.5 | nierozpoczęte | — | — |
 | T7.2 | zakończone | zrzuty obu motywów (przeglądarka, 1400 px i 400 px) w [MOTYWY.md](MOTYWY.md); wybór motywu w menu bocznym, domyślnie jasny; `PaletteTests`, `ThemeChoiceTests` | logo w motywie ciemnym — wariant do dostarczenia |
 | T7.4 | zakończone | `ViewRulesTests` (nazwa dostępna każdej kontrolki interaktywnej w XAML, teksty w `.resw`); `tools/TestyUi`: ekran logowania i 12 sekcji bez kontrolek bez nazwy dostępnej | obszary dotyku mniejsze niż 48 dp — [TESTY-UI.md](TESTY-UI.md#ograniczenia) |
-| T9.1 | w toku | build `net10.0-browserwasm` Release; ekran logowania w Edge; pomiar ładowania (4,1–4,4 s pierwsze, 3,5–5,5 s kolejne); `WebAppHostingTests` | [WEB.md](WEB.md); ⏸ oczekuje na weryfikację Jurka: logowanie, mapa, raport trasy w Chrome i Edge |
+| T9.1 | zakończone | build `net10.0-browserwasm` Release; ekran logowania w Edge; pomiar ładowania (4,1–4,4 s pierwsze, 3,5–5,5 s kolejne); `WebAppHostingTests`; punkt kontrolny: decyzja Jurka o kontynuacji fazy 9 (2026-10-12) | [WEB.md](WEB.md); tabela weryfikacji w Chrome i Edge do uzupełnienia przez Jurka |
 
 ## Odstępstwa od planu
 
