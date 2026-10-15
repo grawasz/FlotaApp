@@ -118,20 +118,26 @@ jobs:
   api-image:
     name: Obraz Flota.Api
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Etap aplikacji przeglądarkowej z kompilacją AOT: ok. 20 min
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
       - name: Budowanie obrazu
         run: docker build -f src/Flota.Api/Dockerfile -t flota-api:ci .
 
-      # Uruchomienie z bazą SQLite (konfiguracja domyślna) i sprawdzenie /health
+      # Uruchomienie z bazą SQLite (konfiguracja domyślna): /health, aplikacja przeglądarkowa pod /, API pod dotychczasowymi ścieżkami
       - name: Test uruchomienia
         run: |
           docker run -d --name flota-api -p 8080:8080 flota-api:ci
           for i in $(seq 1 30); do
-            if curl -fsS http://localhost:8080/health; then echo; exit 0; fi
+            if curl -fsS http://localhost:8080/health; then echo; break; fi
+            if [ "$i" = 30 ]; then docker logs flota-api; exit 1; fi
             sleep 2
           done
-          docker logs flota-api
-          exit 1
+          curl -fsS http://localhost:8080/ | grep -q '<html' || { echo 'brak aplikacji pod /'; exit 1; }
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/fleet/snapshot)
+          [ "$code" = 401 ] || { echo "GET /fleet/snapshot bez tokenu: $code (oczekiwano 401)"; exit 1; }
+          script=$(curl -fsS http://localhost:8080/ | grep -o 'package_[^"]*/uno-bootstrap\.js' | head -1)
+          headers=$(curl -fsS -H 'Accept-Encoding: br' -o /dev/null -D - "http://localhost:8080/$script")
+          echo "$headers" | grep -qi '^content-encoding: br' || { echo "brak wariantu Brotli: $script"; exit 1; }

@@ -22,6 +22,8 @@ dotnet publish src/Flota.App -f net10.0-browserwasm -c Release -o <katalog>
 dotnet run --project src/Flota.Api -- --WebApp:RootPath=<katalog>\wwwroot
 ```
 
+Obraz Docker (`src/Flota.Api/Dockerfile`) zawiera aplikację przeglądarkową: etap `web` buduje `Flota.App` (`-p:FlotaWebOnly=true` — wyłącznie platforma `net10.0-browserwasm`, obciążenie `wasm-tools`, kompilacja AOT; ok. 15–20 min), etap końcowy kopiuje `wwwroot` do `/app/wwwroot` (`WebApp__RootPath`). Po `docker compose up` aplikacja jest dostępna pod `/`, API pod dotychczasowymi ścieżkami.
+
 Aplikacja: `http://localhost:5294/`. Wariant deweloperski z przeładowaniem kodu: `dotnet run --project src/Flota.App -f net10.0-browserwasm` (adres `http://localhost:5000/`, API pod `http://localhost:5294/`). Na danych symulatora UniAVL: `./tools/Start-Symulacja.ps1 -WebApp <katalog>\wwwroot` (login `demo`, hasło `demo`).
 
 ## Wydajność (T9.3a)
@@ -142,4 +144,3 @@ Katalog pośredni buildu AOT wymaga krótkiej ścieżki: pliki pośrednie kompil
 
 - Pamięć podręczna kafelków mapy i ostatniego stanu floty w wirtualnym systemie plików przeglądarki — trwałość do sprawdzenia w T9.3.
 - Eksport XLSX przez okno zapisu pliku — działanie w Firefox i Safari (brak interfejsu File System Access) do sprawdzenia w T9.3.
-- Obraz Docker nie zawiera jeszcze aplikacji przeglądarkowej (T9.4).

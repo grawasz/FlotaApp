@@ -5,10 +5,10 @@
 **/.vs/
 .git/
 .github/
+.claude/
 artifacts/
 docs/
 spikes/
 tests/
-src/Flota.App/
-src/Flota.Client/
+tools/
 .env

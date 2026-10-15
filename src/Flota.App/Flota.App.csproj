@@ -30,6 +30,11 @@
     </UnoFeatures>
   </PropertyGroup>
 
+  <!-- Wyłącznie wersja przeglądarkowa (obraz Docker na Linux — bez obciążeń Android/iOS i pakietów Windows): -p:FlotaWebOnly=true -->
+  <PropertyGroup Condition="'$(FlotaWebOnly)' == 'true'">
+    <TargetFrameworks>net10.0-browserwasm</TargetFrameworks>
+  </PropertyGroup>
+
   <!-- SDK 10.0.4xx dopisuje RID hosta (win-x64) przy PublishTrimmed; dla Android/Mono brak pakietu Runtime.Mono.win-x64 -->
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <UseDefaultPublishRuntimeIdentifier>false</UseDefaultPublishRuntimeIdentifier>
