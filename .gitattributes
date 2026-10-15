@@ -1,0 +1,5 @@
+# Pliki wykonywane w kontenerach i przez powłokę Linux — zawsze LF (kontynuacja wiersza „\” nie działa z CRLF)
+Dockerfile text eol=lf
+*.sh text eol=lf
+docker-compose*.yml text eol=lf
+deploy/** text eol=lf
