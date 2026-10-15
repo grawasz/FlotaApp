@@ -22,7 +22,8 @@ jobs:
   windows:
     name: Testy, Windows, Android
     runs-on: windows-latest
-    timeout-minutes: 60
+    # Build WebAssembly z kompilacją AOT: ok. 15 min
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -58,7 +59,7 @@ jobs:
       - name: Build Windows
         run: dotnet build src/Flota.App -f net10.0-windows10.0.26100 -c Release
 
-      - name: Build WebAssembly
+      - name: Build WebAssembly (AOT)
         run: dotnet publish src/Flota.App -f net10.0-browserwasm -c Release -o artifacts/web
 
       # Aplikacja przeglądarkowa na danych symulatora UniAVL: sekcje (400 i 1400 px) i nazwy dostępne (docs/TESTY-UI.md)
