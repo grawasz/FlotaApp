@@ -21,6 +21,8 @@ export class Browser {
     // Bez wstrzymywania klatek i zegarów strony w tle: potwierdzenia zdarzeń wejścia czekają na klatkę
     const proc = spawn(exe, ['--headless=new', `--remote-debugging-port=${port}`, '--no-first-run', '--no-default-browser-check',
       '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows',
+      // WebGL bez procesora graficznego (maszyny CI): programowy SwiftShader — renderer Skia aplikacji Uno wymaga WebGL
+      '--enable-unsafe-swiftshader',
       `--user-data-dir=${profile}`, `--window-size=${width},${height}`, '--force-device-scale-factor=1', 'about:blank'], { stdio: 'ignore' });
     let page;
     for (let i = 0; i < 100 && !page; i++) {
@@ -128,6 +130,11 @@ export class UnoApp {
            && !await this.b.eval("!document.querySelector('.uno-loader') && !!document.getElementById('uno-canvas') && !!document.getElementById('uno-enable-accessibility')"))
       await sleep(500);
     await sleep(2000);
+    if (!await this.b.eval("!!document.getElementById('uno-enable-accessibility')")) {
+      const state = await this.b.eval(`JSON.stringify({ loader: !!document.querySelector('.uno-loader'), canvas: !!document.getElementById('uno-canvas'),
+        webgl2: !!document.createElement('canvas').getContext('webgl2'), webgl: !!document.createElement('canvas').getContext('webgl') })`);
+      throw new Error(`Aplikacja nie uruchomiła się w ${timeoutMs} ms (${state}).`);
+    }
     // Po przeładowaniu strony warstwa może być już włączona — ponowne kliknięcie by ją wyłączyło
     if (await this.b.eval("document.querySelectorAll('#uno-semantics-root *').length") > 0) return;
     await this.b.eval("document.getElementById('uno-enable-accessibility').click(); true");
