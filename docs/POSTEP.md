@@ -13,7 +13,7 @@
 | T1.3 | zakończone | `dotnet build FlotaUno.slnx`: 0 błędów | — |
 | T1.4 | zakończone | `PaletteTests`: wartości motywu jasnego zgodne z tabelą 7.1 planu (13 zasobów, w tym pędzle statusów); motyw ciemny kompletny | [TESTY-UI.md](TESTY-UI.md) |
 | T1.5 | zakończone | zasoby w `src/Flota.App/Assets/Images`, wyświetlane w aplikacji; ikona aplikacji i ekran startowy odtworzone w SVG z `avl.ico` (Windows, Android — ikona adaptacyjna, iOS) | — |
-| T1.6 | w toku | `.github/workflows/ci.yml`: testy, build Windows i Android (`windows-latest`), build iOS dla symulatora (`macos-latest`), obraz Flota.Api z testem `/health` (`ubuntu-latest`); brak przebiegu potoku — repozytorium bez zdalnego GitHub | — |
+| T1.6 | zakończone | potok `.github/workflows/ci.yml` na GitHub (grawasz/FlotaApp), przebieg dla zatwierdzenia 866e308 zakończony powodzeniem: testy, build Windows, WebAssembly (AOT), testy interfejsu w przeglądarce, build Android (`windows-latest`); build iOS dla symulatora (`macos-latest`); obraz Flota.Api z aplikacją przeglądarkową i testem uruchomienia (`ubuntu-latest`) | iOS: pasmo SDK 10.0.4xx i zestaw obciążeń 10.0.401 (Xcode 26) |
 | T1.7 | zakończone | `tools/TestyUi` (przeglądarka, symulator UniAVL): każda z 12 sekcji wyświetlana przy 400 px i 1400 px; pasek sekcji przewijany w poziomie na wąskim ekranie | [TESTY-UI.md](TESTY-UI.md) |
 | T2.1 | zakończone | deserializacja próbek z `$id`/`$ref`/`$values` — `UniAvlMapperTests` | próbki fikcyjne w `tests/Flota.Api.Tests/Samples` |
 | T2.2 | zakończone | `UniAvlClientTests` (WireMock): 401, 5xx, niepoprawny JSON, 204, parametry niezależne od kultury | — |
