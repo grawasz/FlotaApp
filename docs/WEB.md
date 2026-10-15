@@ -12,7 +12,7 @@
 | CORS | wyłącznie dla serwera deweloperskiego aplikacji (`Cors:Origins` w `appsettings.Development.json` Flota.Api) |
 | Wymagane obciążenie | `wasm-tools` (`dotnet workload install wasm-tools`) — natywne zasoby SkiaSharp dla WebAssembly |
 | Start strony głównej | żądanie `/fleet/snapshot` wysyłane przed budową strony głównej (`App.ShowShell`), równolegle z odczytem stanu zapisanego; panele poza mapą tworzone przy pierwszym wyświetleniu (`ShellPage.EnsurePanel`) |
-| Kompilacja AOT | profilowana kompilacja AOT dostępna na żądanie (`-p:FlotaWasmAot=true -p:FlotaAotProfile=<plik>`); domyślnie wyłączona — [decyzja](#rekomendacja-aot) |
+| Kompilacja AOT | profilowana kompilacja AOT w buildzie Release (profil `Platforms/WebAssembly/aot.profile`); wyłączenie: `-p:FlotaWasmAot=false` — [kompilacja AOT](#kompilacja-aot) |
 
 ## Uruchomienie
 
@@ -106,26 +106,26 @@ Znaczniki aplikacji, czasy od odpowiedzi `POST /auth/login`: wariant b — media
 
 Parametr adresu bez wartości (np. `/?abc`) blokuje uruchomienie aplikacji: Uno przekazuje parametry adresu jako argumenty wiersza poleceń hosta, a argument bez wartości przerywa konfigurację. Parametr z wartością (`/?abc=1`) działa. Do poprawy w T9.3.
 
-### Rekomendacja AOT
+### Kompilacja AOT
 
-Rekomendacja: włączenie profilowanej kompilacji AOT w buildzie Release wersji przeglądarkowej (wariant c).
+Build Release wersji przeglądarkowej korzysta z profilowanej kompilacji AOT (wariant c; decyzja Jurka na punkcie kontrolnym T9.3a). Bilans:
 
-| Za | Przeciw |
+| Zysk | Koszt |
 |---|---|
 | obiekty na liście po zalogowaniu: 2,4 s zamiast 4,2 s | pobranie przy pierwszym otwarciu: +3,2 MB (Brotli), przy łączu 50 Mb/s ok. +0,5 s |
 | ponowne otwarcie: 2,8 s zamiast 4,4 s | build Release: 10–11 min zamiast 3 min (potok CI, obraz Docker) |
-| otwarcie panelu raportu trasy: 0,8 s zamiast 2,3 s; raport trasy: 2,2 s zamiast 3,2 s | profil AOT (5 MB) w repozytorium, odświeżany po istotnych zmianach kodu (`tools/TestyUi/profil-aot.mjs`); nieaktualny profil obniża zysk, nie powoduje błędów |
+| otwarcie panelu raportu trasy: 0,8 s zamiast 2,3 s; raport trasy: 2,2 s zamiast 3,2 s | profil AOT (5 MB) w repozytorium, odświeżany po istotnych zmianach kodu; nieaktualny profil obniża zysk, nie powoduje błędów |
 
-Zebranie profilu:
+Odświeżenie profilu (build zbierający profil działa bez AOT):
 
 ```powershell
 dotnet publish src/Flota.App -f net10.0-browserwasm -c Release -o <katalog> -p:WasmShellGenerateAOTProfile=true
 ./tools/Start-Symulacja.ps1 -WebApp <katalog>\wwwroot
 node tools/TestyUi/profil-aot.mjs http://localhost:5294/ <katalog profilu>
-dotnet publish src/Flota.App -f net10.0-browserwasm -c Release -o <katalog AOT> --artifacts-path artifacts\aot -p:FlotaWasmAot=true -p:FlotaAotProfile=<katalog profilu>\aot.profile
+Copy-Item <katalog profilu>\aot.profile src/Flota.App/Platforms/WebAssembly/aot.profile
 ```
 
-Build AOT wymaga krótkiej ścieżki katalogu pośredniego (`--artifacts-path`): pliki pośrednie kompilatora przekraczają limit 260 znaków ścieżki Windows przy katalogach w profilu użytkownika.
+Katalog pośredni buildu AOT wymaga krótkiej ścieżki: pliki pośrednie kompilatora przekraczają limit 260 znaków ścieżki Windows przy katalogach głęboko w profilu użytkownika (wtedy `--artifacts-path` z krótką ścieżką, np. `artifacts\aot`). Build z katalogu repozytorium mieści się w limicie.
 
 ## Weryfikacja do wykonania przez Jurka
 
