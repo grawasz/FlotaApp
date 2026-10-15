@@ -67,13 +67,19 @@ jobs:
         shell: pwsh
         run: |
           $root = (Get-Location).Path
-          $job = Start-Job { & "$using:root/tools/Start-Symulacja.ps1" -WebApp "$using:root/artifacts/web/wwwroot" }
-          for ($i = 0; $i -lt 150; $i++) {
-            try { if ((Invoke-WebRequest http://localhost:5294/health -UseBasicParsing).StatusCode -eq 200) { break } } catch { }
-            Start-Sleep 2
+          $job = Start-Job { & "$using:root/tools/Start-Symulacja.ps1" -WebApp "$using:root/artifacts/web/wwwroot" *>&1 }
+          # Symulator i Flota.Api (build w zadaniu): do 10 min; brak odpowiedzi — dziennik zadania i błąd
+          $ready = $false
+          for ($i = 0; $i -lt 300 -and -not $ready; $i++) {
+            try { $ready = (Invoke-WebRequest http://localhost:5294/health -UseBasicParsing).StatusCode -eq 200 } catch { Start-Sleep 2 }
+          }
+          if (-not $ready -or (Invoke-WebRequest http://localhost:5294/ -UseBasicParsing).Content -notmatch 'uno-bootstrap') {
+            Receive-Job $job | Select-Object -Last 60
+            throw 'Flota.Api z aplikacją przeglądarkową nie uruchomiła się.'
           }
           node tools/TestyUi/testy.mjs http://localhost:5294/ artifacts/ui
           $code = $LASTEXITCODE
+          if ($code -ne 0) { Receive-Job $job | Select-Object -Last 40 }
           Stop-Job $job
           exit $code
 
