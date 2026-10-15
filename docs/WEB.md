@@ -33,6 +33,8 @@ dotnet publish src/Flota.App -f net10.0-browserwasm -c Release -o <katalog>
 dotnet run --project src/Flota.Api -- --WebApp:RootPath=<katalog>\wwwroot
 ```
 
+Publikacja wymaga pakietów przywróconych w konfiguracji Release. Przywrócenie w konfiguracji Debug (np. przez otwarte w IDE rozwiązanie) dołącza pakiety deweloperskie Uno (Hot Design z Microsoft.SemanticKernel), a kompilacja AOT kończy się błędem `Precompiling failed for … Microsoft.SemanticKernel.Core.dll`. Rozwiązanie: zamknięcie rozwiązania w IDE na czas publikacji, ewentualnie wcześniej `dotnet restore src/Flota.App -p:Configuration=Release`.
+
 Obraz Docker (`src/Flota.Api/Dockerfile`) zawiera aplikację przeglądarkową: etap `web` buduje `Flota.App` (`-p:FlotaWebOnly=true` — wyłącznie platforma `net10.0-browserwasm`, obciążenie `wasm-tools`, kompilacja AOT; ok. 15–20 min), etap końcowy kopiuje `wwwroot` do `/app/wwwroot` (`WebApp__RootPath`). Po `docker compose up` aplikacja jest dostępna pod `/`, API pod dotychczasowymi ścieżkami.
 
 Aplikacja: `http://localhost:5294/`. Wariant deweloperski z przeładowaniem kodu: `dotnet run --project src/Flota.App -f net10.0-browserwasm` (adres `http://localhost:5000/`, API pod `http://localhost:5294/`). Na danych symulatora UniAVL: `./tools/Start-Symulacja.ps1 -WebApp <katalog>\wwwroot` (login `demo`, hasło `demo`).
