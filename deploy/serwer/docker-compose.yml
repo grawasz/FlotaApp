@@ -1,0 +1,114 @@
+# Serwer Flota (VPS): Caddy — jedyny kontener z portami publicznymi:
+#   80   — przekierowanie na HTTPS
+#   443  — dotychczasowa aplikacja Blazor (kontener flota)
+#   8443 — FlotaApp: Flota.Api z aplikacją przeglądarkową (kontener flota-api)
+# Flota.Api i PostgreSQL bez portów publicznych. Sekrety wyłącznie w pliku .env (wzór: .env.example).
+# Procedura wdrożenia, sprawdzenie i wycofanie zmian: docs/WDROZENIE.md.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+      - "8443:8443"
+      - "8443:8443/udp"
+    environment:
+      FLOTA_DOMAIN: ${FLOTA_DOMAIN:?Brak FLOTA_DOMAIN w pliku .env}
+      # Wiersze opcji globalnych Caddyfile: adres e-mail ACME (gdy podany), certyfikaty lokalne (weryfikacja bez Let's Encrypt)
+      CADDY_EMAIL: ${ACME_EMAIL:+email ${ACME_EMAIL}}
+      CADDY_LOCAL_CERTS: ${CADDY_LOCAL_CERTS:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      web:
+        # Stały adres: jedyne zaufane proxy dla Flota.Api (ForwardedHeaders__KnownProxies)
+        ipv4_address: ${FLOTA_CADDY_IP:-172.30.0.10}
+    depends_on:
+      - flota
+      - flota-api
+    logging: *logging
+
+  # Dotychczasowa aplikacja Blazor — obraz i konfiguracja jak w bieżącym uruchomieniu; port wewnętrzny 8080, bez portów publicznych
+  flota:
+    image: ${FLOTA_BLAZOR_IMAGE:?Brak FLOTA_BLAZOR_IMAGE w pliku .env}
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - web
+    logging: *logging
+
+  flota-api:
+    image: ${FLOTA_API_IMAGE:?Brak FLOTA_API_IMAGE w pliku .env}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8080"
+    environment:
+      AllowedHosts: ${FLOTA_DOMAIN}
+      Database__Provider: Postgres
+      ConnectionStrings__Flota: Host=db;Database=flota;Username=flota;Password=${POSTGRES_PASSWORD:?Brak POSTGRES_PASSWORD w pliku .env}
+      # Klucz podpisu JWT (Base64, min. 32 bajty) — stały, aby sesje przetrwały restart usługi
+      Auth__SigningKey: ${AUTH_SIGNING_KEY:?Brak AUTH_SIGNING_KEY w pliku .env}
+      Targeo__Endpoint: ${TARGEO_ENDPOINT:-}
+      Targeo__User: ${TARGEO_USER:-}
+      Targeo__Password: ${TARGEO_PASSWORD:-}
+      Targeo__Salt: ${TARGEO_SALT:-}
+      # Nagłówki X-Forwarded-* wyłącznie od kontenera Caddy (schemat HTTPS — atrybut Secure ciasteczka sesji)
+      ForwardedHeaders__KnownProxies__0: ${FLOTA_CADDY_IP:-172.30.0.10}
+      # Pliki do pobrania pod /pobierz/ (pakiet Android); katalog pusty — odnośnik w aplikacji ukryty
+      Downloads__Path: /app/pobierz
+      Downloads__AndroidVersion: ${ANDROID_VERSION:-}
+    volumes:
+      - api-keys:/app/keys
+      - ${FLOTA_DOWNLOADS_DIR:-./pobierz}:/app/pobierz:ro
+    networks:
+      - web
+      - db
+    logging: *logging
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: flota
+      POSTGRES_USER: flota
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Brak POSTGRES_PASSWORD w pliku .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flota -d flota"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - db
+    logging: *logging
+
+networks:
+  web:
+    ipam:
+      config:
+        - subnet: ${FLOTA_NETWORK_SUBNET:-172.30.0.0/24}
+  # Sieć bazy bez dostępu z zewnątrz i do Internetu
+  db:
+    internal: true
+
+volumes:
+  caddy-data:
+  caddy-config:
+  api-keys:
+  db-data:

@@ -1,0 +1,8 @@
+# Weryfikacja lokalna konfiguracji serwera (docs/WDROZENIE.md, „Weryfikacja lokalna”):
+#   docker compose --env-file <plik testowy .env> -f docker-compose.yml -f docker-compose.test.yml up -d
+# Atrapa aplikacji Blazor (odpowiedź tekstowa na porcie 8080); certyfikaty z wewnętrznego urzędu Caddy (CADDY_LOCAL_CERTS=local_certs).
+
+services:
+  flota:
+    image: caddy:2
+    command: ["caddy", "respond", "--listen", ":8080", "Atrapa aplikacji Blazor"]

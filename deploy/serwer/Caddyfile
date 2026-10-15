@@ -1,0 +1,18 @@
+# Caddy — odwrotne proxy serwera Flota (docker-compose.yml w tym katalogu).
+# Certyfikat Let's Encrypt dla domeny FLOTA_DOMAIN (porty 443 i 8443); port 80 — przekierowanie na HTTPS.
+# Nagłówki X-Forwarded-For i X-Forwarded-Proto oraz połączenia WebSocket przekazywane przez reverse_proxy domyślnie.
+
+{
+	{$CADDY_EMAIL}
+	{$CADDY_LOCAL_CERTS}
+}
+
+# Dotychczasowa aplikacja Blazor (Blazor Server — połączenie WebSocket)
+{$FLOTA_DOMAIN} {
+	reverse_proxy flota:8080
+}
+
+# FlotaApp: Flota.Api z aplikacją przeglądarkową
+{$FLOTA_DOMAIN}:8443 {
+	reverse_proxy flota-api:8080
+}

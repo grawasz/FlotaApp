@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="870" viewBox="0 0 1200 870" font-family="Segoe UI, Roboto, Arial, sans-serif">
+<defs><marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#707070"/></marker></defs>
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="24" y="34" font-size="20" font-weight="700" fill="#222">Flota — diagram wdrożenia (C4): serwer VPS</text>
+
+<!-- Użytkownik -->
+<circle cx="140" cy="92" r="20" fill="#08427B"/>
+<rect x="30" y="110" width="220" height="96" rx="10" fill="#08427B"/>
+<text x="140" y="138" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">Użytkownik floty</text>
+<text x="140" y="156" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[Osoba]</text>
+<text x="140" y="176" text-anchor="middle" font-size="12" fill="#fff">przeglądarka, telefon Android,</text>
+<text x="140" y="192" text-anchor="middle" font-size="12" fill="#fff">Windows, iOS</text>
+
+<!-- Węzeł: VPS -->
+<rect x="300" y="70" width="870" height="470" rx="6" fill="none" stroke="#444" stroke-width="1.2" stroke-dasharray="8 5"/>
+<text x="312" y="90" font-size="13" font-weight="700" fill="#444">VPS OVH — Ubuntu 24.04 LTS, Docker, docker compose v2</text>
+<rect x="320" y="104" width="830" height="420" rx="6" fill="none" stroke="#777" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="332" y="122" font-size="12" font-weight="700" fill="#666">docker compose (deploy/serwer) — dzienniki json-file 10 MB × 5</text>
+
+<!-- Caddy -->
+<rect x="340" y="200" width="250" height="150" rx="10" fill="#438DD5"/>
+<text x="465" y="228" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">Caddy</text>
+<text x="465" y="246" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[caddy:2, 172.30.0.10]</text>
+<text x="465" y="268" text-anchor="middle" font-size="12" fill="#fff">Porty publiczne: 80, 443, 8443</text>
+<text x="465" y="284" text-anchor="middle" font-size="12" fill="#fff">80 → przekierowanie na HTTPS</text>
+<text x="465" y="300" text-anchor="middle" font-size="12" fill="#fff">certyfikat Let's Encrypt (flota.ovh)</text>
+<text x="465" y="316" text-anchor="middle" font-size="12" fill="#fff">wolumeny caddy-data, caddy-config</text>
+
+<!-- Blazor -->
+<rect x="680" y="140" width="250" height="120" rx="10" fill="#438DD5"/>
+<text x="805" y="168" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">Aplikacja Blazor</text>
+<text x="805" y="186" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[kontener flota, :8080]</text>
+<text x="805" y="208" text-anchor="middle" font-size="12" fill="#fff">dotychczasowa aplikacja</text>
+<text x="805" y="224" text-anchor="middle" font-size="12" fill="#fff">https://flota.ovh</text>
+
+<!-- Flota.Api -->
+<rect x="680" y="300" width="250" height="150" rx="10" fill="#438DD5"/>
+<text x="805" y="328" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">Flota.Api</text>
+<text x="805" y="346" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[kontener flota-api, :8080]</text>
+<text x="805" y="368" text-anchor="middle" font-size="12" fill="#fff">API, hub SignalR, aplikacja</text>
+<text x="805" y="384" text-anchor="middle" font-size="12" fill="#fff">przeglądarkowa (AOT), /pobierz/</text>
+<text x="805" y="400" text-anchor="middle" font-size="12" fill="#fff">https://flota.ovh:8443</text>
+<text x="805" y="416" text-anchor="middle" font-size="12" fill="#fff">wolumen api-keys, katalog pobierz</text>
+
+<!-- PostgreSQL -->
+<rect x="970" y="320" width="165" height="110" rx="10" fill="#438DD5"/>
+<text x="1052" y="348" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">Baza</text>
+<text x="1052" y="366" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[postgres:17]</text>
+<text x="1052" y="388" text-anchor="middle" font-size="12" fill="#fff">sieć wewnętrzna db,</text>
+<text x="1052" y="404" text-anchor="middle" font-size="12" fill="#fff">wolumen db-data</text>
+
+<!-- Systemy zewnętrzne -->
+<rect x="330" y="640" width="230" height="110" rx="10" fill="#999999"/>
+<text x="445" y="668" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">Let's Encrypt</text>
+<text x="445" y="686" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[ACME]</text>
+<text x="445" y="708" text-anchor="middle" font-size="12" fill="#fff">Certyfikat TLS</text>
+<rect x="600" y="640" width="230" height="110" rx="10" fill="#999999"/>
+<text x="715" y="668" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">UniAVL REST API</text>
+<text x="715" y="686" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[HTTP, geo.uniavl.pl/AVL]</text>
+<text x="715" y="708" text-anchor="middle" font-size="12" fill="#fff">Obiekty, wiadomości, raporty</text>
+<rect x="870" y="640" width="230" height="110" rx="10" fill="#999999"/>
+<text x="985" y="668" text-anchor="middle" font-weight="700" font-size="15" fill="#fff">Targeo</text>
+<text x="985" y="686" text-anchor="middle" font-size="12" fill="#fff" opacity=".9">[SOAP]</text>
+<text x="985" y="708" text-anchor="middle" font-size="12" fill="#fff">Geokodowanie odwrotne</text>
+
+<!-- Relacje -->
+<line x1="250" y1="170" x2="338" y2="250" stroke="#707070" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="250" y="232" text-anchor="middle" font-size="11.5" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">HTTPS 443, 8443</text>
+<text x="250" y="232" text-anchor="middle" font-size="11.5" fill="#333">HTTPS 443, 8443</text>
+
+<line x1="590" y1="240" x2="678" y2="205" stroke="#707070" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="634" y="196" text-anchor="middle" font-size="11" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">443 → :8080</text>
+<text x="634" y="196" text-anchor="middle" font-size="11" fill="#666">443 → :8080</text>
+<text x="634" y="211" text-anchor="middle" font-size="11" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">[WebSocket]</text>
+<text x="634" y="211" text-anchor="middle" font-size="11" fill="#666">[WebSocket]</text>
+
+<line x1="590" y1="310" x2="678" y2="360" stroke="#707070" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="634" y="372" text-anchor="middle" font-size="11" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">8443 → :8080</text>
+<text x="634" y="372" text-anchor="middle" font-size="11" fill="#666">8443 → :8080</text>
+<text x="634" y="387" text-anchor="middle" font-size="11" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">[X-Forwarded-*]</text>
+<text x="634" y="387" text-anchor="middle" font-size="11" fill="#666">[X-Forwarded-*]</text>
+
+<line x1="930" y1="375" x2="968" y2="375" stroke="#707070" stroke-width="1.5" marker-end="url(#a)"/>
+
+<line x1="445" y1="350" x2="445" y2="638" stroke="#707070" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="445" y="500" text-anchor="middle" font-size="11.5" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">Certyfikat [ACME]</text>
+<text x="445" y="500" text-anchor="middle" font-size="11.5" fill="#333">Certyfikat [ACME]</text>
+
+<line x1="760" y1="450" x2="730" y2="638" stroke="#707070" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="752" y="595" text-anchor="middle" font-size="11.5" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">Pobiera dane [REST/JSON]</text>
+<text x="752" y="595" text-anchor="middle" font-size="11.5" fill="#333">Pobiera dane [REST/JSON]</text>
+
+<line x1="860" y1="450" x2="975" y2="638" stroke="#707070" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="935" y="595" text-anchor="middle" font-size="11.5" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">Geokoduje [SOAP]</text>
+<text x="935" y="595" text-anchor="middle" font-size="11.5" fill="#333">Geokoduje [SOAP]</text>
+
+<path d="M680,250 L645,285 L645,600 L690,638" fill="none" stroke="#707070" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<text x="600" y="580" text-anchor="middle" font-size="11.5" fill="#fff" stroke="#fff" stroke-width="5" stroke-linejoin="round">Blazor: dane UniAVL</text>
+<text x="600" y="580" text-anchor="middle" font-size="11.5" fill="#333">Blazor: dane UniAVL</text>
+
+<!-- Sieci i konfiguracja -->
+<g font-size="12" fill="#444">
+<text x="24" y="790">Sieć web (172.30.0.0/24): Caddy, aplikacja Blazor, Flota.Api. Sieć db (wewnętrzna, bez dostępu do Internetu): Flota.Api, PostgreSQL.</text>
+<text x="24" y="808">Flota.Api przyjmuje nagłówki X-Forwarded-* wyłącznie od Caddy (172.30.0.10). Sekrety w pliku .env (uprawnienia 600). Obraz Flota.Api: docker save / docker load.</text>
+</g>
+
+<g font-size="11" fill="#333"><rect x="24" y="836" width="14" height="14" fill="#08427B"/><text x="44" y="848">Osoba</text>
+<rect x="110" y="836" width="14" height="14" fill="#438DD5"/><text x="130" y="848">Kontener</text>
+<rect x="210" y="836" width="14" height="14" fill="#999"/><text x="230" y="848">System zewnętrzny</text>
+<rect x="360" y="836" width="14" height="14" fill="#fff" stroke="#444" stroke-dasharray="3 2"/><text x="380" y="848">Węzeł wdrożenia</text></g>
+</svg>
