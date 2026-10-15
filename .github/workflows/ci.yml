@@ -98,16 +98,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Pasmo SDK 10.0.4xx i zestaw obciążeń 10.0.401: .NET for iOS 26.5 zgodny z Xcode 26 obrazu macos-latest
+      # (zestawy nowsze zawierają .NET for iOS 27, wymagający Xcode 27)
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: 10.0.4xx
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
       - name: Obciążenia .NET
-        run: dotnet workload restore src/Flota.App/Flota.App.csproj
+        run: dotnet workload install ios android --version 10.0.401
 
       # Build dla symulatora — bez podpisu; podpis i pakowanie IPA w zadaniu T8.2
       - name: Build iOS
