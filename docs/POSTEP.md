@@ -48,6 +48,7 @@
 | T7.4 | zakończone | `ViewRulesTests` (nazwa dostępna każdej kontrolki interaktywnej w XAML, teksty w `.resw`); `tools/TestyUi`: ekran logowania i 12 sekcji bez kontrolek bez nazwy dostępnej | obszary dotyku mniejsze niż 48 dp — [TESTY-UI.md](TESTY-UI.md#ograniczenia) |
 | T9.1 | zakończone | build `net10.0-browserwasm` Release; ekran logowania w Edge; pomiar ładowania (4,1–4,4 s pierwsze, 3,5–5,5 s kolejne); `WebAppHostingTests`; punkt kontrolny: decyzja Jurka o kontynuacji fazy 9 (2026-10-12) | [WEB.md](WEB.md); tabela weryfikacji w Chrome i Edge do uzupełnienia przez Jurka |
 | T9.3a | zakończone | `tools/TestyUi/pomiar.mjs` (Release, Edge bez interfejsu, symulator UniAVL, bloki na przemian): obiekty na liście po zalogowaniu — stan wyjściowy 10,5 s, panele przy pierwszym wyświetleniu i wcześniejsze `/fleet/snapshot` 4,2 s, z kompilacją AOT 2,4 s; ikony mapy wczytywane równolegle (−0,4 s do mapy z obiektami); `FleetViewModelTests`, `RouteReportViewModelTests.CreatedAfterSelection_TakesSelectedObject`; `tools/TestyUi` bez błędów | [WEB.md](WEB.md#wydajność-t93a); punkt kontrolny: decyzja Jurka (2026-10-15) — kompilacja AOT w buildzie Release, profil `src/Flota.App/Platforms/WebAssembly/aot.profile` |
+| T9.2 | zakończone | `CookieSessionTests` (WebApplicationFactory, WireMock): ciasteczko `HttpOnly`/`SameSite=Strict`/`Path=/auth` bez tokenu w treści, odnowienie po przeładowaniu wyłącznie z ciasteczka z rotacją, odrzucenie poprzedniego ciasteczka, odrzucenie żądania bez ciasteczka, wylogowanie usuwające ciasteczko, `Secure` z `X-Forwarded-Proto` wyłącznie z sieci zaufanej; `tools/TestyUi` (sesja w przeglądarce) | [WEB.md](WEB.md#rozwiązanie); konfiguracja sieci proxy w T9.6 |
 
 ## Odstępstwa od planu
 
@@ -67,7 +68,7 @@
 | Projekt | Liczba testów | Wynik |
 |---|---|---|
 | `Flota.Core.Tests` | 70 | wszystkie zakończone powodzeniem |
-| `Flota.Api.Tests` | 53 | wszystkie zakończone powodzeniem |
+| `Flota.Api.Tests` | 60 | wszystkie zakończone powodzeniem |
 | `Flota.Presentation.Tests` | 71 | wszystkie zakończone powodzeniem |
 | `Flota.App.Tests` | 21 | wszystkie zakończone powodzeniem |
-| `tools/TestyUi` (przeglądarka) | 37 sprawdzeń | wszystkie zakończone powodzeniem |
+| `tools/TestyUi` (przeglądarka) | 40 sprawdzeń | wszystkie zakończone powodzeniem |

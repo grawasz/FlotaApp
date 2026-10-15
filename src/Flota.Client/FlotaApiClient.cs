@@ -24,11 +24,20 @@ public sealed class SessionExpiredException : Exception
     public SessionExpiredException(string message, Exception inner) : base(message, inner) { }
 }
 
-/// <summary>Klient Flota.Api. Token dostępowy odnawiany automatycznie po odpowiedzi 401.</summary>
-public sealed class FlotaApiClient(HttpClient http, ITokenStore tokens) : IDisposable
+/// <summary>
+/// Klient Flota.Api. Token dostępowy odnawiany automatycznie po odpowiedzi 401.
+/// Tryb ciasteczkowy (<paramref name="cookieSession"/>, wersja przeglądarkowa): token odświeżający w ciasteczku <c>HttpOnly</c>
+/// ustawianym przez Flota.Api — klient nie przechowuje go i odnawia sesję również bez zapisanych tokenów (po przeładowaniu strony).
+/// </summary>
+public sealed class FlotaApiClient(HttpClient http, ITokenStore tokens, bool cookieSession = false) : IDisposable
 {
     static readonly FlotaJsonContext Json = FlotaJsonContext.Default;
+    // Opcje fetch przeglądarki (BrowserHttpHandler): ciasteczka także dla serwera deweloperskiego spod innego adresu
+    static readonly HttpRequestOptionsKey<IDictionary<string, object>> FetchOptions = new("WebAssemblyFetchOptions");
     readonly SemaphoreSlim _refreshLock = new(1, 1);
+
+    /// <summary>Tryb ciasteczkowy (token odświeżający w ciasteczku <c>HttpOnly</c>).</summary>
+    public bool CookieSession => cookieSession;
 
     public event EventHandler? SessionExpired;
 
@@ -39,7 +48,8 @@ public sealed class FlotaApiClient(HttpClient http, ITokenStore tokens) : IDispo
 
     public async Task<TokenResponse?> LoginAsync(string login, string password, CancellationToken ct)
     {
-        using var response = await http.PostAsJsonAsync(new Uri("auth/login", UriKind.Relative), new LoginRequest(login, password), Json.LoginRequest, ct).ConfigureAwait(false);
+        using var request = AuthRequest("auth/login", JsonContent.Create(new LoginRequest(login, password), Json.LoginRequest));
+        using var response = await http.SendAsync(request, ct).ConfigureAwait(false);
         if (response.StatusCode == HttpStatusCode.Unauthorized) return null;
         await EnsureSuccessAsync(response, ct).ConfigureAwait(false);
         var result = await response.Content.ReadFromJsonAsync(Json.TokenResponse, ct).ConfigureAwait(false)
@@ -48,16 +58,21 @@ public sealed class FlotaApiClient(HttpClient http, ITokenStore tokens) : IDispo
         return result;
     }
 
-    /// <summary>Odnowienie tokenu; <c>false</c>, gdy sesja wygasła.</summary>
+    /// <summary>
+    /// Odnowienie tokenu; <c>false</c>, gdy sesja wygasła. W trybie ciasteczkowym również bez zapisanych tokenów
+    /// (wznowienie sesji po przeładowaniu strony).
+    /// </summary>
     public async Task<bool> RefreshAsync(CancellationToken ct)
     {
         var current = tokens.Current;
-        if (current is null) return false;
+        if (current is null && !cookieSession) return false;
         await _refreshLock.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             if (!ReferenceEquals(current, tokens.Current)) return tokens.Current is not null;
-            using var response = await http.PostAsJsonAsync(new Uri("auth/refresh", UriKind.Relative), new RefreshRequest(current.RefreshToken), Json.RefreshRequest, ct).ConfigureAwait(false);
+            var presented = cookieSession ? string.Empty : current!.RefreshToken;
+            using var request = AuthRequest("auth/refresh", JsonContent.Create(new RefreshRequest(presented), Json.RefreshRequest));
+            using var response = await http.SendAsync(request, ct).ConfigureAwait(false);
             if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.BadRequest)
             {
                 await tokens.ClearAsync().ConfigureAwait(false);
@@ -79,7 +94,7 @@ public sealed class FlotaApiClient(HttpClient http, ITokenStore tokens) : IDispo
     {
         try
         {
-            using var _ = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, "auth/logout"), ct, throwOnExpired: false).ConfigureAwait(false);
+            using var _ = await SendAsync(() => AuthRequest("auth/logout", null), ct, throwOnExpired: false).ConfigureAwait(false);
         }
         catch (HttpRequestException)
         {
@@ -203,6 +218,18 @@ public sealed class FlotaApiClient(HttpClient http, ITokenStore tokens) : IDispo
             await EnsureSuccessAsync(response, ct).ConfigureAwait(false);
             return response;
         }
+    }
+
+    /// <summary>Żądanie <c>/auth/*</c>; w trybie ciasteczkowym nagłówek trybu i ciasteczka w żądaniu przeglądarki.</summary>
+    HttpRequestMessage AuthRequest(string path, HttpContent? content)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = content };
+        if (cookieSession)
+        {
+            request.Headers.Add(AuthSession.SessionModeHeader, AuthSession.CookieMode);
+            request.Options.Set(FetchOptions, new Dictionary<string, object> { ["credentials"] = "include" });
+        }
+        return request;
     }
 
     static async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken ct)

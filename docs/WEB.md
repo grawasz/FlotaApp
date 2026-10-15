@@ -7,9 +7,10 @@
 | Platforma docelowa | `net10.0-browserwasm` w projekcie `Flota.App` (Uno WebAssembly, renderer Skia); ten sam kod XAML/C# co Windows, Android i iOS |
 | Punkt wejścia | `Platforms/WebAssembly/Program.cs`; adres strony przekazywany do aplikacji jako domyślny adres Flota.Api |
 | Adres Flota.Api | pusty `ApiBaseUrl` w konfiguracji — adres strony (aplikacja udostępniana przez Flota.Api); w środowisku deweloperskim `http://localhost:5294/` |
-| Tokeny | wyłącznie w pamięci (`InMemoryTokenStore`); przeładowanie strony wymaga ponownego logowania — trwała sesja w T9.2 (ciasteczko `HttpOnly`) |
+| Sesja | token dostępowy wyłącznie w pamięci (`InMemoryTokenStore`); token odświeżający w ciasteczku `flota_refresh` (`HttpOnly`, `SameSite=Strict`, ścieżka `/auth`, `Secure` przy HTTPS i dla `localhost`) wydawanym przez Flota.Api w trybie ciasteczkowym (nagłówek `X-Flota-Session: cookie`); po przeładowaniu strony sesja wznawiana z ciasteczka (`App.ResumeSessionAsync`); testy `CookieSessionTests`, `tools/TestyUi` (sesja) |
+| Odwrotne proxy | `X-Forwarded-For` i `X-Forwarded-Proto` przyjmowane wyłącznie od adresów z `ForwardedHeaders:KnownNetworks` (CIDR) i `ForwardedHeaders:KnownProxies`; domyślnie lista pusta — nagłówki ignorowane |
 | Udostępnianie | Flota.Api (`WebApp:RootPath`): pliki wstępnie skompresowane Brotli/gzip, pliki z sumą kontrolną w ścieżce (`/package_*`, `/_framework/*`) z nagłówkiem `immutable`, `index.html` bez pamięci podręcznej, `index.html` dla ścieżek spoza API; testy `WebAppHostingTests` |
-| CORS | wyłącznie dla serwera deweloperskiego aplikacji (`Cors:Origins` w `appsettings.Development.json` Flota.Api) |
+| CORS | wyłącznie dla serwera deweloperskiego aplikacji (`Cors:Origins` w `appsettings.Development.json` Flota.Api; z przekazywaniem ciasteczek) |
 | Wymagane obciążenie | `wasm-tools` (`dotnet workload install wasm-tools`) — natywne zasoby SkiaSharp dla WebAssembly |
 | Start strony głównej | żądanie `/fleet/snapshot` wysyłane przed budową strony głównej (`App.ShowShell`), równolegle z odczytem stanu zapisanego; panele poza mapą tworzone przy pierwszym wyświetleniu (`ShellPage.EnsurePanel`) |
 | Kompilacja AOT | profilowana kompilacja AOT w buildzie Release (profil `Platforms/WebAssembly/aot.profile`); wyłączenie: `-p:FlotaWasmAot=false` — [kompilacja AOT](#kompilacja-aot) |
@@ -139,7 +140,6 @@ Katalog pośredni buildu AOT wymaga krótkiej ścieżki: pliki pośrednie kompil
 
 ## Ograniczenia
 
-- Brak trwałej sesji po przeładowaniu strony (T9.2).
 - Pamięć podręczna kafelków mapy i ostatniego stanu floty w wirtualnym systemie plików przeglądarki — trwałość do sprawdzenia w T9.3.
 - Eksport XLSX przez okno zapisu pliku — działanie w Firefox i Safari (brak interfejsu File System Access) do sprawdzenia w T9.3.
 - Obraz Docker nie zawiera jeszcze aplikacji przeglądarkowej (T9.4).

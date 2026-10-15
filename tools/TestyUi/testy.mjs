@@ -1,6 +1,7 @@
 // Testy interfejsu wersji przeglądarkowej na danych symulatora UniAVL (docs/TESTY-UI.md).
 //   T1.7 — przejście do każdej sekcji przy szerokości 400 px i 1400 px
 //   T7.4 — nazwa dostępna (aria-label) każdej kontrolki interaktywnej we wszystkich sekcjach
+//   T9.2 — wznowienie sesji po przeładowaniu strony, wylogowanie
 // Użycie: node tools/TestyUi/testy.mjs [adres] [katalog zrzutów]
 import { mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -159,6 +160,38 @@ async function accessibility() {
   }
 }
 
+/**
+ * T9.2 — sesja w przeglądarce: po przeładowaniu strony sesja wznawiana z ciasteczka odświeżającego (bez logowania);
+ * po wylogowaniu przeładowanie prowadzi do ekranu logowania.
+ */
+async function session() {
+  const browser = await Browser.launch({ width: 1400, height: 900 });
+  try {
+    await browser.send('Page.enable');
+    browser.on(method => { if (method === 'Page.javascriptDialogOpening') browser.send('Page.handleJavaScriptDialog', { accept: true }); });
+    const app = new UnoApp(browser);
+    await app.open(url);
+    await app.login('demo', 'demo');
+    await sleep(3000);
+
+    await app.open(url);
+    const resumed = await app.waitFor(n => n.label === 'Menu', 60000);
+    check(!!resumed, 'sesja: po przeładowaniu strony aplikacja bez ponownego logowania');
+
+    if (resumed) {
+      await app.b.eval(`document.querySelector('#uno-semantics-root [aria-label="Menu"]').click(); true`);
+      const logout = await app.waitFor(n => n.tag === 'BUTTON' && (n.label === 'Wyloguj' || n.text.trim() === 'Wyloguj'), 10000);
+      if (logout) await app.b.eval(`[...document.querySelectorAll('#uno-semantics-root button')].find(b => (b.getAttribute('aria-label') || b.textContent).trim() === 'Wyloguj').click(); true`);
+      check(!!await app.waitFor(n => n.tag === 'INPUT' && n.label === 'Użytkownik', 30000), 'sesja: wylogowanie — ekran logowania');
+      await app.open(url);
+      check(!!await app.waitFor(n => n.tag === 'INPUT' && n.label === 'Użytkownik', 60000), 'sesja: po wylogowaniu i przeładowaniu — ekran logowania');
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
+await session();
 await sectionsAt(1400, 900);
 await sectionsAt(400, 800);
 await accessibility();

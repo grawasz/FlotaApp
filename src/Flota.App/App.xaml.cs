@@ -90,6 +90,7 @@ public partial class App : Application
         Pomiar.MarkNextFrame("app.rendered");
         var tokens = Services.GetRequiredService<ITokenStore>();
         if (tokens.Current is not null) ShowShell();
+        else if (Services.GetRequiredService<FlotaApiClient>().CookieSession) _ = ResumeSessionAsync();
         else ShowLogin();
     }
 
@@ -114,7 +115,8 @@ public partial class App : Application
                 baseUrl = origin.TrimEnd('/') + "/";
             var http = new HttpClient { Timeout = TimeSpan.FromMinutes(3) };
             if (!string.IsNullOrWhiteSpace(baseUrl)) http.BaseAddress = new Uri(baseUrl);
-            return new FlotaApiClient(http, sp.GetRequiredService<ITokenStore>());
+            // Przeglądarka: token odświeżający w ciasteczku HttpOnly ustawianym przez Flota.Api (T9.2)
+            return new FlotaApiClient(http, sp.GetRequiredService<ITokenStore>(), cookieSession: OperatingSystem.IsBrowser());
         });
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<FleetHubClient>();
@@ -142,6 +144,25 @@ public partial class App : Application
         _statusTimer.Interval = TimeSpan.FromMinutes(1);
         _statusTimer.Tick += (_, _) => fleet.RefreshStatuses();
         _statusTimer.Start();
+    }
+
+    /// <summary>
+    /// Wersja przeglądarkowa: wznowienie sesji z ciasteczka odświeżającego (przeładowanie strony, nowa karta);
+    /// brak ważnej sesji — ekran logowania.
+    /// </summary>
+    async Task ResumeSessionAsync()
+    {
+        bool resumed;
+        try
+        {
+            resumed = await Services.GetRequiredService<FlotaApiClient>().RefreshAsync(CancellationToken.None);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or FlotaApiException or TaskCanceledException)
+        {
+            resumed = false;
+        }
+        if (resumed) ShowShell();
+        else ShowLogin();
     }
 
     public void ShowLogin()

@@ -83,6 +83,7 @@ builder.Services.AddSingleton<IReverseGeocoder>(sp => sp.GetRequiredService<Targ
 builder.Services.AddSingleton<GeocodingService>();
 builder.Services.AddSingleton<SessionStore>();
 builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton<RefreshCookie>();
 builder.Services.AddSingleton<LiveSessionRegistry>();
 builder.Services.AddScoped<UserContext>();
 builder.Services.AddScoped<FleetService>();
@@ -115,7 +116,7 @@ builder.Services.AddAuthorization();
 // w produkcji aplikacja jest udostępniana przez Flota.Api pod tym samym adresem (T9.4)
 var corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
 if (corsOrigins.Length > 0)
-    builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod()));
+    builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
 builder.Services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.TypeInfoResolverChain.Insert(0, FlotaJsonContext.Default));
 
@@ -140,6 +141,9 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOIN
     otel.UseOtlpExporter();
 
 var app = builder.Build();
+
+// Odwrotne proxy: schemat i adres klienta z nagłówków X-Forwarded-* wyłącznie od zaufanych adresów (T9.2)
+app.UseForwardedHeaders(ProxyHeaders.Options(app.Configuration));
 
 // Komunikaty dla użytkownika bez szczegółów technicznych (B4); szczegóły w dzienniku
 app.UseExceptionHandler(e => e.Run(async ctx =>

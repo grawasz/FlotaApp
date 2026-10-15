@@ -85,7 +85,7 @@ public static class ApiEndpoints
     }
 
     static async Task<Results<Ok<TokenResponse>, UnauthorizedHttpResult, BadRequest<ErrorResponse>>> LoginAsync(
-        LoginRequest body, UniAvlClient avl, SessionStore sessions, TokenService tokens, CancellationToken ct)
+        LoginRequest body, HttpContext http, UniAvlClient avl, SessionStore sessions, TokenService tokens, RefreshCookie cookie, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(body.Login) || string.IsNullOrEmpty(body.Password))
             return TypedResults.BadRequest(new ErrorResponse("Wprowadź login i hasło."));
@@ -96,25 +96,43 @@ public static class ApiEndpoints
         var user = UniAvlMapper.ToUser(identity ?? new Infrastructure.UniAvl.Dto.AvlIdentity(), body.Login.Trim());
         var (session, refresh) = await sessions.CreateAsync(user.UserId, user.Login, avlToken, ct);
         var (access, expires) = tokens.Issue(session);
-        return TypedResults.Ok(new TokenResponse(access, refresh, expires, user));
+        return TypedResults.Ok(new TokenResponse(access, IssueRefresh(http, cookie, refresh), expires, user));
     }
 
+    /// <summary>
+    /// Odnowienie tokenu: token odświeżający z treści żądania albo — w trybie ciasteczkowym — wyłącznie z ciasteczka.
+    /// </summary>
     static async Task<Results<Ok<TokenResponse>, UnauthorizedHttpResult>> RefreshAsync(
-        RefreshRequest body, UniAvlClient avl, SessionStore sessions, TokenService tokens, CancellationToken ct)
+        RefreshRequest? body, HttpContext http, UniAvlClient avl, SessionStore sessions, TokenService tokens, RefreshCookie cookie, CancellationToken ct)
     {
-        var result = await sessions.RefreshAsync(body.RefreshToken, ct);
-        if (result is null) return TypedResults.Unauthorized();
+        var presented = RefreshCookie.IsCookieMode(http.Request) ? RefreshCookie.Read(http.Request) : body?.RefreshToken;
+        if (string.IsNullOrEmpty(presented)) return TypedResults.Unauthorized();
+        var result = await sessions.RefreshAsync(presented, ct);
+        if (result is null)
+        {
+            if (RefreshCookie.IsCookieMode(http.Request)) cookie.Delete(http.Response);
+            return TypedResults.Unauthorized();
+        }
         var (session, refresh) = result.Value;
         var identity = await avl.GetIdentityAsync(session.AvlToken, ct);
         var (access, expires) = tokens.Issue(session);
         var user = UniAvlMapper.ToUser(identity ?? new Infrastructure.UniAvl.Dto.AvlIdentity { UserId = session.UserId }, session.Login);
-        return TypedResults.Ok(new TokenResponse(access, refresh, expires, user));
+        return TypedResults.Ok(new TokenResponse(access, IssueRefresh(http, cookie, refresh), expires, user));
     }
 
-    static async Task<NoContent> LogoutAsync(UserContext user, SessionStore sessions, CancellationToken ct)
+    static async Task<NoContent> LogoutAsync(HttpContext http, UserContext user, SessionStore sessions, RefreshCookie cookie, CancellationToken ct)
     {
         await sessions.RevokeAsync(user.SessionId, ct);
+        if (RefreshCookie.IsCookieMode(http.Request)) cookie.Delete(http.Response);
         return TypedResults.NoContent();
+    }
+
+    /// <summary>Token odświeżający dla klienta: w trybie ciasteczkowym w ciasteczku (treść odpowiedzi — pusty ciąg).</summary>
+    static string IssueRefresh(HttpContext http, RefreshCookie cookie, string refresh)
+    {
+        if (!RefreshCookie.IsCookieMode(http.Request)) return refresh;
+        cookie.Write(http.Response, refresh);
+        return string.Empty;
     }
 
     /// <summary>Parametry raportu trasy w zapytaniu.</summary>
