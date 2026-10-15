@@ -1,6 +1,6 @@
-# Serwer Flota (VPS): Caddy — jedyny kontener z portami publicznymi:
-#   80   — przekierowanie na HTTPS
-#   443  — dotychczasowa aplikacja Blazor (kontener flota)
+# Serwer Flota (VPS). Dotychczasowa aplikacja Blazor (kontener flota, uruchomiony poza compose) pozostaje bez zmian
+# pod http://FLOTA_DOMAIN (port 80 serwera). Caddy — jedyny kontener compose z portami publicznymi:
+#   443  — dotychczasowa aplikacja Blazor przez HTTPS (przekazanie do portu 80 serwera)
 #   8443 — FlotaApp: Flota.Api z aplikacją przeglądarkową (kontener flota-api)
 # Flota.Api i PostgreSQL bez portów publicznych. Sekrety wyłącznie w pliku .env (wzór: .env.example).
 # Procedura wdrożenia, sprawdzenie i wycofanie zmian: docs/WDROZENIE.md.
@@ -16,16 +16,19 @@ services:
     image: caddy:2
     restart: unless-stopped
     ports:
-      - "80:80"
       - "443:443"
       - "443:443/udp"
       - "8443:8443"
       - "8443:8443/udp"
     environment:
       FLOTA_DOMAIN: ${FLOTA_DOMAIN:?Brak FLOTA_DOMAIN w pliku .env}
-      # Wiersze opcji globalnych Caddyfile: adres e-mail ACME (gdy podany), certyfikaty lokalne (weryfikacja bez Let's Encrypt)
+      # Opcja globalna Caddyfile: adres e-mail ACME (gdy podany)
       CADDY_EMAIL: ${ACME_EMAIL:+email ${ACME_EMAIL}}
-      CADDY_LOCAL_CERTS: ${CADDY_LOCAL_CERTS:-}
+      # Certyfikat: acme (Let's Encrypt) albo lokalny (wewnętrzny urząd Caddy — weryfikacja lokalna)
+      CADDY_CERTS: ${CADDY_CERTS:-acme}
+    extra_hosts:
+      # Port 80 serwera — dotychczasowy kontener flota
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
@@ -35,18 +38,7 @@ services:
         # Stały adres: jedyne zaufane proxy dla Flota.Api (ForwardedHeaders__KnownProxies)
         ipv4_address: ${FLOTA_CADDY_IP:-172.30.0.10}
     depends_on:
-      - flota
       - flota-api
-    logging: *logging
-
-  # Dotychczasowa aplikacja Blazor — obraz i konfiguracja jak w bieżącym uruchomieniu; port wewnętrzny 8080, bez portów publicznych
-  flota:
-    image: ${FLOTA_BLAZOR_IMAGE:?Brak FLOTA_BLAZOR_IMAGE w pliku .env}
-    restart: unless-stopped
-    expose:
-      - "8080"
-    networks:
-      - web
     logging: *logging
 
   flota-api:
