@@ -6,9 +6,9 @@ Zestawienie pytań dotyczących kwestii K1–K4 z rozdziału 12 planu oraz pyta�
 
 ### K1 — szyfrowanie połączeń
 
-**Kontekst.** Aplikacja korzysta z adresu `http://geo.uniavl.pl/AVL/`. Login i hasło są przekazywane w parametrach zapytania `GET api/Login/Token?Login=&Password=`, a token w nagłówku `Authorization` — bez szyfrowania. Strumień pozycji korzysta z `wss://geo.uniavl.pl:44380` (szyfrowany).
+**Kontekst.** Aplikacja korzysta z adresu `http://geo.uniavl.pl/AVL/`. Login i hasło są przekazywane w parametrach zapytania `GET api/Login/Token?Login=&Password=`, a token w nagłówku `Authorization` — bez szyfrowania. Strumień pozycji korzysta z `wss://geo.uniavl.pl:44380` (szyfrowany). Notatki projektowe aplikacji Blazor wymieniają adres HTTPS `https://geo.uniavl.pl:44381` jako adres usługi komunikacyjnej (hub SignalR `CommunicationHub`); dostępność REST API pod tym adresem nie została sprawdzona.
 
-1. Czy UniAVL REST API jest dostępne przez HTTPS? Jeżeli tak — pod jakim adresem i czy dotychczasowy adres HTTP pozostanie dostępny?
+1. Czy UniAVL REST API jest dostępne przez HTTPS (np. pod `https://geo.uniavl.pl:44381`)? Jeżeli tak — pod jakim adresem i czy dotychczasowy adres HTTP pozostanie dostępny?
 2. Czy możliwe jest pobieranie tokenu metodą `POST` z danymi logowania w treści żądania zamiast w parametrach adresu?
 3. Jaki jest czas ważności tokenu i czy istnieje mechanizm jego odnowienia bez ponownego podawania hasła?
 
@@ -28,7 +28,7 @@ Zestawienie pytań dotyczących kwestii K1–K4 z rozdziału 12 planu oraz pyta�
 
 ### K3 — strumień pozycji (WebSocket)
 
-**Kontekst.** Logowanie do `wss://geo.uniavl.pl:44380` odbywa się poleceniem `LOGIN <użytkownik> <hasło>`. Aplikacja Blazor przechowuje w tym celu hasło użytkownika w pamięci sesji przeglądarki. W nowym rozwiązaniu połączenie ze strumieniem utrzymuje serwer Flota.Api i rozsyła zmiany do aplikacji.
+**Kontekst.** Logowanie do `wss://geo.uniavl.pl:44380` odbywa się poleceniem `LOGIN <użytkownik> <hasło>`. Aplikacja Blazor przechowuje w tym celu hasło użytkownika w pamięci sesji przeglądarki. Komunikaty strumienia to obiekty JSON pozycji (`TrackingMessage`), przypisywane do obiektów według pola `SenderId` urządzenia; po zamknięciu połączenia aplikacja Blazor łączy się ponownie po 5 s. Bez uwierzytelnienia tokenem lub konta technicznego Flota.Api musiałaby przechowywać hasło użytkownika (w postaci zaszyfrowanej) przez cały czas trwania sesji — do czasu rozstrzygnięcia aktualizacja pozycji odbywa się przez odpytywanie co 10 s. W nowym rozwiązaniu połączenie ze strumieniem utrzymuje serwer Flota.Api i rozsyła zmiany do aplikacji.
 
 1. Czy WebSocket przyjmuje uwierzytelnienie tokenem (tym samym co REST API) zamiast loginu i hasła?
 2. Czy możliwe jest konto techniczne, które otrzymuje pozycje wszystkich obiektów firmy? Jeżeli tak — czy strumień zawiera identyfikator obiektu lub urządzenia pozwalający przefiltrować dane według uprawnień poszczególnych użytkowników?

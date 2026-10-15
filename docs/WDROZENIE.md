@@ -30,6 +30,25 @@ Procedura dla serwera VPS (OVH) z dotychczasową aplikacją Blazor i FlotaApp (F
 - Zapora: ruch przychodzący wyłącznie 80/TCP, 443/TCP i UDP, 8443/TCP i UDP oraz SSH.
 - Dotychczasowa aplikacja Blazor: nazwa obrazu oraz bieżąca konfiguracja uruchomienia (zmienne środowiskowe, wolumeny) — przenoszone do usługi `flota`. Aplikacja nasłuchuje w kontenerze na porcie 8080.
 
+### Stan serwera według notatek wdrożeniowych aplikacji Blazor
+
+| Element | Wartość |
+|---|---|
+| Obraz | `flota:latest` — budowany lokalnie (`docker build -t flota .`), przenoszony plikiem (`docker save` / `docker load`); profil publikacji przewiduje także `grawasz/flota:latest` w Docker Hub |
+| Kontenery | `flota` (`-p 80:8080`, `--restart unless-stopped`), `flota-old` (`-p 32785:8080`) |
+| Konfiguracja uruchomienia | bez zmiennych środowiskowych i wolumenów; ustawienia regionalne `pl_PL.UTF-8` w obrazie |
+| Inne kontenery | FloAPI (`-p 5000:8080`), Florea (`-p 5173:80`) — porty niekolidujące z Caddy; poza zakresem wdrożenia |
+| Protokół | HTTP na porcie 80, bez certyfikatu — po wdrożeniu wyłącznie HTTPS przez Caddy |
+
+Stan bieżący do potwierdzenia przed wdrożeniem:
+
+```bash
+docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}'
+docker inspect flota --format '{{json .Config.Env}} {{json .Mounts}}'
+```
+
+Przy zgodności z tabelą: `FLOTA_BLAZOR_IMAGE=flota:latest`, krok 4 pomijany.
+
 ## Przygotowanie obrazu (komputer deweloperski)
 
 ```powershell
@@ -70,10 +89,12 @@ Skrypt buduje obraz z bieżącego zatwierdzenia (tag `flota-api:<skrót zatwierd
        volumes:
          - <wolumen lub katalog>:<ścieżka w kontenerze>
    ```
-5. Zatrzymanie dotychczasowego kontenera aplikacji Blazor (zwolnienie portów 80 i 443) — bez usuwania, na potrzeby wycofania zmian:
+5. Zatrzymanie dotychczasowych kontenerów aplikacji Blazor (zwolnienie portu 80) — bez usuwania, na potrzeby wycofania zmian; wyłączenie automatycznego restartu po ponownym uruchomieniu serwera:
    ```bash
-   docker stop <nazwa bieżącego kontenera>
+   docker stop flota flota-old
+   docker update --restart no flota flota-old
    ```
+   Usługa `flota` w `docker-compose.yml` otrzymuje nazwę kontenera nadaną przez compose (`<katalog wdrożenia>-flota-1`) — bez konfliktu z zatrzymanym kontenerem `flota`.
 6. Uruchomienie:
    ```bash
    docker compose up -d
@@ -130,7 +151,7 @@ Odtworzenie bazy (Flota.Api zatrzymywana na czas odtwarzania):
 |---|---|
 | Wersja Flota.Api | `.env`: poprzedni `FLOTA_API_IMAGE`; `docker compose up -d flota-api` |
 | Dane bazy | `./odtworz-baze.sh kopie/<kopia sprzed aktualizacji>.dump` |
-| Całe wdrożenie | `docker compose down` (bez `-v` — wolumeny zachowane), następnie `docker start <nazwa dotychczasowego kontenera>` — stan sprzed wdrożenia |
+| Całe wdrożenie | `docker compose down` (bez `-v` — wolumeny zachowane), następnie `docker update --restart unless-stopped flota && docker start flota` (oraz `flota-old`) — stan sprzed wdrożenia |
 
 Schemat bazy tworzony przy pierwszym uruchomieniu (`EnsureCreated`; migracje po rozstrzygnięciu K6) — wycofanie wersji Flota.Api nie wymaga zmian schematu.
 
