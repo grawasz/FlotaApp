@@ -110,6 +110,9 @@ public sealed class FlotaApiClient(HttpClient http, ITokenStore tokens, bool coo
 
     public Task<UserSettings> GetSettingsAsync(CancellationToken ct) => GetAsync("me/settings", Json.UserSettings, ct);
 
+    /// <summary>Pakiet Android do pobrania; <c>null</c>, gdy Flota.Api go nie udostępnia.</summary>
+    public Task<AppDownloadInfo?> GetAndroidDownloadAsync(CancellationToken ct) => GetOptionalAsync("downloads/android", Json.AppDownloadInfo, ct);
+
     public async Task SaveSettingsAsync(UserSettings settings, CancellationToken ct)
     {
         using var _ = await SendAsync(() => new HttpRequestMessage(HttpMethod.Put, "me/settings") { Content = JsonContent.Create(settings, Json.UserSettings) }, ct).ConfigureAwait(false);

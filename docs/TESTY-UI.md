@@ -23,6 +23,7 @@ Skrypt Node.js (wersja 22 lub nowsza, bez zależności zewnętrznych) steruje pr
 | Sekcje, 400 px | jak wyżej; pasek sekcji przewijany w poziomie | T1.7 |
 | Dostępność | ekran logowania i każda sekcja: kontrolki interaktywne bez nazwy dostępnej (`aria-label`) | T7.4 |
 | Sesja | po zalogowaniu i przeładowaniu strony aplikacja bez ponownego logowania; wylogowanie — ekran logowania, również po przeładowaniu | T9.2 |
+| Pobieranie | odnośnik „Pobierz aplikację na Android” na ekranie logowania i w menu bocznym widoczny wyłącznie, gdy `/downloads/android` zwraca 200 | T9.5 |
 
 Elementy pasków przewijania (strzałki i suwak, do 16 px), które Uno wystawia jako przyciski bez nazwy, są pomijane — nie pochodzą z widoków aplikacji.
 
@@ -50,6 +51,7 @@ Po ponownej publikacji aplikacji przeglądarkowej Flota.Api należy uruchomić p
 | 2026-09-27 | zatwierdzenie z T7.2 (motywy, ikony jednobarwne) | 37 sprawdzeń zakończonych powodzeniem |
 | 2026-10-12 | zatwierdzenie z T9.3a (panele przy pierwszym wyświetleniu) | 37 sprawdzeń zakończonych powodzeniem w trzech kolejnych przebiegach |
 | 2026-10-15 | zatwierdzenie z T9.2 (sesja w ciasteczku) | 40 sprawdzeń zakończonych powodzeniem (3 — sesja, 24 — sekcje, 13 — dostępność) |
+| 2026-10-15 | T9.5, pakiet testowy w katalogu pobierania | 42 sprawdzenia zakończone powodzeniem (2 — pobieranie, 3 — sesja, 24 — sekcje, 13 — dostępność) |
 
 ## Ograniczenia
 

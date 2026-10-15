@@ -125,6 +125,7 @@ public partial class App : Application
         services.AddSingleton<Notifier>();
         services.AddSingleton<MapImages>();
         services.AddSingleton<ExportService>();
+        services.AddSingleton<AndroidDownload>();
         services.AddSingleton<FleetViewModel>();
         services.AddSingleton<ShellViewModel>();
         services.AddSingleton<RouteReportViewModel>();

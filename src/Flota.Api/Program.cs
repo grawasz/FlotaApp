@@ -7,6 +7,7 @@ using Flota.Api.Infrastructure.Geocoding;
 using Flota.Api.Infrastructure.Targeo;
 using Flota.Api.Infrastructure.UniAvl;
 using Flota.Api.Services;
+using Flota.Api.Downloads;
 using Flota.Api.WebApp;
 using Flota.Core.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -164,6 +165,8 @@ if (corsOrigins.Length > 0)
     app.UseCors();
 // Aplikacja przeglądarkowa (faza 9): pliki statyczne z katalogu WebApp:RootPath
 app.TryUseFlotaWebApp();
+// Pliki do pobrania (pakiet Android) z katalogu Downloads:Path pod /pobierz/ (T9.5)
+app.UseFlotaDownloads();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -175,6 +178,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapHealthChecks("/health");
 app.MapFlotaApi();
+app.MapFlotaDownloads();
 app.MapHub<FleetHub>(FleetHub.Path);
 
 // Schemat bazy (migracje po rozstrzygnięciu K6 — dostawca bazy produkcyjnej)

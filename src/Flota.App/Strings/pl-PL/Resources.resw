@@ -337,4 +337,7 @@
   <data name="ThemeLight" xml:space="preserve"><value>Jasny</value></data>
   <data name="ThemeDark" xml:space="preserve"><value>Ciemny</value></data>
   <data name="ThemeSystem" xml:space="preserve"><value>Zgodny z systemem</value></data>
+  <data name="DownloadAndroid" xml:space="preserve"><value>Pobierz aplikację na Android</value></data>
+  <data name="DownloadAndroidDetails" xml:space="preserve"><value>{0} MB · {1}</value></data>
+  <data name="DownloadAndroidDetailsVersion" xml:space="preserve"><value>Wersja {0} · {1} MB · {2}</value></data>
 </root>

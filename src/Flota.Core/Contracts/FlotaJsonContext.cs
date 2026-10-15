@@ -12,6 +12,7 @@ namespace Flota.Core.Contracts;
 [JsonSerializable(typeof(RefreshRequest))]
 [JsonSerializable(typeof(TokenResponse))]
 [JsonSerializable(typeof(ErrorResponse))]
+[JsonSerializable(typeof(AppDownloadInfo))]
 [JsonSerializable(typeof(FleetSnapshot))]
 [JsonSerializable(typeof(PositionChanged))]
 [JsonSerializable(typeof(IReadOnlyList<ObjectPosition>))]

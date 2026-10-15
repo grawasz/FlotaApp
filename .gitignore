@@ -37,3 +37,8 @@ Thumbs.db
 
 # Dane lokalne Flota.Api
 App_Data/
+
+# Pliki do pobrania (pakiety APK) — poza repozytorium
+pobierz/
+*.apk
+!tests/Flota.Api.Tests/Samples/*.apk

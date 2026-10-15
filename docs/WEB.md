@@ -15,6 +15,17 @@
 | Start strony głównej | żądanie `/fleet/snapshot` wysyłane przed budową strony głównej (`App.ShowShell`), równolegle z odczytem stanu zapisanego; panele poza mapą tworzone przy pierwszym wyświetleniu (`ShellPage.EnsurePanel`) |
 | Kompilacja AOT | profilowana kompilacja AOT w buildzie Release (profil `Platforms/WebAssembly/aot.profile`); wyłączenie: `-p:FlotaWasmAot=false` — [kompilacja AOT](#kompilacja-aot) |
 
+## Pobieranie wersji Android
+
+| Element | Stan |
+|---|---|
+| Pliki | katalog `Downloads:Path` (w `docker-compose.yml` wolumen `FLOTA_DOWNLOADS_DIR`, domyślnie `./pobierz`, tylko do odczytu) udostępniany pod `/pobierz/`; wyłącznie pliki `*.apk` (`application/vnd.android.package-archive`), `Cache-Control: no-cache` (nazwa stała przy kolejnych wydaniach), `Content-Disposition: attachment` |
+| Metadane | `GET /downloads/android` (bez logowania): nazwa, adres, rozmiar, data pliku, wersja — z `Downloads:AndroidVersion` albo z `versionName` manifestu pakietu (`ApkManifest`); brak pakietu — 404. Plik: `Downloads:AndroidFile` albo najnowszy `*.apk` w katalogu |
+| Aplikacja | odnośnik „Pobierz aplikację na Android” z wersją, rozmiarem i datą (`Controls/AndroidDownloadLink`) na ekranie logowania i w menu bocznym — wyłącznie w wersji przeglądarkowej i tylko przy odpowiedzi 200 metadanych |
+| Testy | `DownloadsTests` (metadane, nagłówki, brak pakietu, inne typy plików, wersja z manifestu i z konfiguracji); `tools/TestyUi`: obecność odnośnika zgodna z odpowiedzią `/downloads/android` (`-Downloads <katalog>` w `tools/Start-Symulacja.ps1`) |
+
+Wydanie pakietu do dystrybucji wymaga rozstrzygnięcia K9 (identyfikator aplikacji — obecnie wartość domyślna szablonu `com.companyname.flota-app`) i klucza podpisu wydania (T8.2). Mechanizm sprawdzony na pakiecie testowym (build Debug, podpis deweloperski). Pakiet nie zawiera danych uwierzytelniających — adres Flota.Api i sekrety Targeo/UniAVL pozostają po stronie usługi.
+
 ## Uruchomienie
 
 ```powershell

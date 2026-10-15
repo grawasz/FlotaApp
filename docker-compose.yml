@@ -36,8 +36,12 @@ services:
       Targeo__User: ${TARGEO_USER:-}
       Targeo__Password: ${TARGEO_PASSWORD:-}
       Targeo__Salt: ${TARGEO_SALT:-}
+      # Pliki do pobrania pod /pobierz/ (pakiet Android); katalog pusty — odnośnik w aplikacji ukryty
+      Downloads__Path: /app/pobierz
+      Downloads__AndroidVersion: ${ANDROID_VERSION:-}
     volumes:
       - api-keys:/app/keys
+      - ${FLOTA_DOWNLOADS_DIR:-./pobierz}:/app/pobierz:ro
     restart: unless-stopped
 
 volumes:

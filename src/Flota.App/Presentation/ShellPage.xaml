@@ -31,6 +31,8 @@
           <ComboBox x:Name="ThemeBox" x:Uid="ThemeBox" AutomationProperties.Name="Motyw" HorizontalAlignment="Stretch" SelectionChanged="OnThemeChanged" />
           <TextBlock x:Uid="ThemeRestartHint" Text="Zmiana motywu po ponownym uruchomieniu aplikacji." Style="{StaticResource FlotaCaptionTextStyle}"
                      TextWrapping="Wrap" />
+          <!-- Wersja przeglądarkowa: pakiet Android do pobrania (T9.5) -->
+          <controls:AndroidDownloadLink Margin="0,16,0,0" />
         </StackPanel>
         <StackPanel Grid.Row="4" Spacing="2">
           <TextBlock x:Name="VersionText" Style="{StaticResource FlotaCaptionTextStyle}" HorizontalAlignment="Center" />

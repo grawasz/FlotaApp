@@ -50,6 +50,7 @@
 | T9.3a | zakończone | `tools/TestyUi/pomiar.mjs` (Release, Edge bez interfejsu, symulator UniAVL, bloki na przemian): obiekty na liście po zalogowaniu — stan wyjściowy 10,5 s, panele przy pierwszym wyświetleniu i wcześniejsze `/fleet/snapshot` 4,2 s, z kompilacją AOT 2,4 s; ikony mapy wczytywane równolegle (−0,4 s do mapy z obiektami); `FleetViewModelTests`, `RouteReportViewModelTests.CreatedAfterSelection_TakesSelectedObject`; `tools/TestyUi` bez błędów | [WEB.md](WEB.md#wydajność-t93a); punkt kontrolny: decyzja Jurka (2026-10-15) — kompilacja AOT w buildzie Release, profil `src/Flota.App/Platforms/WebAssembly/aot.profile` |
 | T9.2 | zakończone | `CookieSessionTests` (WebApplicationFactory, WireMock): ciasteczko `HttpOnly`/`SameSite=Strict`/`Path=/auth` bez tokenu w treści, odnowienie po przeładowaniu wyłącznie z ciasteczka z rotacją, odrzucenie poprzedniego ciasteczka, odrzucenie żądania bez ciasteczka, wylogowanie usuwające ciasteczko, `Secure` z `X-Forwarded-Proto` wyłącznie z sieci zaufanej; `tools/TestyUi` (sesja w przeglądarce) | [WEB.md](WEB.md#rozwiązanie); konfiguracja sieci proxy w T9.6 |
 | T9.4 | zakończone | `docker compose up` (Flota.Api z aplikacją przeglądarkową + PostgreSQL): `GET /health` → 200, `GET /` → aplikacja (`index.html`), `GET /fleet/snapshot` bez tokenu → 401, pliki aplikacji w wariancie Brotli z nagłówkiem `immutable`; `tools/TestyUi` na kontenerze (aplikacja AOT, symulator UniAVL na hoście); potok CI: build WebAssembly z AOT, test obrazu (`/`, `/health`, 401, Brotli) | build aplikacji w etapie `web` obrazu (`-p:FlotaWebOnly=true`) |
+| T9.5 | w toku | `DownloadsTests`: metadane `/downloads/android` (nazwa, rozmiar, data, wersja z manifestu pakietu i z konfiguracji), plik `/pobierz/` z typem APK, `no-cache` i `attachment`, brak pakietu — 404, inne typy plików niedostępne; `tools/TestyUi` na pakiecie testowym (build Debug): odnośnik na ekranie logowania i w menu bocznym | [WEB.md](WEB.md#pobieranie-wersji-android); ⏸ przygotowanie pakietu do dystrybucji wstrzymane — wymaga K9 (identyfikator aplikacji) i klucza podpisu wydania (T8.2) |
 
 ## Odstępstwa od planu
 
@@ -69,7 +70,7 @@
 | Projekt | Liczba testów | Wynik |
 |---|---|---|
 | `Flota.Core.Tests` | 70 | wszystkie zakończone powodzeniem |
-| `Flota.Api.Tests` | 60 | wszystkie zakończone powodzeniem |
+| `Flota.Api.Tests` | 66 | wszystkie zakończone powodzeniem |
 | `Flota.Presentation.Tests` | 71 | wszystkie zakończone powodzeniem |
 | `Flota.App.Tests` | 21 | wszystkie zakończone powodzeniem |
-| `tools/TestyUi` (przeglądarka) | 40 sprawdzeń | wszystkie zakończone powodzeniem |
+| `tools/TestyUi` (przeglądarka) | 42 sprawdzenia | wszystkie zakończone powodzeniem |

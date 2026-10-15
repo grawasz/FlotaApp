@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <None Update="Samples\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Samples\*.apk" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -3,9 +3,12 @@
     Uruchamia symulator UniAVL i Flota.Api skierowane do symulatora (docs/SYMULATOR.md).
 .PARAMETER WebApp
     Katalog opublikowanej aplikacji przeglądarkowej (wwwroot) udostępnianej przez Flota.Api.
+.PARAMETER Downloads
+    Katalog plików do pobrania (pakiet Android) udostępnianych pod /pobierz/.
 #>
 param(
-    [string]$WebApp
+    [string]$WebApp,
+    [string]$Downloads
 )
 
 $ErrorActionPreference = 'Stop'
@@ -33,6 +36,7 @@ $apiArgs = @(
     "--DataProtection:KeysPath=$(Join-Path $work 'keys')"
 )
 if ($WebApp) { $apiArgs += "--WebApp:RootPath=$((Resolve-Path $WebApp).Path)" }
+if ($Downloads) { $apiArgs += "--Downloads:Path=$((Resolve-Path $Downloads).Path)" }
 
 try {
     dotnet run --no-build --project (Join-Path $root 'src/Flota.Api') --no-launch-profile -- @apiArgs

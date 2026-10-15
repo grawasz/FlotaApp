@@ -2,6 +2,7 @@
 //   T1.7 — przejście do każdej sekcji przy szerokości 400 px i 1400 px
 //   T7.4 — nazwa dostępna (aria-label) każdej kontrolki interaktywnej we wszystkich sekcjach
 //   T9.2 — wznowienie sesji po przeładowaniu strony, wylogowanie
+//   T9.5 — odnośnik do pakietu Android wyłącznie, gdy Flota.Api go udostępnia (ekran logowania i menu boczne)
 // Użycie: node tools/TestyUi/testy.mjs [adres] [katalog zrzutów]
 import { mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -171,8 +172,19 @@ async function session() {
     browser.on(method => { if (method === 'Page.javascriptDialogOpening') browser.send('Page.handleJavaScriptDialog', { accept: true }); });
     const app = new UnoApp(browser);
     await app.open(url);
+
+    // T9.5: odnośnik zgodny z odpowiedzią /downloads/android
+    const available = await app.b.eval(`fetch('downloads/android').then(r => r.ok)`);
+    const isLink = n => n.label === 'Pobierz aplikację na Android' || n.text.trim() === 'Pobierz aplikację na Android';
+    const loginLink = await app.waitFor(isLink, available ? 15000 : 3000);
+    check(!!loginLink === available, `pobieranie: odnośnik na ekranie logowania ${available ? 'widoczny' : 'ukryty'} (pakiet ${available ? 'udostępniony' : 'nieudostępniony'})`);
+
     await app.login('demo', 'demo');
     await sleep(3000);
+    await app.b.eval(`document.querySelector('#uno-semantics-root [aria-label="Menu"]').click(); true`);
+    const menuLink = await app.waitFor(isLink, available ? 15000 : 3000);
+    check(!!menuLink === available, `pobieranie: odnośnik w menu bocznym ${available ? 'widoczny' : 'ukryty'}`);
+    await app.b.eval(`document.querySelector('#uno-semantics-root [aria-label="Menu"]').click(); true`);
 
     await app.open(url);
     const resumed = await app.waitFor(n => n.label === 'Menu', 60000);
